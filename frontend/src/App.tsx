@@ -50,7 +50,7 @@ export default function App() {
   return (
     <Suspense fallback={<PageLoader />}>
       <Routes>
-        {/* ── Guest Only (redirect to /dashboard if logged in) ── */}
+        {/* ── Guest Only (redirect to /dashboard if logged in) ─*/}
         <Route element={<GuestRoute />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
