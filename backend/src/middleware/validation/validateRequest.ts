@@ -18,9 +18,10 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
-import { z, ZodSchema } from 'zod';
+import { ZodSchema } from 'zod';
 
 type ValidationTarget = 'body' | 'params' | 'query';
+type ValidatedRequest = Omit<Request, ValidationTarget> & Record<ValidationTarget, unknown>;
 
 /**
  * Creates validation middleware for the specified target (body/params/query).
@@ -32,12 +33,12 @@ type ValidationTarget = 'body' | 'params' | 'query';
  *   router.get('/users/:id', validateRequest(idParamSchema, 'params'), getUser)
  */
 export const validateRequest =
-  (schema: ZodSchema, target: ValidationTarget = 'body') =>
+  <TOutput>(schema: ZodSchema<TOutput>, target: ValidationTarget = 'body') =>
   (req: Request, _res: Response, next: NextFunction): void => {
+    const validatedReq = req as ValidatedRequest;
     // parse() throws ZodError on failure — express-async-errors forwards it to errorHandler
-    const parsed = schema.parse(req[target]);
+    const parsed = schema.parse(validatedReq[target]);
     // Replace with parsed data — Zod strips unknown fields (security)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (req as any)[target] = parsed;
+    validatedReq[target] = parsed;
     next();
   };

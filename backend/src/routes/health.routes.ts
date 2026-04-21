@@ -11,7 +11,7 @@
  *   /api/health/ready   → Readiness: "Is it ready to serve traffic?"
  *                          (checks DB and Redis connectivity)
  */
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { getPool } from '../config/database';
 import { getRedis } from '../config/redis';
 import { logger } from '../utils/logger';
@@ -27,7 +27,7 @@ router.get('/', (_req: Request, res: Response) => {
   });
 });
 
-router.get('/ready', async (_req: Request, res: Response) => {
+const readinessHandler = async (_req: Request, res: Response): Promise<void> => {
   const checks: Record<string, 'ok' | 'error'> = {};
 
   // Check PostgreSQL
@@ -54,6 +54,10 @@ router.get('/ready', async (_req: Request, res: Response) => {
     checks,
     timestamp: new Date().toISOString(),
   });
+};
+
+router.get('/ready', (req: Request, res: Response, next: NextFunction) => {
+  void readinessHandler(req, res).catch(next);
 });
 
 export { router as healthRouter };

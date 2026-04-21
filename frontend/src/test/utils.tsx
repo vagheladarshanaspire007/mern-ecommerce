@@ -20,7 +20,7 @@
 import { ReactElement } from 'react';
 import { render, RenderOptions } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
 import authReducer from '@/store/slices/authSlice';
@@ -29,10 +29,16 @@ import uiReducer from '@/store/slices/uiSlice';
 import type { RootState } from '@/store';
 
 // ─── Test Store Factory ──────────────────────────────────────
-// Creates a fresh store for each test — prevents state leaking between tests
+// Creates a fresh store for each test — prevents state leaking between tests;
+const rootReducer = combineReducers({
+  auth: authReducer,
+  cart: cartReducer,
+  ui: uiReducer,
+});
+
 export const createTestStore = (preloadedState?: Partial<RootState>) =>
   configureStore({
-    reducer: { auth: authReducer, cart: cartReducer, ui: uiReducer },
+    reducer: rootReducer,
     preloadedState,
   });
 
@@ -54,11 +60,7 @@ interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
 
 export function renderWithProviders(
   ui: ReactElement,
-  {
-    preloadedState,
-    initialEntries = ['/'],
-    ...renderOptions
-  }: CustomRenderOptions = {}
+  { preloadedState, initialEntries = ['/'], ...renderOptions }: CustomRenderOptions = {}
 ) {
   const store = createTestStore(preloadedState);
   const queryClient = createTestQueryClient();
