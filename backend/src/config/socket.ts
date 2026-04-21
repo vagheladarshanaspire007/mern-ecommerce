@@ -57,7 +57,9 @@ export const initSocketIO = (server: HTTPServer): SocketServer => {
 
     // Join user's personal room for targeted messages
     // WHY: Allows sending events to specific users: io.to(`user:${userId}`).emit(...)
-    void socket.join(`user:${user?.userId}`);
+    Promise.resolve(socket.join(`user:${user.userId}`)).catch((error: unknown) => {
+      logger.error(`Failed to join socket room for user ${user.userId}:`, error);
+    });
 
     // ── Room Management ──────────────────────────────────
     // TODO (Day 18): Add chat room join/leave handlers here
