@@ -44,7 +44,7 @@ export const app: Application = express();
 
 // ─── 1. Security Headers ────────────────────────────────────
 // helmet() sets ~14 HTTP headers that protect against common web vulnerabilities.
-// WHY helmet: Prevents clickjacking (X-Frame-Options), XSS (CSP),
+// WHY helmet: Prevents clickjacking (X-Frame-Options), XSS (CSP) ,
 // sniffing attacks (X-Content-Type-Options), and more — in one line.
 app.use(
   helmet({
