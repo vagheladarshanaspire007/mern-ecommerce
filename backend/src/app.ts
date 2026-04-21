@@ -19,7 +19,7 @@
  * ============================================================
  */
 
-import express, { Application, Request, Response, NextFunction } from 'express';
+import express, { Application, Request } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
@@ -75,7 +75,7 @@ app.use(securityHeaders);
 app.use(
   cors({
     origin: process.env.FRONTEND_URL || 'http://localhost:3000',
-    credentials: true,               // Allow cookies to be sent cross-origin
+    credentials: true, // Allow cookies to be sent cross-origin
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Correlation-ID'],
     exposedHeaders: ['X-Correlation-ID', 'X-RateLimit-Remaining'],
@@ -122,11 +122,11 @@ app.use('/api', globalRateLimiter);
 // ─── 9. Routes ──────────────────────────────────────────────
 const API_PREFIX = `/api/${process.env.API_VERSION || 'v1'}`;
 
-app.use('/api/health', healthRouter);                     // Health check (no version prefix)
-app.use(`${API_PREFIX}/auth`, authRouter);                // Registration, login, refresh, logout
-app.use(`${API_PREFIX}/users`, userRouter);               // User CRUD (protected)
-app.use(`${API_PREFIX}/products`, productRouter);         // Product CRUD (Day 41-43 feature)
-app.use(`${API_PREFIX}/upload`, uploadRouter);            // File uploads via Multer
+app.use('/api/health', healthRouter); // Health check (no version prefix)
+app.use(`${API_PREFIX}/auth`, authRouter); // Registration, login, refresh, logout
+app.use(`${API_PREFIX}/users`, userRouter); // User CRUD (protected)
+app.use(`${API_PREFIX}/products`, productRouter); // Product CRUD (Day 41-43 feature)
+app.use(`${API_PREFIX}/upload`, uploadRouter); // File uploads via Multer
 
 // ─── 10. 404 Handler ────────────────────────────────────────
 // Catches requests to routes that don't exist

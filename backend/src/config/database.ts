@@ -15,7 +15,7 @@
  * ============================================================
  */
 
-import { Pool, PoolClient, QueryResult } from 'pg';
+import { Pool, PoolClient, QueryResult, QueryResultRow } from 'pg';
 import { logger } from '../utils/logger';
 
 let pool: Pool;
@@ -27,11 +27,11 @@ export const connectDB = async (): Promise<void> => {
     database: process.env.DB_NAME || 'mern_db',
     user: process.env.DB_USER || 'postgres',
     password: process.env.DB_PASSWORD,
-    min: parseInt(process.env.DB_POOL_MIN || '2'),   // Minimum idle connections
-    max: parseInt(process.env.DB_POOL_MAX || '10'),  // Maximum connections
-    idleTimeoutMillis: 30_000,    // Close idle connections after 30s
+    min: parseInt(process.env.DB_POOL_MIN || '2'), // Minimum idle connections
+    max: parseInt(process.env.DB_POOL_MAX || '10'), // Maximum connections
+    idleTimeoutMillis: 30_000, // Close idle connections after 30s
     connectionTimeoutMillis: 5_000, // Error if connection takes >5s
-    statement_timeout: 30_000,    // Kill queries running >30s (prevent runaway queries)
+    statement_timeout: 30_000, // Kill queries running >30s (prevent runaway queries)
   });
 
   // Test the connection
@@ -56,7 +56,7 @@ export const getPool = (): Pool => {
  * @example
  *   await query('SELECT * FROM users WHERE id = $1', [userId])
  */
-export const query = async <T = Record<string, unknown>>(
+export const query = async <T extends QueryResultRow = Record<string, unknown>>(
   text: string,
   params?: unknown[]
 ): Promise<QueryResult<T>> => {

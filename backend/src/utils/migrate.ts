@@ -4,7 +4,7 @@
  * ============================================================
  * WHY migrations instead of dropping and recreating tables:
  *   Migrations track schema changes over time like Git tracks code.
- *   Team members run the same migrations in the same order → 
+ *   Team members run the same migrations in the same order →
  *   everyone has identical schemas. In production, you apply only
  *   NEW migrations — you never lose existing data.
  *
@@ -19,15 +19,17 @@ import 'dotenv/config';
 import { connectDB, query, withTransaction } from '../config/database';
 import { logger } from './logger';
 
+const createMigrationsTableSql = `
+  CREATE TABLE IF NOT EXISTS _migrations (
+    id VARCHAR(255) PRIMARY KEY,
+    run_at TIMESTAMP DEFAULT NOW()
+  );
+`;
+
 const migrations: { id: string; sql: string }[] = [
   {
     id: '001_create_migrations_table',
-    sql: `
-      CREATE TABLE IF NOT EXISTS _migrations (
-        id VARCHAR(255) PRIMARY KEY,
-        run_at TIMESTAMP DEFAULT NOW()
-      );
-    `,
+    sql: createMigrationsTableSql,
   },
   {
     id: '002_create_users_table',
@@ -75,11 +77,12 @@ async function runMigrations() {
   await connectDB();
   logger.info('Running migrations...');
 
+  await query(createMigrationsTableSql);
+
   for (const migration of migrations) {
-    const { rows } = await query<{ id: string }>(
-      'SELECT id FROM _migrations WHERE id = $1',
-      [migration.id]
-    );
+    const { rows } = await query<{ id: string }>('SELECT id FROM _migrations WHERE id = $1', [
+      migration.id,
+    ]);
 
     if (rows.length > 0) {
       logger.info(`Skipping migration: ${migration.id} (already run)`);

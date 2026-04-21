@@ -18,7 +18,7 @@
  * ============================================================
  */
 
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import { logger } from './logger';
 
 export interface TokenPayload {
@@ -31,6 +31,8 @@ export interface TokenPayload {
 
 const ACCESS_SECRET = process.env.JWT_ACCESS_SECRET!;
 const REFRESH_SECRET = process.env.JWT_REFRESH_SECRET!;
+const ACCESS_EXPIRES_IN = (process.env.JWT_ACCESS_EXPIRES_IN || '15m') as SignOptions['expiresIn'];
+const REFRESH_EXPIRES_IN = (process.env.JWT_REFRESH_EXPIRES_IN || '7d') as SignOptions['expiresIn'];
 
 if (!ACCESS_SECRET || !REFRESH_SECRET) {
   throw new Error('JWT secrets must be defined in environment variables');
@@ -45,7 +47,7 @@ if (!ACCESS_SECRET || !REFRESH_SECRET) {
  */
 export const generateAccessToken = (payload: Omit<TokenPayload, 'iat' | 'exp'>): string => {
   return jwt.sign(payload, ACCESS_SECRET, {
-    expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '15m',
+    expiresIn: ACCESS_EXPIRES_IN,
     algorithm: 'HS256',
   });
 };
@@ -53,7 +55,7 @@ export const generateAccessToken = (payload: Omit<TokenPayload, 'iat' | 'exp'>):
 /** Generate a long-lived refresh token stored in httpOnly cookie */
 export const generateRefreshToken = (payload: Omit<TokenPayload, 'iat' | 'exp'>): string => {
   return jwt.sign(payload, REFRESH_SECRET, {
-    expiresIn: process.env.JWT_REFRESH_EXPIRES_IN || '7d',
+    expiresIn: REFRESH_EXPIRES_IN,
     algorithm: 'HS256',
   });
 };
@@ -81,9 +83,9 @@ export const verifyRefreshToken = (token: string): TokenPayload | null => {
 
 /** Cookie options for the refresh token httpOnly cookie */
 export const refreshCookieOptions = {
-  httpOnly: true,                                         // Not accessible via JavaScript
-  secure: process.env.NODE_ENV === 'production',          // HTTPS only in prod
-  sameSite: 'strict' as const,                           // Prevent CSRF
-  maxAge: 7 * 24 * 60 * 60 * 1000,                     // 7 days in ms
-  path: '/api/v1/auth/refresh',                          // Restrict cookie scope
+  httpOnly: true, // Not accessible via JavaScript
+  secure: process.env.NODE_ENV === 'production', // HTTPS only in prod
+  sameSite: 'strict' as const, // Prevent CSRF
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in ms
+  path: '/api/v1/auth/refresh', // Restrict cookie scope
 };

@@ -18,7 +18,7 @@
  */
 
 import { Server as HTTPServer } from 'http';
-import { Server as SocketServer } from 'socket.io';
+import { Server as SocketServer, Socket } from 'socket.io';
 import { logger } from '../utils/logger';
 import { verifyAccessToken } from '../utils/jwt';
 
@@ -30,9 +30,9 @@ export const initSocketIO = (server: HTTPServer): SocketServer => {
       origin: process.env.FRONTEND_URL || 'http://localhost:3000',
       credentials: true,
     },
-    pingTimeout: 60_000,     // How long to wait for pong before disconnecting
-    pingInterval: 25_000,    // How often to send ping
-    maxHttpBufferSize: 1e6,  // 1MB max message size
+    pingTimeout: 60_000, // How long to wait for pong before disconnecting
+    pingInterval: 25_000, // How often to send ping
+    maxHttpBufferSize: 1e6, // 1MB max message size
   });
 
   // ─── Authentication Middleware ───────────────────────────
@@ -57,7 +57,7 @@ export const initSocketIO = (server: HTTPServer): SocketServer => {
 
     // Join user's personal room for targeted messages
     // WHY: Allows sending events to specific users: io.to(`user:${userId}`).emit(...)
-    socket.join(`user:${user?.userId}`);
+    void socket.join(`user:${user?.userId}`);
 
     // ── Room Management ──────────────────────────────────
     // TODO (Day 18): Add chat room join/leave handlers here
@@ -96,6 +96,6 @@ interface DecodedUser {
   role: string;
 }
 
-interface SocketWithUser extends ReturnType<SocketServer['sockets']['sockets']['get']> {
+interface SocketWithUser extends Socket {
   user: DecodedUser;
 }

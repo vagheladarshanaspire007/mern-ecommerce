@@ -26,11 +26,17 @@ import path from 'path';
 const LOG_DIR = 'logs';
 const LOG_LEVEL = process.env.LOG_LEVEL || 'info';
 
+const formatLogValue = (value: unknown): string => {
+  if (typeof value === 'string') return value;
+  if (value instanceof Error) return value.stack ?? value.message;
+  return JSON.stringify(value) ?? String(value);
+};
+
 // ─── Custom Format ───────────────────────────────────────────
 const logFormat = winston.format.combine(
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-  winston.format.errors({ stack: true }),  // Include stack traces
-  winston.format.json()                    // Structured output
+  winston.format.errors({ stack: true }), // Include stack traces
+  winston.format.json() // Structured output
 );
 
 const consoleFormat = winston.format.combine(
@@ -38,7 +44,7 @@ const consoleFormat = winston.format.combine(
   winston.format.timestamp({ format: 'HH:mm:ss' }),
   winston.format.printf(({ timestamp, level, message, ...meta }) => {
     const metaStr = Object.keys(meta).length ? ` ${JSON.stringify(meta)}` : '';
-    return `[${timestamp}] ${level}: ${message}${metaStr}`;
+    return `[${formatLogValue(timestamp)}] ${formatLogValue(level)}: ${formatLogValue(message)}${metaStr}`;
   })
 );
 
@@ -59,8 +65,8 @@ if (process.env.NODE_ENV !== 'test') {
       filename: path.join(LOG_DIR, 'error-%DATE%.log'),
       datePattern: 'YYYY-MM-DD',
       level: 'error',
-      maxSize: '20m',    // Rotate when file hits 20MB
-      maxFiles: '14d',   // Keep 14 days of error logs
+      maxSize: '20m', // Rotate when file hits 20MB
+      maxFiles: '14d', // Keep 14 days of error logs
       zippedArchive: true,
       format: logFormat,
     }),
@@ -68,7 +74,7 @@ if (process.env.NODE_ENV !== 'test') {
       filename: path.join(LOG_DIR, 'combined-%DATE%.log'),
       datePattern: 'YYYY-MM-DD',
       maxSize: '50m',
-      maxFiles: '7d',    // Keep 7 days of combined logs
+      maxFiles: '7d', // Keep 7 days of combined logs
       zippedArchive: true,
       format: logFormat,
     })
@@ -104,5 +110,4 @@ export const requestLogger = winston.createLogger({
  *   log.info('Order created', { orderId });
  *   // → { userId, correlationId, orderId, message: 'Order created' }
  */
-export const createContextLogger = (context: Record<string, unknown>) =>
-  logger.child(context);
+export const createContextLogger = (context: Record<string, unknown>) => logger.child(context);
