@@ -1,0 +1,18 @@
+# Automatically marks stale PRs and closes them if no activity
+name: Stale
+
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Every Monday at 9am UTC
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v9
+        with:
+          stale-pr-message: 'This PR has had no activity in 14 days. It will be closed in 7 days unless updated.'
+          close-pr-message: 'This PR was closed due to inactivity. Reopen if still needed.'
+          days-before-pr-stale: 14
+          days-before-pr-close: 7
+          exempt-pr-labels: 'WIP,do-not-close,blocked'

@@ -1,0 +1,30 @@
+# WHY: Large PRs are hard to review — reviewers lose focus after ~400 lines.
+# This warns (but doesn't block) when a PR is too large.
+name: PR Size Check
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  size-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check PR size
+        uses: CodelyTV/pr-size-labeler@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          xs_label: 'size/XS'
+          xs_max_size: 10
+          s_label: 'size/S'
+          s_max_size: 100
+          m_label: 'size/M'
+          m_max_size: 300
+          l_label: 'size/L'
+          l_max_size: 500
+          xl_label: 'size/XL'
+          fail_if_xl: false  # Warn but don't block
+          message_if_xl: >
+            This PR is very large. Please consider breaking it into smaller PRs.
+            Large PRs are harder to review and more likely to introduce bugs.
