@@ -1,0 +1,33 @@
+# ============================================================
+# CODEOWNERS — Automatic PR Review Assignment
+# ============================================================
+# Format: <path pattern>  <@github-username or @org/team>
+#
+# WHY CODEOWNERS:
+#   Without it, devs might merge PRs without the right expert reviewing.
+#   A backend change to auth middleware should always be reviewed by
+#   someone who understands security — not just anyone on the team.
+# ============================================================
+
+# Global — all files require review from tech lead
+* @vagheladarshanaspire007
+
+# Backend security-critical files — must have senior backend review
+backend/src/middleware/auth/      @vagheladarshanaspire007 @Miten-kumar
+backend/src/middleware/security/  @vagheladarshanaspire007 @Miten-kumar
+backend/src/config/              @vagheladarshanaspire007 @Miten-kumar
+
+# Database changes — always need DBA review
+backend/src/utils/migrate.ts     @vagheladarshanaspire007 @Miten-kumar
+
+# Docs
+docs/*    @vagheladarshanaspire007
+
+# CI/CD changes — DevOps must review
+.github/                        @vagheladarshanaspire007
+docker-compose.yml              @vagheladarshanaspire007
+**/Dockerfile*                  @vagheladarshanaspire007
+
+# Frontend core architecture
+frontend/src/store/             @vagheladarshanaspire007 @Miten-kumar
+frontend/src/services/api.ts    @vagheladarshanaspire007 @Miten-kumar

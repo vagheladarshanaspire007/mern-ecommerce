@@ -128,24 +128,24 @@ Create `.github/CODEOWNERS`:
 # ============================================================
 
 # Global — all files require review from tech lead
-*                           @your-org/tech-leads
+* @vagheladarshanaspire007
 
 # Backend security-critical files — must have senior backend review
-backend/src/middleware/auth/      @your-org/backend-seniors
-backend/src/middleware/security/  @your-org/backend-seniors
-backend/src/config/              @your-org/backend-seniors
+backend/src/middleware/auth/      @vagheladarshanaspire007 @Miten-kumar
+backend/src/middleware/security/  @vagheladarshanaspire007 @Miten-kumar
+backend/src/config/              @vagheladarshanaspire007 @Miten-kumar
 
 # Database changes — always need DBA review
-backend/src/utils/migrate.ts     @your-org/backend-seniors @your-org/dba
+backend/src/utils/migrate.ts     @vagheladarshanaspire007 @Miten-kumar
 
 # CI/CD changes — DevOps must review
-.github/                        @your-org/devops
-docker-compose.yml              @your-org/devops
-**/Dockerfile*                  @your-org/devops
+.github/                        @vagheladarshanaspire007
+docker-compose.yml              @vagheladarshanaspire007
+**/Dockerfile*                  @vagheladarshanaspire007
 
 # Frontend core architecture
-frontend/src/store/             @your-org/frontend-seniors
-frontend/src/services/api.ts    @your-org/frontend-seniors
+frontend/src/store/             @vagheladarshanaspire007 @Miten-kumar
+frontend/src/services/api.ts    @vagheladarshanaspire007 @Miten-kumar
 ```
 
 ---
