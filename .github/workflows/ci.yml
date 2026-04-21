@@ -1,0 +1,270 @@
+# ============================================================
+# CI Pipeline — .github/workflows/ci.yml
+# ============================================================
+# Triggers:
+#   - Every Pull Request to: dev, staging, main
+#   - Every push to: dev, staging, main (merge commits)
+#
+# Pipeline stages (run in parallel where possible):
+#   1. lint-and-format   → ESLint + Prettier check
+#   2. typecheck         → TypeScript compiler validation
+#   3. test-backend      → Jest unit + integration tests
+#   4. test-frontend     → Vitest unit tests
+#   5. sonarqube         → Code quality & security scan (after tests)
+#   6. build             → Docker images (only on main/staging push)
+#
+# WHY fail-fast: false on matrix jobs:
+#   See ALL failures at once instead of stopping at the first.
+#   Saves time — you know ALL problems, not just the first one.
+# ============================================================
+
+name: CI
+
+on:
+  pull_request:
+    branches: [dev, staging, main]
+  push:
+    branches: [dev, staging, main]
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # ─── Job 1: Lint & Format ─────────────────────────────────
+  lint-and-format:
+    name: Lint & Format Check
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [backend, frontend]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ matrix.project }}/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ${{ matrix.project }}
+        run: npm ci
+
+      # WHY --max-warnings 0: Treat ALL warnings as errors in CI.
+      # Warnings are fine locally (to not block flow), but CI is strict.
+      - name: Run ESLint
+        working-directory: ${{ matrix.project }}
+        run: npx eslint src --ext .ts,.tsx --max-warnings 0
+
+      # WHY --check: Prettier in check mode exits non-zero if any file needs formatting.
+      # Enforces that all committed code is formatted — no negotiation.
+      - name: Run Prettier check
+        working-directory: ${{ matrix.project }}
+        run: npx prettier --check 'src/**/*.{ts,tsx,css}'
+
+  # ─── Job 2: TypeScript Check ──────────────────────────────
+  typecheck:
+    name: TypeScript Check
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [backend, frontend]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: ${{ matrix.project }}/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ${{ matrix.project }}
+        run: npm ci
+
+      - name: TypeScript type check
+        working-directory: ${{ matrix.project }}
+        run: npm run typecheck
+
+  # ─── Job 3: Backend Tests ─────────────────────────────────
+  test-backend:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    needs: [lint-and-format, typecheck]
+
+    # WHY services: Integration tests need a real Postgres + Redis.
+    # GitHub Actions can spin up Docker containers alongside the job.
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: mern_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Run migrations
+        working-directory: backend
+        run: npm run migrate
+        env:
+          NODE_ENV: test
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: mern_test
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+          JWT_ACCESS_SECRET: test_access_secret_32_chars_minimum
+          JWT_REFRESH_SECRET: test_refresh_secret_32_chars_minimum
+
+      - name: Run tests with coverage
+        working-directory: backend
+        run: npm run test
+        env:
+          NODE_ENV: test
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_NAME: mern_test
+          DB_USER: postgres
+          DB_PASSWORD: postgres
+          REDIS_HOST: localhost
+          REDIS_PORT: 6379
+          JWT_ACCESS_SECRET: test_access_secret_32_chars_minimum
+          JWT_REFRESH_SECRET: test_refresh_secret_32_chars_minimum
+
+      # WHY upload coverage: SonarQube reads this to show coverage overlay in UI
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend/coverage/
+          retention-days: 7
+
+  # ─── Job 4: Frontend Tests ────────────────────────────────
+  test-frontend:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    needs: [lint-and-format, typecheck]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run tests with coverage
+        working-directory: frontend
+        run: npm run test
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: frontend/coverage/
+          retention-days: 7
+
+  # ─── Job 5: SonarQube Analysis ────────────────────────────
+  sonarqube:
+    name: SonarQube Scan
+    runs-on: ubuntu-latest
+    needs: [test-backend, test-frontend]
+    # WHY only on dev/staging/main push (not PR from forks):
+    #   SonarQube token should not be exposed to fork PRs.
+    if: github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # WHY: SonarQube needs full history for blame annotations
+
+      - name: Download backend coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend/coverage
+
+      - name: Download frontend coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-coverage
+          path: frontend/coverage
+
+      # WHY SonarQube:
+      #   - Detects code smells, bugs, and security vulnerabilities
+      #   - Tracks technical debt over time
+      #   - Enforces coverage gates (fail if coverage drops below threshold)
+      #   - OWASP security hotspot detection
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      # Quality Gate — fail the pipeline if SonarQube conditions not met
+      - name: SonarQube Quality Gate check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  # ─── Job 6: Security Audit ────────────────────────────────
+  security-audit:
+    name: Dependency Security Audit
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project: [backend, frontend]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      # WHY npm audit: Checks all dependencies against known vulnerability database.
+      # --audit-level=high: Only fail on HIGH or CRITICAL vulnerabilities.
+      # Low/moderate issues generate a warning but don't block.
+      - name: Run npm audit
+        working-directory: ${{ matrix.project }}
+        run: npm audit --audit-level=high
+        continue-on-error: false

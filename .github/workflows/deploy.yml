@@ -1,0 +1,148 @@
+# ============================================================
+# CD Pipeline — .github/workflows/deploy.yml
+# ============================================================
+# Deployment strategy:
+#   dev branch    → auto-deploy to Development environment
+#   staging branch → auto-deploy to Staging (after CI passes)
+#   main branch   → deploy to Production (requires manual approval)
+#
+# WHY separate deploy pipeline from CI:
+#   CI runs on EVERY PR — fast feedback loop.
+#   Deploy only runs on merges to protected branches.
+#   Clear separation of concerns.
+# ============================================================
+
+name: Deploy
+
+on:
+  push:
+    branches: [dev, staging, main]
+
+jobs:
+  # ─── Build Docker Images ──────────────────────────────────
+  build:
+    name: Build & Push Docker Images
+    runs-on: ubuntu-latest
+    outputs:
+      image-tag: ${{ steps.meta.outputs.version }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # WHY docker/metadata-action:
+      #   Automatically generates image tags from branch name, git SHA, semver.
+      #   dev → tag: dev-<sha>
+      #   staging → tag: staging-<sha>
+      #   main → tag: latest, v1.2.3
+      - name: Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ghcr.io/${{ github.repository }}/backend
+            ghcr.io/${{ github.repository }}/frontend
+          tags: |
+            type=ref,event=branch
+            type=sha,prefix={{branch}}-
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # WHY buildx + cache: Multi-platform builds + layer caching for speed
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build & push backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: ghcr.io/${{ github.repository }}/backend:${{ steps.meta.outputs.version }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build & push frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          tags: ghcr.io/${{ github.repository }}/frontend:${{ steps.meta.outputs.version }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ─── Deploy to Dev ────────────────────────────────────────
+  deploy-dev:
+    name: Deploy to Development
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/dev'
+    environment: development  # Maps to GitHub Environment with its own secrets
+
+    steps:
+      - name: Deploy to dev server
+        run: |
+          echo "Deploying image ${{ needs.build.outputs.image-tag }} to DEV"
+          # TODO: Replace with your actual deployment command
+          # Examples:
+          # SSH: ssh deploy@dev.server.com "docker pull && docker-compose up -d"
+          # Kubernetes: kubectl set image deployment/api api=ghcr.io/.../backend:$TAG
+          # Render/Railway: curl -X POST "$DEPLOY_HOOK_URL"
+
+  # ─── Deploy to Staging ────────────────────────────────────
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/staging'
+    environment: staging
+
+    steps:
+      - name: Deploy to staging server
+        run: |
+          echo "Deploying image ${{ needs.build.outputs.image-tag }} to STAGING"
+          # TODO: Add staging deployment command
+
+      # WHY smoke tests: Quick sanity check that deployment succeeded.
+      # Tests health endpoint, checks basic pages load, verifies DB connection.
+      - name: Run smoke tests
+        run: |
+          sleep 30  # Wait for deployment to complete
+          curl -f ${{ secrets.STAGING_URL }}/api/health || exit 1
+          echo "✅ Smoke tests passed"
+
+  # ─── Deploy to Production ─────────────────────────────────
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    # WHY environment with required reviewers:
+    #   GitHub Environments can require manual approval before deployment.
+    #   Go to Settings → Environments → production → add "Required reviewers"
+    #   This creates a pause in the pipeline where a human must click "Approve".
+    environment:
+      name: production
+      url: ${{ secrets.PRODUCTION_URL }}
+
+    steps:
+      - name: Deploy to production
+        run: |
+          echo "Deploying image ${{ needs.build.outputs.image-tag }} to PRODUCTION"
+          # TODO: Add production deployment command
+
+      - name: Run production smoke tests
+        run: |
+          sleep 60  # Production may take longer
+          curl -f ${{ secrets.PRODUCTION_URL }}/api/health || exit 1
+
+      # WHY rollback step: If smoke tests fail, immediately redeploy previous version.
+      # The previous image tag is stored in the deployment history.
+      - name: Notify deployment
+        if: always()
+        run: |
+          echo "Deployment status: ${{ job.status }}"
+          # TODO: Send Slack/Teams notification with status

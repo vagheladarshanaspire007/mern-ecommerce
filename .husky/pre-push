@@ -1,0 +1,31 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# ============================================================
+# Pre-Push Hook — TypeScript Type Check
+# ============================================================
+# Runs before `git push`. Heavier checks than pre-commit.
+# WHY here and not pre-commit: TypeScript full check is slow (~10s).
+# We don't want to slow down every commit, but we DO want to
+# catch type errors before code reaches the remote.
+# ============================================================
+
+echo "🔍 Running type checks before push..."
+
+# Backend typecheck
+echo "  Checking backend types..."
+cd backend && npm run typecheck
+if [ $? -ne 0 ]; then
+  echo "❌ Backend TypeScript errors found. Fix them before pushing."
+  exit 1
+fi
+
+# Frontend typecheck
+echo "  Checking frontend types..."
+cd ../frontend && npm run typecheck
+if [ $? -ne 0 ]; then
+  echo "❌ Frontend TypeScript errors found. Fix them before pushing."
+  exit 1
+fi
+
+echo "✅ All type checks passed. Pushing..."

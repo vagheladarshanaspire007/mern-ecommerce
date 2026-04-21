@@ -1,0 +1,59 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# ============================================================
+# Commit Message Validation — Conventional Commits
+# ============================================================
+# WHY Conventional Commits:
+#   Standardized commit messages enable:
+#   - Automated CHANGELOG generation
+#   - Semantic versioning (patch/minor/major) via CI
+#   - Clear communication of intent to teammates
+#   - Easy git log filtering: git log --grep="^feat"
+#
+# Format: <type>(<scope>): <description>
+#
+# Types:
+#   feat     → New feature (triggers minor version bump)
+#   fix      → Bug fix (triggers patch version bump)
+#   BREAKING → Breaking change (triggers major version bump)
+#   chore    → Maintenance, dependencies, config changes
+#   docs     → Documentation only
+#   style    → Formatting, no logic change
+#   refactor → Restructure code, no feature/fix
+#   test     → Adding or fixing tests
+#   perf     → Performance improvement
+#   ci       → CI/CD pipeline changes
+#
+# Examples:
+#   feat(auth): add refresh token rotation
+#   fix(cart): correct quantity update on duplicate add
+#   chore(deps): upgrade helmet to v7
+#   docs(readme): add day 42 setup instructions
+#   test(auth): add unit tests for JWT verification
+# ============================================================
+
+commit_msg_file="$1"
+commit_msg=$(cat "$commit_msg_file")
+
+pattern="^(feat|fix|chore|docs|style|refactor|test|perf|ci|revert)(\(.+\))?: .{1,100}$|^BREAKING CHANGE: .+"
+
+if ! echo "$commit_msg" | grep -qE "$pattern"; then
+  echo ""
+  echo "❌ Invalid commit message format!"
+  echo ""
+  echo "  Your message: '$commit_msg'"
+  echo ""
+  echo "  Required format: <type>(<scope>): <description>"
+  echo ""
+  echo "  Valid types: feat, fix, chore, docs, style, refactor, test, perf, ci, revert"
+  echo ""
+  echo "  Examples:"
+  echo "    feat(auth): add JWT refresh token rotation"
+  echo "    fix(cart): fix quantity reset on page refresh"
+  echo "    chore(deps): upgrade to Node 20"
+  echo ""
+  exit 1
+fi
+
+echo "✅ Commit message format valid"

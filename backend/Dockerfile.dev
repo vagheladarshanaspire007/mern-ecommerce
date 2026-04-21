@@ -1,0 +1,40 @@
+# ============================================================
+# Backend Dockerfile — Development
+# ============================================================
+# WHY multi-stage builds:
+#   Stage 1 (deps): Install node_modules — cached by Docker layer
+#   Stage 2 (dev):  Copy source + run nodemon for hot reload
+#
+# WHY COPY package*.json BEFORE copying source:
+#   Docker caches each layer. If only source files changed (not deps),
+#   Docker skips the npm install layer → much faster rebuilds.
+# ============================================================
+
+FROM node:20-alpine AS deps
+
+WORKDIR /app
+
+# Copy package files first (layer cache optimization)
+COPY package*.json ./
+
+# Install ALL dependencies (including devDeps for development)
+RUN npm ci
+
+# ─── Development Stage ───────────────────────────────────────
+FROM node:20-alpine AS dev
+
+WORKDIR /app
+
+# Copy node_modules from deps stage
+COPY --from=deps /app/node_modules ./node_modules
+
+# Copy package files
+COPY package*.json tsconfig.json ./
+
+# Source is mounted as volume at runtime (docker-compose.yml)
+# so we don't COPY src here in dev
+
+EXPOSE 5000
+
+# nodemon watches TypeScript files and restarts on changes
+CMD ["npm", "run", "dev"]

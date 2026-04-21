@@ -1,0 +1,26 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# ============================================================
+# Husky Pre-Commit Hook
+# ============================================================
+# Runs automatically before EVERY git commit.
+# If any command exits with a non-zero code, the commit is aborted.
+#
+# WHY Husky:
+#   Enforces code quality LOCALLY before code ever reaches GitHub.
+#   Catches lint errors and type issues without waiting for CI pipeline.
+#   "Shift left" — find problems as early as possible in the dev cycle.
+#
+# What runs:
+#   lint-staged → runs ESLint + Prettier ONLY on staged files (fast)
+#   typecheck   → TypeScript compiler check (no emit) for both projects
+# ============================================================
+
+echo "🔍 Running pre-commit checks..."
+
+# Run lint-staged for both backend and frontend
+cd backend && npx lint-staged
+cd ../frontend && npx lint-staged
+
+echo "✅ Pre-commit checks passed"

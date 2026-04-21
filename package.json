@@ -1,0 +1,21 @@
+{
+  "name": "mern-boilerplate",
+  "version": "1.0.0",
+  "description": "MERN Stack Boilerplate — Root workspace",
+  "private": true,
+  "scripts": {
+    "prepare": "husky install",
+    "dev": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+    "install:all": "npm install && npm install --prefix backend && npm install --prefix frontend",
+    "lint": "npm run lint --prefix backend && npm run lint --prefix frontend",
+    "typecheck": "npm run typecheck --prefix backend && npm run typecheck --prefix frontend",
+    "test": "npm run test --prefix backend && npm run test --prefix frontend",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "husky": "^8.0.3"
+  }
+}
