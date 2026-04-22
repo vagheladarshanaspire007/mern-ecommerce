@@ -1,4 +1,4 @@
-import { delay, http, HttpResponse } from 'msw';
+import { http, HttpResponse } from 'msw';
 import type { RegisterData, User } from '@/types/auth.types';
 
 interface UserRecord {
@@ -135,8 +135,6 @@ const mockProducts = [
   },
 ];
 
-const randomDelay = () => Math.floor(Math.random() * 500) + 300;
-
 const endpointVariants = (path: string) => [`*/api${path}`, `*/api/v1${path}`];
 
 const createAccessToken = () => `mock-access-${crypto.randomUUID()}`;
@@ -180,7 +178,6 @@ const badRequestResponse = (message: string, code = 'BAD_REQUEST') =>
 
 const loginHandlers = endpointVariants('/auth/login').map((url) =>
   http.post(url, async ({ request }) => {
-    await delay(randomDelay());
     const body = (await request.json().catch(() => null)) as {
       email?: string;
       password?: string;
@@ -227,7 +224,6 @@ const loginHandlers = endpointVariants('/auth/login').map((url) =>
 
 const registerHandlers = endpointVariants('/auth/register').map((url) =>
   http.post(url, async ({ request }) => {
-    await delay(randomDelay());
     const body = (await request.json().catch(() => null)) as Partial<RegisterData> | null;
 
     if (!body?.email || !body.password || !body.firstName || !body.lastName) {
@@ -272,7 +268,6 @@ const registerHandlers = endpointVariants('/auth/register').map((url) =>
 
 const refreshHandlers = endpointVariants('/auth/refresh').map((url) =>
   http.post(url, async () => {
-    await delay(randomDelay());
     const user = getCurrentUser();
     if (!authState.refreshToken || !user) {
       return unauthorizedResponse();
@@ -295,7 +290,6 @@ const refreshHandlers = endpointVariants('/auth/refresh').map((url) =>
 
 const meHandlers = endpointVariants('/auth/me').map((url) =>
   http.get(url, async ({ request }) => {
-    await delay(randomDelay());
     const authHeader = request.headers.get('Authorization');
     const user = getCurrentUser();
 
@@ -315,7 +309,6 @@ const meHandlers = endpointVariants('/auth/me').map((url) =>
 
 const logoutHandlers = endpointVariants('/auth/logout').map((url) =>
   http.post(url, async () => {
-    await delay(randomDelay());
     authState.currentUserId = null;
     authState.accessToken = null;
     authState.refreshToken = null;
@@ -332,7 +325,6 @@ const logoutHandlers = endpointVariants('/auth/logout').map((url) =>
 
 const productHandlers = endpointVariants('/products').map((url) =>
   http.get(url, async () => {
-    await delay(randomDelay());
     return HttpResponse.json(
       {
         success: true,
