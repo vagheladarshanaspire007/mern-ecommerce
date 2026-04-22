@@ -101,6 +101,17 @@ const authSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    updateCurrentUser: (
+      state,
+      action: PayloadAction<Pick<User, 'firstName' | 'lastName'>>
+    ) => {
+      if (!state.user) return;
+
+      state.user = {
+        ...state.user,
+        ...action.payload,
+      };
+    },
   },
   extraReducers: (builder) => {
     // ── Initialize ──────────────────────────────────────────
@@ -152,5 +163,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setAccessToken, clearError } = authSlice.actions;
+export const { setAccessToken, clearError, updateCurrentUser } = authSlice.actions;
 export default authSlice.reducer;
