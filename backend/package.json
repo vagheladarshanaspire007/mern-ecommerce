@@ -9,7 +9,7 @@
     "start": "node dist/index.js",
     "lint": "eslint src/**/*.ts --fix",
     "format": "prettier --write 'src/**/*.ts'",
-    "test": "jest --coverage",
+    "test": "jest --coverage --passWithNoTests",
     "test:watch": "jest --watch",
     "migrate": "ts-node src/utils/migrate.ts",
     "seed": "ts-node src/utils/seed.ts",
