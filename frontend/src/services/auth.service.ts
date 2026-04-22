@@ -6,12 +6,7 @@
  */
 
 import api from './api';
-import type {
-  User,
-  LoginCredentials,
-  RegisterData,
-  AuthResponse,
-} from '@/types/auth.types';
+import type { User, LoginCredentials, RegisterData, AuthResponse } from '@/types/auth.types';
 
 export const authService = {
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {

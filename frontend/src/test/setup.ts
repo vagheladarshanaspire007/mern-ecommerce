@@ -63,8 +63,7 @@ const originalConsoleError = console.error;
 console.error = (...args: unknown[]) => {
   if (
     typeof args[0] === 'string' &&
-    (args[0].includes('Warning: ReactDOM.render') ||
-      args[0].includes('act(...)'))
+    (args[0].includes('Warning: ReactDOM.render') || args[0].includes('act(...)'))
   ) {
     return;
   }

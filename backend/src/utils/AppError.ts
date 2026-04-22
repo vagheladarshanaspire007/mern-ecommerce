@@ -20,12 +20,7 @@ export class AppError extends Error {
   public readonly details?: unknown;
   public readonly isOperational: boolean;
 
-  constructor(
-    statusCode: number,
-    code: string,
-    message: string,
-    details?: unknown
-  ) {
+  constructor(statusCode: number, code: string, message: string, details?: unknown) {
     super(message);
     this.name = 'AppError';
     this.statusCode = statusCode;
@@ -43,23 +38,18 @@ export class AppError extends Error {
 
 // ─── Common Pre-built Errors ─────────────────────────────────
 export const Errors = {
-  NotFound: (resource = 'Resource') =>
-    new AppError(404, 'NOT_FOUND', `${resource} not found`),
+  NotFound: (resource = 'Resource') => new AppError(404, 'NOT_FOUND', `${resource} not found`),
 
-  Unauthorized: (message = 'Authentication required') =>
-    new AppError(401, 'UNAUTHORIZED', message),
+  Unauthorized: (message = 'Authentication required') => new AppError(401, 'UNAUTHORIZED', message),
 
-  Forbidden: (message = 'Access denied') =>
-    new AppError(403, 'FORBIDDEN', message),
+  Forbidden: (message = 'Access denied') => new AppError(403, 'FORBIDDEN', message),
 
   BadRequest: (message: string, details?: unknown) =>
     new AppError(400, 'BAD_REQUEST', message, details),
 
-  Conflict: (message: string) =>
-    new AppError(409, 'CONFLICT', message),
+  Conflict: (message: string) => new AppError(409, 'CONFLICT', message),
 
-  TooManyRequests: () =>
-    new AppError(429, 'RATE_LIMIT_EXCEEDED', 'Too many requests'),
+  TooManyRequests: () => new AppError(429, 'RATE_LIMIT_EXCEEDED', 'Too many requests'),
 
   InternalError: (message = 'Internal server error') =>
     new AppError(500, 'INTERNAL_ERROR', message),

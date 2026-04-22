@@ -34,12 +34,12 @@ import './index.css';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 30,   // 30 seconds
+      staleTime: 1000 * 30, // 30 seconds
       retry: 1,
       refetchOnWindowFocus: true,
     },
     mutations: {
-      retry: 0,               // Don't retry mutations (POST/PUT/DELETE)
+      retry: 0, // Don't retry mutations (POST/PUT/DELETE)
     },
   },
 });
