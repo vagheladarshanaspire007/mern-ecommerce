@@ -29,7 +29,9 @@ export function ProtectedRoute() {
   if (!isInitialized) return null; // Or <PageLoader /> while checking
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    const redirectPath = `${location.pathname}${location.search}${location.hash}`;
+    const loginUrl = `/login?redirect=${encodeURIComponent(redirectPath)}`;
+    return <Navigate to={loginUrl} state={{ from: location }} replace />;
   }
 
   return <Outlet />;

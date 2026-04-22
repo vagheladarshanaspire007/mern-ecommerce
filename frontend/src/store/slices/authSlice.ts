@@ -112,6 +112,9 @@ const authSlice = createSlice({
         state.isInitialized = true;
       })
       .addCase(initializeAuth.rejected, (state) => {
+        state.user = null;
+        state.accessToken = null;
+        state.isAuthenticated = false;
         state.isInitialized = true; // Mark initialized even if no session
       })
 
@@ -136,11 +139,12 @@ const authSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(registerUser.fulfilled, (state, action) => {
+      .addCase(registerUser.fulfilled, (state) => {
         state.isLoading = false;
-        state.user = action.payload.user;
-        state.accessToken = action.payload.accessToken;
-        state.isAuthenticated = true;
+        // Registration success should not auto-login in this app flow.
+        state.user = null;
+        state.accessToken = null;
+        state.isAuthenticated = false;
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -148,7 +152,14 @@ const authSlice = createSlice({
       })
 
       // ── Logout ───────────────────────────────────────────
-      .addCase(logoutUser.fulfilled, () => initialState);
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.user = null;
+        state.accessToken = null;
+        state.isAuthenticated = false;
+        state.isLoading = false;
+        state.error = null;
+        state.isInitialized = true;
+      });
   },
 });
 
