@@ -28,8 +28,8 @@ import { Request, Response } from 'express';
 export const globalRateLimiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'), // 15 min
   max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100'),
-  standardHeaders: true,   // Returns RateLimit-* headers (RFC standard)
-  legacyHeaders: false,    // Disable X-RateLimit-* (deprecated)
+  standardHeaders: true, // Returns RateLimit-* headers (RFC standard)
+  legacyHeaders: false, // Disable X-RateLimit-* (deprecated)
   keyGenerator: (req: Request): string => {
     // WHY custom key: Use real IP, not proxy IP (trust proxy must be set)
     // In production behind nginx: app.set('trust proxy', 1)
@@ -50,7 +50,7 @@ export const globalRateLimiter = rateLimit({
 // Apply this ONLY to /auth/login and /auth/register
 export const authRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5,                    // Only 5 login attempts per 15 min
+  max: 5, // Only 5 login attempts per 15 min
   skipSuccessfulRequests: true, // Don't count successful logins
   standardHeaders: true,
   legacyHeaders: false,
@@ -85,7 +85,7 @@ export const passwordResetRateLimiter = rateLimit({
 // ─── Upload Rate Limiter ─────────────────────────────────────
 export const uploadRateLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 50,                   // Max 50 uploads per hour
+  max: 50, // Max 50 uploads per hour
   standardHeaders: true,
   legacyHeaders: false,
 });

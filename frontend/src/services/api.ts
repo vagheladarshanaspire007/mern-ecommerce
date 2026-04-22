@@ -134,18 +134,12 @@ api.interceptors.response.use(
  * WHY: Keeps error handling in components simple — always the same structure.
  */
 function normalizeError(error: AxiosError): Error {
-  const data = error.response?.data as
-    | { error?: { message?: string; code?: string } }
-    | undefined;
+  const data = error.response?.data as { error?: { message?: string; code?: string } } | undefined;
 
-  const message =
-    data?.error?.message ||
-    error.message ||
-    'An unexpected error occurred';
+  const message = data?.error?.message || error.message || 'An unexpected error occurred';
 
   const normalizedError = new Error(message);
-  (normalizedError as Error & { code?: string; status?: number }).code =
-    data?.error?.code;
+  (normalizedError as Error & { code?: string; status?: number }).code = data?.error?.code;
   (normalizedError as Error & { status?: number }).status = error.response?.status;
   return normalizedError;
 }

@@ -24,10 +24,7 @@ export const securityHeaders = (req: Request, res: Response, next: NextFunction)
 
   // Restrict browser features — deny access to camera, mic, geolocation
   // WHY: Even if your app doesn't use these, an XSS attack could
-  res.setHeader(
-    'Permissions-Policy',
-    'camera=(), microphone=(), geolocation=(), payment=()'
-  );
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()');
 
   // Prevent this page from being embedded in iframes on other domains
   // WHY: Clickjacking attack — attacker overlays invisible iframe on your page

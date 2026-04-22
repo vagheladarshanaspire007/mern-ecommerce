@@ -25,7 +25,9 @@ const router = Router();
 
 // Public (with optional auth to show wishlist status)
 router.get('/', optionalAuth, (_req, res) =>
-  res.status(501).json({ message: 'TODO: Implement listProducts — use cursor pagination + Redis cache' })
+  res
+    .status(501)
+    .json({ message: 'TODO: Implement listProducts — use cursor pagination + Redis cache' })
 );
 
 router.get('/:id', optionalAuth, (_req, res) =>
@@ -34,7 +36,9 @@ router.get('/:id', optionalAuth, (_req, res) =>
 
 // Admin only
 router.post('/', authenticate, authorize('admin'), (_req, res) =>
-  res.status(501).json({ message: 'TODO: Implement createProduct — invalidate product list cache after creation' })
+  res.status(501).json({
+    message: 'TODO: Implement createProduct — invalidate product list cache after creation',
+  })
 );
 
 router.patch('/:id', authenticate, authorize('admin'), (_req, res) =>

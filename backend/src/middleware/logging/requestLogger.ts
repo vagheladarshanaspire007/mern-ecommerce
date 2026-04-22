@@ -8,10 +8,7 @@ export const requestLogger = winston.createLogger({
   level: 'http',
   transports: [
     new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.simple()
-      ),
+      format: winston.format.combine(winston.format.colorize(), winston.format.simple()),
       silent: process.env.NODE_ENV === 'test',
     }),
   ],
