@@ -12,8 +12,8 @@
  * ============================================================
  */
 
-import 'dotenv/config';                  // Load .env FIRST before any other import
-import 'express-async-errors';           // Patches Express to catch async errors automatically
+import 'dotenv/config'; // Load .env FIRST before any other import
+import 'express-async-errors'; // Patches Express to catch async errors automatically
 import http from 'http';
 import { app } from './app';
 import { initSocketIO } from './config/socket';
@@ -48,22 +48,28 @@ async function bootstrap() {
 
     // 6. Graceful shutdown — handle SIGTERM (Docker stop, Kubernetes pod eviction)
     //    WHY: Abrupt shutdown drops in-flight requests. We finish them first.
-    const shutdown = async (signal: string) => {
+    const shutdown = (signal: string) => {
       logger.warn(`Received ${signal}. Graceful shutdown initiated...`);
       server.close(() => {
         logger.info('HTTP server closed');
         process.exit(0);
       });
-      // Force exit after 10s if not closed cleanly
       setTimeout(() => process.exit(1), 10_000);
     };
 
-    process.on('SIGTERM', () => shutdown('SIGTERM'));
-    process.on('SIGINT', () => shutdown('SIGINT'));
+    process.on('SIGTERM', () => {
+      void shutdown('SIGTERM');
+    });
+    process.on('SIGINT', () => {
+      void shutdown('SIGINT');
+    });
   } catch (error) {
     logger.error('Fatal error during bootstrap:', error);
     process.exit(1);
   }
 }
 
-bootstrap();
+bootstrap().catch((err) => {
+  logger.error('Unhandled bootstrap error:', err);
+  process.exit(1);
+});

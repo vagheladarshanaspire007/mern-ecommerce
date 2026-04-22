@@ -33,16 +33,18 @@ const passwordField = z
 
 // ─── Auth Schemas ────────────────────────────────────────────
 
-export const registerSchema = z.object({
-  firstName: z.string().trim().min(1, 'First name is required').max(50),
-  lastName: z.string().trim().min(1, 'Last name is required').max(50),
-  email: emailField,
-  password: passwordField,
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'Passwords do not match',
-  path: ['confirmPassword'],
-});
+export const registerSchema = z
+  .object({
+    firstName: z.string().trim().min(1, 'First name is required').max(50),
+    lastName: z.string().trim().min(1, 'Last name is required').max(50),
+    email: emailField,
+    password: passwordField,
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
 
 export const loginSchema = z.object({
   email: emailField,
@@ -54,14 +56,16 @@ export const forgotPasswordSchema = z.object({
   email: emailField,
 });
 
-export const resetPasswordSchema = z.object({
-  token: z.string().min(1, 'Reset token is required'),
-  password: passwordField,
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'Passwords do not match',
-  path: ['confirmPassword'],
-});
+export const resetPasswordSchema = z
+  .object({
+    token: z.string().min(1, 'Reset token is required'),
+    password: passwordField,
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
 
 // ─── Inferred Types ──────────────────────────────────────────
 // WHY: Use these in controllers for type-safe req.body access

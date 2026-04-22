@@ -90,8 +90,7 @@ router.get(
   '/me',
   authenticate,
   // getMe,
-  (req, res) =>
-    res.json({ message: 'TODO: Implement getMe controller', user: req.user })
+  (req, res) => res.json({ message: 'TODO: Implement getMe controller', user: req.user })
 );
 
 export { router as authRouter };

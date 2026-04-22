@@ -73,16 +73,4 @@ export default defineConfig({
       },
     },
   },
-
-  test: {
-    // Vitest configuration — lives here instead of separate config file
-    globals: true,
-    environment: 'jsdom',         // Simulate browser DOM for React testing
-    setupFiles: './src/test/setup.ts',
-    coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'html'],
-      exclude: ['node_modules/', 'src/test/', '*.config.*'],
-    },
-  },
 });

@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "lint": "eslint src --ext ts,tsx --fix",
     "format": "prettier --write 'src/**/*.{ts,tsx,css}'",
-    "test": "vitest run --coverage",
+    "test": "vitest run --coverage --passWithNoTests",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "typecheck": "tsc --noEmit"
@@ -36,11 +36,13 @@
     "@testing-library/user-event": "^14.5.2",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
-    "@typescript-eslint/eslint-plugin": "^6.19.0",
-    "@typescript-eslint/parser": "^6.19.0",
-    "@vitejs/plugin-react": "^4.2.1",
-    "@vitest/coverage-v8": "^1.2.1",
-    "@vitest/ui": "^1.2.1",
+    "@typescript-eslint/eslint-plugin": "^7.7.0",
+    "@typescript-eslint/parser": "^7.7.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "vite": "^8.0.9",
+    "vitest": "^4.1.5",
+    "@vitest/coverage-v8": "^4.1.5",
+    "@vitest/ui": "^4.1.5",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react": "^7.33.2",
@@ -51,9 +53,7 @@
     "lint-staged": "^15.2.0",
     "msw": "^2.1.2",
     "prettier": "^3.2.4",
-    "typescript": "^5.3.3",
-    "vite": "^5.0.11",
-    "vitest": "^1.2.1"
+    "typescript": "^5.3.3"
   },
   "lint-staged": {
     "src/**/*.{ts,tsx}": [

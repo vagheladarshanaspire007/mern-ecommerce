@@ -24,11 +24,9 @@ import { AppError } from '../../utils/AppError';
 import { verifyAccessToken, TokenPayload } from '../../utils/jwt';
 
 // Extend Express Request type to include our user
-declare global {
-  namespace Express {
-    interface Request {
-      user?: TokenPayload;
-    }
+declare module 'express-serve-static-core' {
+  interface Request {
+    user?: TokenPayload;
   }
 }
 
@@ -68,11 +66,7 @@ export const authorize = (...roles: string[]) => {
     }
 
     if (!roles.includes(req.user.role)) {
-      throw new AppError(
-        403,
-        'FORBIDDEN',
-        `Access denied. Required role: ${roles.join(' or ')}`
-      );
+      throw new AppError(403, 'FORBIDDEN', `Access denied. Required role: ${roles.join(' or ')}`);
     }
 
     next();

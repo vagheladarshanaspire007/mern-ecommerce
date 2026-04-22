@@ -61,9 +61,12 @@ export function useIntersectionObserver(
     const element = ref.current;
     if (!element) return;
 
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) callback();
-    }, { threshold: 0.1, ...options });
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) callback();
+      },
+      { threshold: 0.1, ...options }
+    );
 
     observer.observe(element);
     return () => observer.disconnect(); // WHY cleanup: Prevent memory leaks
@@ -116,9 +119,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
  *   const { execute, isLoading, error } = useAsync(uploadFile);
  *   <button onClick={() => execute(file)} disabled={isLoading}>Upload</button>
  */
-export function useAsync<T, Args extends unknown[]>(
-  asyncFn: (...args: Args) => Promise<T>
-) {
+export function useAsync<T, Args extends unknown[]>(asyncFn: (...args: Args) => Promise<T>) {
   const [state, setState] = useState<{
     data: T | null;
     isLoading: boolean;
