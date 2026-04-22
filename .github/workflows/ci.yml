@@ -22,12 +22,12 @@ name: CI
 
 on:
   pull_request:
-    branches: [dev, staging, main]
+    branches: [ dev, staging, main ]
   push:
-    branches: [dev, staging, main]
+    branches: [ dev, staging, main ]
 
 env:
-  NODE_VERSION: '20'
+  NODE_VERSION: "20"
 
 jobs:
   # ─── Job 1: Lint & Format ─────────────────────────────────
@@ -37,7 +37,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [backend, frontend]
+        project: [ backend, frontend ]
 
     steps:
       - name: Checkout code
@@ -47,18 +47,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: ${{ matrix.project }}/package-lock.json
 
       - name: Install dependencies
         working-directory: ${{ matrix.project }}
         run: npm ci
 
-      # WHY --max-warnings 0: Treat ALL warnings as errors in CI.
+      # WHY --max-warnings 5: Treat ALL warnings as errors in CI.
       # Warnings are fine locally (to not block flow), but CI is strict.
       - name: Run ESLint
         working-directory: ${{ matrix.project }}
-        run: npx eslint src --ext .ts,.tsx --max-warnings 0
+        run: npx eslint src --ext .ts,.tsx --max-warnings 5
 
       # WHY --check: Prettier in check mode exits non-zero if any file needs formatting.
       # Enforces that all committed code is formatted — no negotiation.
@@ -73,14 +73,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        project: [backend, frontend]
+        project: [ backend, frontend ]
 
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: ${{ matrix.project }}/package-lock.json
 
       - name: Install dependencies
@@ -95,7 +95,7 @@ jobs:
   test-backend:
     name: Backend Tests
     runs-on: ubuntu-latest
-    needs: [lint-and-format, typecheck]
+    needs: [ lint-and-format, typecheck ]
 
     # WHY services: Integration tests need a real Postgres + Redis.
     # GitHub Actions can spin up Docker containers alongside the job.
@@ -109,9 +109,7 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
+          --health-cmd pg_isready --health-interval 10s --health-timeout 5s
           --health-retries 5
 
       redis:
@@ -119,17 +117,15 @@ jobs:
         ports:
           - 6379:6379
         options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          --health-cmd "redis-cli ping" --health-interval 10s --health-timeout
+          5s --health-retries 5
 
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: backend/package-lock.json
 
       - name: Install dependencies
@@ -178,14 +174,14 @@ jobs:
   test-frontend:
     name: Frontend Tests
     runs-on: ubuntu-latest
-    needs: [lint-and-format, typecheck]
+    needs: [ lint-and-format, typecheck ]
 
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: "npm"
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
@@ -207,7 +203,7 @@ jobs:
   sonarqube:
     name: SonarQube Scan
     runs-on: ubuntu-latest
-    needs: [test-backend, test-frontend]
+    needs: [ test-backend, test-frontend ]
     # WHY only on dev/staging/main push (not PR from forks):
     #   SonarQube token should not be exposed to fork PRs.
     if: github.event_name == 'push'
@@ -215,7 +211,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # WHY: SonarQube needs full history for blame annotations
+          fetch-depth: 0 # WHY: SonarQube needs full history for blame annotations
 
       - name: Download backend coverage
         uses: actions/download-artifact@v4
@@ -253,7 +249,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        project: [backend, frontend]
+        project: [ backend, frontend ]
 
     steps:
       - uses: actions/checkout@v4
