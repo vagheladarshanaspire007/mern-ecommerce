@@ -101,10 +101,7 @@ const authSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    updateCurrentUser: (
-      state,
-      action: PayloadAction<Pick<User, 'firstName' | 'lastName'>>
-    ) => {
+    updateCurrentUser: (state, action: PayloadAction<Pick<User, 'firstName' | 'lastName'>>) => {
       if (!state.user) return;
 
       state.user = {
