@@ -49,7 +49,7 @@ const migrations: Migration[] = [
         last_name VARCHAR(50) NOT NULL,
         email VARCHAR(255) UNIQUE NOT NULL,
         password_hash VARCHAR(255) NOT NULL,
-        address TEXT,
+        address VARCHAR(255),
         role VARCHAR(20) NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'admin')),
         reset_token VARCHAR(255),
         reset_token_expires TIMESTAMP,
@@ -58,7 +58,6 @@ const migrations: Migration[] = [
         updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
         image TEXT DEFAULT NULL
       );
-      CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
     `,
     down: `
       DROP TABLE IF EXISTS users;

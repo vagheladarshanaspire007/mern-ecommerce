@@ -300,12 +300,22 @@ async function seedCartItems(
   }
 }
 
+function buildSeedPassword(firstName: string, lastName: string): string {
+  const normalize = (value: string) =>
+    value.trim().charAt(0).toUpperCase() + value.trim().slice(1).toLowerCase();
+
+  return `${normalize(firstName)}${normalize(lastName)}@123`;
+}
+
 async function runSeed() {
   await connectDB();
   logger.info('Seeding database...');
 
   const data = seedData as SeedShape;
-  const passwordHash = await bcrypt.hash('Password@123', 10);
+  const passwordHash = await bcrypt.hash(
+    buildSeedPassword(data.users[0].first_name, data.users[0].last_name),
+    10
+  );
 
   await withTransaction(async (client) => {
     await clearSeedTables(client);
