@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useMemo } from 'react';
 
 type Column<T> = {
   key: keyof T | string;
@@ -24,11 +24,16 @@ export function DataTable<T extends { id: string | number }>({
   isLoading = false,
   skeletonRows = 4,
 }: DataTableProps<T>) {
+  const skeletonRowKeys = useMemo(
+    () => Array.from({ length: skeletonRows }, () => crypto.randomUUID()),
+    [skeletonRows]
+  );
+
   let tableBody: ReactNode;
 
   if (isLoading) {
-    tableBody = Array.from({ length: skeletonRows }).map((_, rowIndex) => (
-      <tr key={`skeleton-${rowIndex}`} className="animate-pulse">
+    tableBody = skeletonRowKeys.map((skeletonRowKey) => (
+      <tr key={skeletonRowKey} className="animate-pulse">
         {columns.map((column) => (
           <td
             key={String(column.key)}
