@@ -81,15 +81,15 @@ export function Modal({
       if (!dialog.open) {
         dialog.showModal();
       }
-    } else {
-      if (dialog.open) {
-        dialog.close();
-      }
+    } else if (dialog.open) {
+      dialog.close();
+      return;
     }
 
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    previousActiveElementRef.current = document.activeElement as HTMLElement | null;
+    previousActiveElementRef.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
 
     const dialogElement = dialogRef.current;
     const focusable = dialogElement?.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
@@ -126,7 +126,7 @@ export function Modal({
 
       const firstElement = focusableElements[0];
       const lastElement = focusableElements[focusableElements.length - 1];
-      const activeElement = document.activeElement as HTMLElement | null;
+      const activeElement = document.activeElement;
 
       if (event.shiftKey && activeElement === firstElement) {
         event.preventDefault();
@@ -151,22 +151,14 @@ export function Modal({
   }
 
   return (
-    <div
-      className={modalOverlayStyles({ align })}
-      role="button"
-      tabIndex={0}
-      aria-label="Close modal"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget) {
-          onClose();
-        }
-      }}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          onClose();
-        }
-      }}
-    >
+    <div className={modalOverlayStyles({ align })}>
+      <button
+        type="button"
+        aria-label="Close modal"
+        tabIndex={-1}
+        className="fixed inset-0 w-full h-full cursor-default bg-transparent border-0 p-0"
+        onClick={onClose}
+      />
       <dialog
         ref={dialogRef}
         aria-labelledby={titleId}
