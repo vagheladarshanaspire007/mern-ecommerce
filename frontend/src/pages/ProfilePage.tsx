@@ -103,11 +103,11 @@ const ProfilePage = () => {
         <p className="mt-3 max-w-2xl text-base leading-7 text-gray-300">
           Review your membership details and keep your personal information up to date.
         </p>
-        {!user ? (
+        {!user && (
           <p className="mt-4 inline-flex rounded-full border border-indigo-500/40 bg-indigo-500/10 px-4 py-2 text-sm font-medium text-indigo-300">
             Showing demo profile because no user is logged in.
           </p>
-        ) : null}
+        )}
       </section>
 
       <section className="grid gap-6 lg:grid-cols-[1.05fr_1.35fr]">
@@ -219,7 +219,7 @@ const ProfilePage = () => {
 
             <div className="flex flex-col gap-3 border-t border-gray-700 pt-5 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-h-6 text-sm text-gray-300">
-                {saveMessage ? saveMessage : 'Changes update locally until the API is connected.'}
+                {saveMessage || 'Changes update locally until the API is connected.'}
               </div>
 
               <button

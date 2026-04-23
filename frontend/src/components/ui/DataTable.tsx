@@ -7,16 +7,16 @@ type Column<T> = {
   render?: (row: T) => ReactNode;
 };
 
-type DataTableProps<T> = {
+type DataTableProps<T> = Readonly<{
   columns: Column<T>[];
   data: T[];
   caption?: string;
   emptyMessage?: string;
   isLoading?: boolean;
   skeletonRows?: number;
-};
+}>;
 
-export function DataTable<T>({
+export function DataTable<T extends { id: string | number }>({
   columns,
   data,
   caption,
@@ -24,6 +24,44 @@ export function DataTable<T>({
   isLoading = false,
   skeletonRows = 4,
 }: DataTableProps<T>) {
+  let tableBody: ReactNode;
+
+  if (isLoading) {
+    tableBody = Array.from({ length: skeletonRows }).map((_, rowIndex) => (
+      <tr key={`skeleton-${rowIndex}`} className="animate-pulse">
+        {columns.map((column) => (
+          <td
+            key={String(column.key)}
+            className={`px-6 py-4 align-middle ${column.className ?? ''}`}
+          >
+            <div className="h-5 rounded-full bg-gray-700" />
+          </td>
+        ))}
+      </tr>
+    ));
+  } else if (data.length > 0) {
+    tableBody = data.map((row) => (
+      <tr key={String(row.id)} className="transition hover:bg-gray-700/40">
+        {columns.map((column) => (
+          <td
+            key={String(column.key)}
+            className={`px-6 py-4 align-middle text-sm text-gray-200 ${column.className ?? ''}`}
+          >
+            {column.render ? column.render(row) : String(row[column.key as keyof T] ?? '')}
+          </td>
+        ))}
+      </tr>
+    ));
+  } else {
+    tableBody = (
+      <tr>
+        <td colSpan={columns.length} className="px-6 py-10 text-center text-sm text-gray-400">
+          {emptyMessage}
+        </td>
+      </tr>
+    );
+  }
+
   return (
     <div className="overflow-hidden rounded-3xl border border-gray-700 bg-gray-800 shadow-md">
       <div className="overflow-x-auto">
@@ -42,46 +80,7 @@ export function DataTable<T>({
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-700">
-            {isLoading ? (
-              Array.from({ length: skeletonRows }).map((_, rowIndex) => (
-                <tr key={`skeleton-${rowIndex}`} className="animate-pulse">
-                  {columns.map((column, columnIndex) => (
-                    <td
-                      key={`${String(column.key)}-${columnIndex}`}
-                      className={`px-6 py-4 align-middle ${column.className ?? ''}`}
-                    >
-                      <div className="h-5 rounded-full bg-gray-700" />
-                    </td>
-                  ))}
-                </tr>
-              ))
-            ) : data.length ? (
-              data.map((row, rowIndex) => (
-                <tr key={rowIndex} className="transition hover:bg-gray-700/40">
-                  {columns.map((column) => (
-                    <td
-                      key={String(column.key)}
-                      className={`px-6 py-4 align-middle text-sm text-gray-200 ${column.className ?? ''}`}
-                    >
-                      {column.render
-                        ? column.render(row)
-                        : String(row[column.key as keyof T] ?? '')}
-                    </td>
-                  ))}
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan={columns.length}
-                  className="px-6 py-10 text-center text-sm text-gray-400"
-                >
-                  {emptyMessage}
-                </td>
-              </tr>
-            )}
-          </tbody>
+          <tbody className="divide-y divide-gray-700">{tableBody}</tbody>
         </table>
       </div>
     </div>

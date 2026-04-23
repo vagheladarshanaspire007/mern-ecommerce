@@ -12,7 +12,7 @@ export const mockOrders: Order[] = [
   {
     id: 'ORD-10437',
     userId: 'user-123',
-    totalAmount: 92.0,
+    totalAmount: 92,
     status: 'processing',
     createdAt: '2026-03-05T15:12:00.000Z',
     items: [],
