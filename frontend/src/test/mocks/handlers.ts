@@ -30,21 +30,7 @@ const getStorage = (): Storage | null => {
 
 const storage = getStorage();
 
-const seedUsers: UserRecord[] = [
-  {
-    user: {
-      id: 'user_001',
-      firstName: 'Alex',
-      lastName: 'Johnson',
-      email: 'alex@example.com',
-      role: 'user',
-      emailVerified: true,
-      createdAt: now,
-      updatedAt: now,
-    },
-    password: 'Password@123',
-  },
-];
+const seedUsers: UserRecord[] = [];
 
 const loadUsers = (): UserRecord[] => {
   if (!storage) return seedUsers;
@@ -52,9 +38,7 @@ const loadUsers = (): UserRecord[] => {
     const raw = storage.getItem(STORAGE_KEYS.users);
     if (!raw) return seedUsers;
     const parsed = JSON.parse(raw) as UserRecord[];
-    // Ensure seed user is always present.
-    const hasSeed = parsed.some((r) => r.user.email.toLowerCase() === 'alex@example.com');
-    return hasSeed ? parsed : [...parsed, ...seedUsers];
+    return parsed;
   } catch {
     return seedUsers;
   }
@@ -115,7 +99,7 @@ const mockProducts = [
     id: 'prod_001',
     name: 'Minimal Desk Lamp',
     description: 'Matte black aluminum desk lamp with adjustable arm.',
-    price: 79.99,
+    price: 79,
     stock: 24,
     imageUrls: ['https://images.unsplash.com/photo-1513506003901-1e6a229e2d15'],
     isActive: true,
@@ -126,7 +110,7 @@ const mockProducts = [
     id: 'prod_002',
     name: 'Ergo Office Chair',
     description: 'Breathable mesh ergonomic chair with lumbar support.',
-    price: 249.0,
+    price: 249,
     stock: 8,
     imageUrls: ['https://images.unsplash.com/photo-1580480055273-228ff5388ef8'],
     isActive: true,
@@ -191,7 +175,7 @@ const loginHandlers = endpointVariants('/auth/login').map((url) =>
       ({ user }) => user.email.toLowerCase() === body.email!.toLowerCase()
     );
 
-    if (!record || record.password !== body.password) {
+    if (record?.password !== body.password) {
       return HttpResponse.json(
         {
           success: false,
