@@ -36,7 +36,7 @@ export function Skeleton({
   rounded = false,
   className,
   ...props
-}: SkeletonProps) {
+}: Readonly<SkeletonProps>) {
   return (
     <div
       className={clsx(skeletonStyles({ rounded: rounded as SkeletonRounded }), className)}

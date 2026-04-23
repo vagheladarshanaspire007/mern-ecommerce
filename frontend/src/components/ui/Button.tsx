@@ -48,7 +48,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 /**
  * Reusable button component with variants, sizes, and loading state.
  */
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+export const Button = forwardRef<HTMLButtonElement, Readonly<ButtonProps>>(function Button(
   {
     className,
     variant = 'primary',

@@ -44,7 +44,7 @@ export function EmptyState({
   action,
   density = 'comfortable',
   className,
-}: EmptyStateProps) {
+}: Readonly<EmptyStateProps>) {
   return (
     <div className={clsx(emptyStateStyles({ density }), className)}>
       {icon ? (

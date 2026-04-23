@@ -67,14 +67,24 @@ export function Modal({
   className,
   size = 'md',
   align = 'center',
-}: ModalProps) {
-  const dialogRef = useRef<HTMLDivElement>(null);
+}: Readonly<ModalProps>) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const titleId = useId();
   const previousActiveElementRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    if (!isOpen) {
-      return;
+    const dialog = dialogRef.current;
+
+    if (!dialog) return;
+
+    if (isOpen) {
+      if (!dialog.open) {
+        dialog.showModal();
+      }
+    } else {
+      if (dialog.open) {
+        dialog.close();
+      }
     }
 
     const originalOverflow = document.body.style.overflow;
@@ -143,18 +153,24 @@ export function Modal({
   return (
     <div
       className={modalOverlayStyles({ align })}
+      role="button"
+      tabIndex={0}
+      aria-label="Close modal"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) {
           onClose();
         }
       }}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          onClose();
+        }
+      }}
     >
-      <div
+      <dialog
         ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
         aria-labelledby={titleId}
-        tabIndex={-1}
+        onClose={onClose}
         className={clsx(modalPanelStyles({ size }), className)}
       >
         <div className="mb-4 flex items-start justify-between gap-3">
@@ -172,7 +188,7 @@ export function Modal({
         </div>
 
         <div className="text-sm text-slate-700">{children}</div>
-      </div>
+      </dialog>
     </div>
   );
 }

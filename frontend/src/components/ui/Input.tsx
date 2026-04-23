@@ -57,7 +57,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   const helperId = `${inputId}-helper`;
   const errorId = `${inputId}-error`;
 
-  const describedBy = error ? errorId : helperText ? helperId : undefined;
+  let describedBy: string | undefined;
+
+  if (error) describedBy = errorId;
+  else if (helperText) describedBy = helperId;
 
   return (
     <div className="w-full">

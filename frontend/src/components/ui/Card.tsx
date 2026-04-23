@@ -49,7 +49,7 @@ export function Card({
   compact = false,
   className,
   contentClassName,
-}: CardProps) {
+}: Readonly<CardProps>) {
   const paddingClassName = compact ? 'p-4' : 'p-5';
 
   return (

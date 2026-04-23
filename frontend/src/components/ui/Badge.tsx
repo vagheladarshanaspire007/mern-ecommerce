@@ -29,7 +29,12 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 /**
  * Compact status badge for counts, stock, and semantic states.
  */
-export function Badge({ variant = 'neutral', className, children, ...props }: BadgeProps) {
+export function Badge({
+  variant = 'neutral',
+  className,
+  children,
+  ...props
+}: Readonly<BadgeProps>) {
   return (
     <span className={clsx(badgeStyles({ variant }), className)} {...props}>
       {children}
