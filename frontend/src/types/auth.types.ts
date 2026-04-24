@@ -16,6 +16,7 @@ export interface User {
   firstName: string;
   lastName: string;
   email: string;
+  profileImageUrl?: string;
   role: 'user' | 'admin' | 'manager';
   emailVerified: boolean;
   createdAt: string;
