@@ -94,6 +94,12 @@ const migrations: Migration[] = [
         is_active BOOLEAN NOT NULL DEFAULT TRUE
       );
       CREATE INDEX IF NOT EXISTS idx_products_category_id ON products(category_id);
+      -- Helps cursor pagination on the product list
+      CREATE INDEX IF NOT EXISTS idx_products_created_at_id
+      ON products (created_at DESC, id DESC);
+      -- Helps filtering out soft-deleted/inactive products
+      CREATE INDEX IF NOT EXISTS idx_products_is_active
+      ON products (is_active);
     `,
     down: `
       DROP TABLE IF EXISTS products;
