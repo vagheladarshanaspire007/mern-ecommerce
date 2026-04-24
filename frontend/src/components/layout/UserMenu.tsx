@@ -11,7 +11,7 @@ interface UserMenuProps {
   onNavigate?: () => void;
 }
 
-export function UserMenu({ user, isAuthenticated, onNavigate }: UserMenuProps) {
+export function UserMenu({ user, isAuthenticated, onNavigate }: Readonly<UserMenuProps>) {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
