@@ -47,9 +47,7 @@ export function StarRating({
       </div>
       {(showValue || typeof reviewCount === 'number') && (
         <div className="flex items-center gap-2 text-sm text-gray-400">
-          {showValue && (
-            <span className="font-medium text-white">{boundedRating.toFixed(1)}</span>
-          )}
+          {showValue && <span className="font-medium text-white">{boundedRating.toFixed(1)}</span>}
           {typeof reviewCount === 'number' && <span>({reviewCount} reviews)</span>}
         </div>
       )}

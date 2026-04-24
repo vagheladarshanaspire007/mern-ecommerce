@@ -145,57 +145,40 @@ const sampleProducts: Product[] = [
   },
 ];
 
+// ─── Storage helpers ──────────────────────────────────────────────────────────
+
 function buildStorageProduct(product: Product): Product {
-  return {
-    ...product,
-    imageUrls: product.images.map((image) => image.url),
-  };
+  return { ...product, imageUrls: product.images.map((image) => image.url) };
+}
+
+function getLocalStore<T>(key: string, seed: T[]): T[] {
+  if (globalThis.window === undefined) return seed;
+  const stored = globalThis.window.localStorage.getItem(key);
+  if (!stored) {
+    globalThis.window.localStorage.setItem(key, JSON.stringify(seed));
+    return seed;
+  }
+  try {
+    return JSON.parse(stored) as T[];
+  } catch {
+    return seed;
+  }
 }
 
 function getLocalCategories(): Category[] {
-  if (globalThis.window === undefined) {
-    return sampleCategories;
-  }
-
-  const stored = globalThis.window.localStorage.getItem(CATEGORIES_STORAGE_KEY);
-  if (!stored) {
-    globalThis.window.localStorage.setItem(CATEGORIES_STORAGE_KEY, JSON.stringify(sampleCategories));
-    return sampleCategories;
-  }
-
-  try {
-    return JSON.parse(stored) as Category[];
-  } catch {
-    return sampleCategories;
-  }
+  return getLocalStore<Category>(CATEGORIES_STORAGE_KEY, sampleCategories);
 }
 
 function getLocalProducts(): Product[] {
-  if (globalThis.window === undefined) {
-    return sampleProducts;
-  }
-
-  const stored = globalThis.window.localStorage.getItem(PRODUCTS_STORAGE_KEY);
-  if (!stored) {
-    const normalized = sampleProducts.map(buildStorageProduct);
-    globalThis.window.localStorage.setItem(PRODUCTS_STORAGE_KEY, JSON.stringify(normalized));
-    return normalized;
-  }
-
-  try {
-    return JSON.parse(stored) as Product[];
-  } catch {
-    return sampleProducts;
-  }
+  return getLocalStore<Product>(PRODUCTS_STORAGE_KEY, sampleProducts.map(buildStorageProduct));
 }
 
 function setLocalProducts(products: Product[]) {
-  if (globalThis.window === undefined) {
-    return;
-  }
-
+  if (globalThis.window === undefined) return;
   globalThis.window.localStorage.setItem(PRODUCTS_STORAGE_KEY, JSON.stringify(products));
 }
+
+// ─── Normalisation ────────────────────────────────────────────────────────────
 
 function normalizeProduct(product: Partial<Product> & { id: string; name: string }): Product {
   const images =
@@ -229,6 +212,10 @@ function normalizeProduct(product: Partial<Product> & { id: string; name: string
   };
 }
 
+// ─── Response parsers ─────────────────────────────────────────────────────────
+
+type ShapeFn<T> = (raw: unknown) => T;
+
 function unwrapData<T>(response: unknown): T {
   if (
     typeof response === 'object' &&
@@ -238,31 +225,29 @@ function unwrapData<T>(response: unknown): T {
   ) {
     return (response as { data: T }).data;
   }
-
   return response as T;
 }
 
-function parseProductResponse(response: unknown): Product {
-  return normalizeProduct(unwrapData<Partial<Product> & { id: string; name: string }>(response));
+function parseResponse<T>(response: unknown, shape: ShapeFn<T>): T {
+  return shape(unwrapData<unknown>(response));
 }
 
-function parseProductsResponse(response: unknown): Product[] {
-  const source = unwrapData<{
+function shapeProduct(raw: unknown): Product {
+  return normalizeProduct(raw as Partial<Product> & { id: string; name: string });
+}
+
+function shapeProducts(raw: unknown): Product[] {
+  const src = raw as {
     items?: Array<Partial<Product> & { id: string; name: string }>;
     products?: Array<Partial<Product> & { id: string; name: string }>;
-  }>(response);
-  const items = source.items ?? source.products ?? [];
-  return items.map(normalizeProduct);
+  };
+  return (src.items ?? src.products ?? []).map(normalizeProduct);
 }
 
-function parseCategoriesResponse(response: unknown): Category[] {
-  const source = unwrapData<Category[] | { items?: Category[]; categories?: Category[] }>(response);
-
-  if (Array.isArray(source)) {
-    return source;
-  }
-
-  return source.categories ?? source.items ?? [];
+function shapeCategories(raw: unknown): Category[] {
+  if (Array.isArray(raw)) return raw as Category[];
+  const src = raw as { items?: Category[]; categories?: Category[] };
+  return src.categories ?? src.items ?? [];
 }
 
 function parseUploadResponse(response: unknown): UploadImageResponse {
@@ -272,13 +257,13 @@ function parseUploadResponse(response: unknown): UploadImageResponse {
     file?: { path?: string; filename?: string };
   }>(response);
   const url = source.url ?? source.imageUrl ?? source.file?.path;
-
   if (!url) {
     throw new Error('Upload completed but the server did not return an image URL.');
   }
-
   return { url };
 }
+
+// ─── Mutation helpers ─────────────────────────────────────────────────────────
 
 function toMutationResult(payload: ProductMutationPayload, existing?: Product): Product {
   const categories = getLocalCategories();
@@ -307,29 +292,30 @@ function toMutationResult(payload: ProductMutationPayload, existing?: Product): 
   });
 }
 
-function isNotImplementedError(error: unknown) {
+function isNotImplementedError(error: unknown): boolean {
   return typeof error === 'object' && error !== null && 'status' in error && error.status === 501;
 }
+
+async function withLocalFallback<T>(apiCall: () => Promise<T>, localFallback: () => T): Promise<T> {
+  try {
+    return await apiCall();
+  } catch (error) {
+    if (!isNotImplementedError(error)) throw error;
+    return localFallback();
+  }
+}
+
+// ─── Service ──────────────────────────────────────────────────────────────────
 
 export const productService = {
   async getProductById(id: string): Promise<Product> {
     try {
       const { data } = await api.get<ApiResponse<Product> | Product>(`/products/${id}`);
-      return parseProductResponse(data);
-    } catch (error) {
-      if (!isNotImplementedError(error)) {
-        const localProduct = getLocalProducts().find((product) => product.id === id);
-        if (localProduct) {
-          return normalizeProduct(localProduct);
-        }
-      }
-
+      return parseResponse(data, shapeProduct);
+    } catch {
       const localProduct = getLocalProducts().find((product) => product.id === id);
-      if (localProduct) {
-        return normalizeProduct(localProduct);
-      }
-
-      throw error;
+      if (localProduct) return normalizeProduct(localProduct);
+      throw new Error(`Product ${id} not found.`);
     }
   },
 
@@ -338,7 +324,7 @@ export const productService = {
       const { data } = await api.get<ApiResponse<{ items: Product[] }> | { items: Product[] }>(
         '/products'
       );
-      return parseProductsResponse(data);
+      return parseResponse(data, shapeProducts);
     } catch {
       return getLocalProducts().map(normalizeProduct);
     }
@@ -347,59 +333,53 @@ export const productService = {
   async getProductCategories(): Promise<Category[]> {
     try {
       const { data } = await api.get<ApiResponse<Category[]> | Category[]>('/products/categories');
-      return parseCategoriesResponse(data);
+      return parseResponse(data, shapeCategories);
     } catch {
       return getLocalCategories();
     }
   },
 
   async createProduct(payload: ProductMutationPayload): Promise<Product> {
-    try {
-      const { data } = await api.post<ApiResponse<Product> | Product>('/products', payload);
-      return parseProductResponse(data);
-    } catch (error) {
-      if (!isNotImplementedError(error)) {
-        throw error;
+    return withLocalFallback(
+      async () => {
+        const { data } = await api.post<ApiResponse<Product> | Product>('/products', payload);
+        return parseResponse(data, shapeProduct);
+      },
+      () => {
+        const next = toMutationResult(payload);
+        setLocalProducts([...getLocalProducts(), next]);
+        return next;
       }
-
-      const next = toMutationResult(payload);
-      const products = [...getLocalProducts(), next];
-      setLocalProducts(products);
-      return next;
-    }
+    );
   },
 
   async updateProduct(id: string, payload: ProductMutationPayload): Promise<Product> {
-    try {
-      const { data } = await api.patch<ApiResponse<Product> | Product>(`/products/${id}`, payload);
-      return parseProductResponse(data);
-    } catch (error) {
-      if (!isNotImplementedError(error)) {
-        throw error;
+    return withLocalFallback(
+      async () => {
+        const { data } = await api.patch<ApiResponse<Product> | Product>(
+          `/products/${id}`,
+          payload
+        );
+        return parseResponse(data, shapeProduct);
+      },
+      () => {
+        const products = getLocalProducts();
+        const existing = products.find((p) => p.id === id);
+        if (!existing) throw new Error('Product not found.');
+        const updated = toMutationResult(payload, existing);
+        setLocalProducts(products.map((p) => (p.id === id ? updated : p)));
+        return updated;
       }
-
-      const products = getLocalProducts();
-      const existing = products.find((product) => product.id === id);
-      if (!existing) {
-        throw new Error('Product not found.');
-      }
-
-      const updated = toMutationResult(payload, existing);
-      setLocalProducts(products.map((product) => (product.id === id ? updated : product)));
-      return updated;
-    }
+    );
   },
 
   async deleteProduct(id: string): Promise<void> {
-    try {
-      await api.delete(`/products/${id}`);
-    } catch (error) {
-      if (!isNotImplementedError(error)) {
-        throw error;
+    return withLocalFallback(
+      () => api.delete(`/products/${id}`).then(() => undefined),
+      () => {
+        setLocalProducts(getLocalProducts().filter((p) => p.id !== id));
       }
-
-      setLocalProducts(getLocalProducts().filter((product) => product.id !== id));
-    }
+    );
   },
 
   async uploadImage(
@@ -410,14 +390,9 @@ export const productService = {
     formData.append('image', file);
 
     const { data } = await api.post('/upload/image', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
+      headers: { 'Content-Type': 'multipart/form-data' },
       onUploadProgress: (event) => {
-        if (!event.total) {
-          return;
-        }
-
+        if (!event.total) return;
         onProgress?.(Math.round((event.loaded / event.total) * 100));
       },
     });
