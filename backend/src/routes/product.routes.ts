@@ -16,22 +16,23 @@ import {
   updateProductController,
 } from '../controllers/product.controller';
 import { asyncHandler } from '../utils/asyncHandler';
+import { authenticate, authorize, optionalAuth } from '@/middleware/auth/authenticate';
 
 const router = Router();
 
 // Public routes
-router.get('/categories', asyncHandler(getCategoriesController));
+router.get('/categories', optionalAuth, asyncHandler(getCategoriesController));
 
 router.get(
   '/',
-  // optionalAuth,
+  optionalAuth,
   validateRequest(productListQuerySchema, 'query'),
   asyncHandler(listProductsController)
 );
 
 router.get(
   '/:id',
-  // optionalAuth,
+  optionalAuth,
   validateRequest(productIdParamSchema, 'params'),
   asyncHandler(getProductByIdController)
 );
@@ -39,16 +40,16 @@ router.get(
 // Admin-only routes
 router.post(
   '/',
-  // authenticate,
-  // authorize('admin'),
+  authenticate,
+  authorize('admin'),
   validateRequest(createProductSchema),
   asyncHandler(createProductController)
 );
 
 router.patch(
   '/:id',
-  // authenticate,
-  // authorize('admin'),
+  authenticate,
+  authorize('admin'),
   validateRequest(productIdParamSchema, 'params'),
   validateRequest(updateProductSchema),
   asyncHandler(updateProductController)
@@ -56,8 +57,8 @@ router.patch(
 
 router.delete(
   '/:id',
-  // authenticate,
-  // authorize('admin'),
+  authenticate,
+  authorize('admin'),
   validateRequest(productIdParamSchema, 'params'),
   asyncHandler(deleteProductController)
 );
