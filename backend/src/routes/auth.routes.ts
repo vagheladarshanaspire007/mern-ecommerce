@@ -20,7 +20,7 @@
  * ============================================================
  */
 
-import { Router, Request, Response, NextFunction } from 'express';
+import { Router } from 'express';
 import { authRateLimiter, passwordResetRateLimiter } from '../middleware/security/rateLimiter';
 import { authenticate } from '../middleware/auth/authenticate';
 import { validateRequest } from '../middleware/validation/validateRequest';
@@ -39,16 +39,9 @@ import {
   resetPasswordController,
   meController,
 } from '../controllers/auth.controller';
+import { asyncHandler } from '@/utils/asyncHandler';
 
 const router = Router();
-
-const asyncHandler =
-  (fn: (req: Request, res: Response) => Promise<void>) =>
-  (req: Request, res: Response, next: NextFunction): void => {
-    fn(req, res).catch((err: unknown) => {
-      next(err instanceof Error ? err : new Error('Unknown error'));
-    });
-  };
 
 // Public
 router.post(
