@@ -23,12 +23,20 @@ export async function listProductsController(
 ): Promise<void> {
   const query = req.query;
 
+  let inStock: boolean | undefined;
+
+  if (query.inStock === 'true') {
+    inStock = true;
+  } else if (query.inStock === 'false') {
+    inStock = false;
+  }
+
   const result = await listProducts({
     search: query.search,
     minPrice: query.minPrice,
     maxPrice: query.maxPrice,
     categoryId: query.categoryId,
-    inStock: query.inStock === 'true' ? true : query.inStock === 'false' ? false : undefined,
+    inStock,
     limit: query.limit,
     cursor: query.cursor,
   });

@@ -1,5 +1,4 @@
 import { Router } from 'express';
-// import { authenticate, authorize, optionalAuth } from '../middleware/auth/authenticate';
 import { validateRequest } from '../middleware/validation/validateRequest';
 import {
   createProductSchema,
