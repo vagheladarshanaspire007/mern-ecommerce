@@ -15,6 +15,8 @@ import {
   forgotPassword,
   resetPassword,
 } from '../services/auth.service';
+import { t } from '../utils/i18n';
+import { AUTH_MESSAGES } from '../constants/messages';
 
 type CookiesWithRefreshToken = {
   refreshToken?: string;
@@ -57,6 +59,8 @@ export const registerController = async (
   setRefreshCookie(res, result.refreshToken);
 
   res.status(201).json({
+    success: true,
+    message: t(AUTH_MESSAGES.USER_CREATED),
     user: result.user,
     accessToken: result.accessToken,
   });
@@ -73,6 +77,8 @@ export const loginController = async (req: AuthRequest<LoginDto>, res: Response)
   setRefreshCookie(res, result.refreshToken);
 
   res.status(200).json({
+    success: true,
+    message: t(AUTH_MESSAGES.LOGIN_SUCCESS),
     user: result.user,
     accessToken: result.accessToken,
   });
@@ -86,7 +92,8 @@ export const refreshController = async (
 
   if (!refreshToken) {
     res.status(401).json({
-      message: 'Invalid or expired token',
+      success: false,
+      message: t(AUTH_MESSAGES.INVALID_OR_EXPIRED_TOKEN),
     });
     return;
   }
@@ -94,6 +101,7 @@ export const refreshController = async (
   const result = await refresh(refreshToken);
 
   res.status(200).json({
+    success: true,
     accessToken: result.accessToken,
   });
 };
@@ -108,7 +116,8 @@ export const logoutController = async (req: AuthRequest<unknown>, res: Response)
   clearRefreshCookie(res);
 
   res.status(200).json({
-    message: 'Logged out successfully',
+    success: true,
+    message: t(AUTH_MESSAGES.LOGGED_OUT),
   });
 };
 
@@ -117,7 +126,8 @@ export const meController = async (req: AuthRequest<unknown>, res: Response): Pr
 
   if (!userId) {
     res.status(401).json({
-      message: 'Authentication required',
+      success: false,
+      message: t(AUTH_MESSAGES.AUTH_REQUIRED),
     });
     return;
   }
@@ -125,6 +135,7 @@ export const meController = async (req: AuthRequest<unknown>, res: Response): Pr
   const user = await getMe(userId);
 
   res.status(200).json({
+    success: true,
     user,
   });
 };
@@ -140,7 +151,8 @@ export const forgotPasswordController = async (
   });
 
   res.status(200).json({
-    message: 'If the email exists, a password reset link has been sent',
+    success: true,
+    message: t(AUTH_MESSAGES.PASSWORD_RESET_LINK_SENT),
   });
 };
 
@@ -156,6 +168,7 @@ export const resetPasswordController = async (
   });
 
   res.status(200).json({
-    message: 'Password reset successful',
+    success: true,
+    message: t(AUTH_MESSAGES.PASSWORD_RESET_SUCCESS),
   });
 };

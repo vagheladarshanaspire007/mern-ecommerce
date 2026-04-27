@@ -175,6 +175,52 @@ export const clearResetToken = async (userId: string): Promise<void> => {
   );
 };
 
+export const storeRefreshToken = async (
+  userId: string,
+  refreshToken: string,
+  expiresAt: Date
+): Promise<void> => {
+  await query(
+    `
+      UPDATE users
+      SET reset_token = $2,
+          reset_token_expires = $3,
+          updated_at = NOW()
+      WHERE id = $1 AND deleted_at IS NULL
+    `,
+    [userId, refreshToken, expiresAt]
+  );
+};
+
+export const findUserByRefreshToken = async (refreshToken: string): Promise<UserRow | null> => {
+  const result = await query<UserRow>(
+    `
+      SELECT *
+      FROM users
+      WHERE reset_token = $1
+        AND reset_token_expires > NOW()
+        AND deleted_at IS NULL
+      LIMIT 1
+    `,
+    [refreshToken]
+  );
+
+  return result.rows[0] ?? null;
+};
+
+export const clearRefreshToken = async (userId: string): Promise<void> => {
+  await query(
+    `
+      UPDATE users
+      SET reset_token = NULL,
+          reset_token_expires = NULL,
+          updated_at = NOW()
+      WHERE id = $1 AND deleted_at IS NULL
+    `,
+    [userId]
+  );
+};
+
 export const softDeleteUser = async (userId: string): Promise<void> => {
   await query(
     `

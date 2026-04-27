@@ -21,7 +21,11 @@
  */
 
 import { Router } from 'express';
-import { authRateLimiter, passwordResetRateLimiter } from '../middleware/security/rateLimiter';
+import {
+  loginRateLimiter,
+  passwordResetRateLimiter,
+  registerRateLimiter,
+} from '../middleware/security/rateLimiter';
 import { authenticate } from '../middleware/auth/authenticate';
 import { validateRequest } from '../middleware/validation/validateRequest';
 import {
@@ -40,36 +44,42 @@ import {
   meController,
 } from '../controllers/auth.controller';
 import { asyncHandler } from '../utils/asyncHandler';
+import { ROUTES } from '../constants/routes';
 
 const router = Router();
 
 // Public
 router.post(
-  '/register',
-  authRateLimiter,
+  ROUTES.AUTH.REGISTER,
+  registerRateLimiter,
   validateRequest(registerSchema),
   asyncHandler(registerController)
 );
 
-router.post('/login', authRateLimiter, validateRequest(loginSchema), asyncHandler(loginController));
+router.post(
+  ROUTES.AUTH.LOGIN,
+  loginRateLimiter,
+  validateRequest(loginSchema),
+  asyncHandler(loginController)
+);
 
-router.post('/refresh', asyncHandler(refreshController));
+router.post(ROUTES.AUTH.REFRESH, asyncHandler(refreshController));
 
 router.post(
-  '/forgot-password',
+  ROUTES.AUTH.FORGOT_PASSWORD,
   passwordResetRateLimiter,
   validateRequest(forgotPasswordSchema),
   asyncHandler(forgotPasswordController)
 );
 
 router.post(
-  '/reset-password',
+  ROUTES.AUTH.RESET_PASSWORD,
   validateRequest(resetPasswordSchema),
   asyncHandler(resetPasswordController)
 );
 
-router.post('/logout', asyncHandler(logoutController));
+router.post(ROUTES.AUTH.LOGOUT, asyncHandler(logoutController));
 // Protected
-router.get('/me', authenticate, asyncHandler(meController));
+router.get(ROUTES.AUTH.ME, authenticate, asyncHandler(meController));
 
 export { router as authRouter };
