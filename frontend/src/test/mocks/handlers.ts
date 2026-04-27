@@ -3,7 +3,7 @@ import type { RegisterData, User } from '@/types/auth.types';
 
 interface UserRecord {
   user: User;
-  password: string;
+  password?: string;
 }
 
 interface AuthState {
@@ -21,7 +21,6 @@ const STORAGE_KEYS = {
 
 const getStorage = (): Storage | null => {
   try {
-    // In browser/tests (jsdom) this exists; in pure node it may not.
     return (globalThis as unknown as { localStorage?: Storage }).localStorage ?? null;
   } catch {
     return null;
@@ -30,13 +29,109 @@ const getStorage = (): Storage | null => {
 
 const storage = getStorage();
 
-const seedUsers: UserRecord[] = [];
+// Generate expected password from email following password policies
+// Pattern: EmailPrefix + "123" + SpecialChar + Uppercase
+const generateExpectedPassword = (email: string): string => {
+  const emailPrefix = email.toLowerCase().split('@')[0];
+  const firstChar = emailPrefix.charAt(0).toUpperCase();
+  const restChars = emailPrefix.slice(1).toLowerCase();
+  const specialChar = '!';
+  const number = '123';
+
+  return `${firstChar}${restChars}${number}${specialChar}`;
+};
+
+const verifyPasswordPattern = (email: string, password: string): boolean => {
+  const expectedPassword = generateExpectedPassword(email);
+  return password === expectedPassword;
+};
+
+const DUMMY_EMAILS = [
+  'admin@example.com',
+  'manager@example.com',
+  'user@example.com',
+  'john@example.com',
+  'jane@example.com',
+];
+
+// Dummy users - only user data, no passwords stored
+const seedUsers: UserRecord[] = [
+  {
+    user: {
+      id: 'user_admin_001',
+      firstName: 'Admin',
+      lastName: 'User',
+      email: 'admin@example.com',
+      role: 'admin',
+      emailVerified: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+  },
+  {
+    user: {
+      id: 'user_manager_001',
+      firstName: 'Manager',
+      lastName: 'Staff',
+      email: 'manager@example.com',
+      role: 'manager',
+      emailVerified: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+  },
+  {
+    user: {
+      id: 'user_standard_001',
+      firstName: 'Standard',
+      lastName: 'User',
+      email: 'user@example.com',
+      role: 'user',
+      emailVerified: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+  },
+  {
+    user: {
+      id: 'user_john_doe',
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john@example.com',
+      role: 'user',
+      emailVerified: false,
+      createdAt: now,
+      updatedAt: now,
+    },
+  },
+  {
+    user: {
+      id: 'user_jane_smith',
+      firstName: 'Jane',
+      lastName: 'Smith',
+      email: 'jane@example.com',
+      role: 'user',
+      emailVerified: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+  },
+];
+
+if (seedUsers.length > 5) {
+  throw new Error(
+    `Dummy users constraint violated: ${seedUsers.length} users defined. Maximum is 5.`
+  );
+}
 
 const loadUsers = (): UserRecord[] => {
   if (!storage) return seedUsers;
   try {
     const raw = storage.getItem(STORAGE_KEYS.users);
-    if (!raw) return seedUsers;
+    if (!raw) {
+      saveUsers(seedUsers);
+      return seedUsers;
+    }
     const parsed = JSON.parse(raw) as UserRecord[];
     return parsed;
   } catch {
@@ -132,7 +227,7 @@ const getCurrentUser = (): User | null => {
 
   if (!authState.currentUserId) return null;
   userRecords = loadUsers();
-  const record = userRecords.find(({ user }) => user.id === authState.currentUserId);
+  const record = userRecords.find((user) => user.user.id === authState.currentUserId);
   return record?.user ?? null;
 };
 
@@ -175,7 +270,7 @@ const loginHandlers = endpointVariants('/auth/login').map((url) =>
       ({ user }) => user.email.toLowerCase() === body.email!.toLowerCase()
     );
 
-    if (record?.password !== body.password) {
+    if (!record) {
       return HttpResponse.json(
         {
           success: false,
@@ -186,6 +281,35 @@ const loginHandlers = endpointVariants('/auth/login').map((url) =>
         },
         { status: 401 }
       );
+    }
+
+    const isDummyEmail = DUMMY_EMAILS.includes(body.email!.toLowerCase());
+    if (isDummyEmail) {
+      if (!verifyPasswordPattern(body.email!, body.password)) {
+        return HttpResponse.json(
+          {
+            success: false,
+            error: {
+              code: 'INVALID_CREDENTIALS',
+              message: 'Invalid email or password.',
+            },
+          },
+          { status: 401 }
+        );
+      }
+    } else {
+      if (!record.password || record.password !== body.password) {
+        return HttpResponse.json(
+          {
+            success: false,
+            error: {
+              code: 'INVALID_CREDENTIALS',
+              message: 'Invalid email or password.',
+            },
+          },
+          { status: 401 }
+        );
+      }
     }
 
     authState.currentUserId = record.user.id;
@@ -233,7 +357,6 @@ const registerHandlers = endpointVariants('/auth/register').map((url) =>
     };
 
     userRecords.push({ user, password: body.password });
-    // Registration should not create an authenticated session.
     const accessToken = createAccessToken();
     saveUsers(userRecords);
 

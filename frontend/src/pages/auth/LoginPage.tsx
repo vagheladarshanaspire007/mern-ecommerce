@@ -9,7 +9,12 @@ import { loginUser } from '@/store/slices/authSlice';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address.'),
-  password: z.string().min(6, 'Password must be at least 6 characters.'),
+  password: z
+    .string()
+    .min(
+      6,
+      'Password must be at least 8 characters long and must contain 1 uppercase,1 lowercase and 1 number .'
+    ),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -51,7 +56,7 @@ export default function LoginPage() {
         ? `${state.from.pathname}${state.from.search ?? ''}${state.from.hash ?? ''}`
         : null;
       const queryRedirect = searchParams.get('redirect');
-      navigate(stateRedirect || queryRedirect || '/', { replace: true });
+      navigate(stateRedirect || queryRedirect || '/dashboard', { replace: true });
     } catch (error: unknown) {
       toast.error(getErrorMessage(error, 'Login failed. Please try again.'));
     }
