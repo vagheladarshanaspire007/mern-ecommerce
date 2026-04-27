@@ -152,7 +152,7 @@ export const forgotPasswordController = async (
 
   res.status(200).json({
     success: true,
-    message: t(AUTH_MESSAGES.PASSWORD_RESET_LINK_SENT),
+    message: t(AUTH_MESSAGES.RESET_LINK_SENT),
   });
 };
 
@@ -169,6 +169,6 @@ export const resetPasswordController = async (
 
   res.status(200).json({
     success: true,
-    message: t(AUTH_MESSAGES.PASSWORD_RESET_SUCCESS),
+    message: t(AUTH_MESSAGES.RESET_SUCCESS),
   });
 };

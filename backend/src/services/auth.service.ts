@@ -16,9 +16,6 @@ import {
   toPublicUser,
   PublicUser,
   UserRow,
-  storeRefreshToken,
-  findUserByRefreshToken,
-  clearRefreshToken,
   storeResetToken,
   findUserByResetToken,
   clearResetToken,
@@ -101,7 +98,7 @@ export const register = async (input: RegisterInput): Promise<AuthResult> => {
     role: createdUser.role,
   });
 
-  await storeRefreshToken(createdUser.id, tokens.refreshToken, refreshExpiresAt());
+  await storeResetToken(createdUser.id, tokens.refreshToken, refreshExpiresAt());
 
   return {
     user: createdUser,
@@ -124,7 +121,7 @@ export const login = async (input: LoginInput): Promise<AuthResult> => {
 
   const tokens = buildTokens(user);
 
-  await storeRefreshToken(user.id, tokens.refreshToken, refreshExpiresAt());
+  await storeResetToken(user.id, tokens.refreshToken, refreshExpiresAt());
 
   return {
     user: toPublicUser(user),
@@ -140,7 +137,7 @@ export const refresh = async (refreshToken: string): Promise<{ accessToken: stri
     throw new AppError(401, 'INVALID_TOKEN', 'Invalid or expired token');
   }
 
-  const user = await findUserByRefreshToken(refreshToken);
+  const user = await findUserByResetToken(refreshToken);
 
   if (!user) {
     throw new AppError(401, 'INVALID_TOKEN', 'Invalid or expired token');
@@ -156,13 +153,13 @@ export const refresh = async (refreshToken: string): Promise<{ accessToken: stri
 };
 
 export const logout = async (refreshToken: string): Promise<void> => {
-  const user = await findUserByRefreshToken(refreshToken);
+  const user = await findUserByResetToken(refreshToken);
 
   if (!user) {
     throw new AppError(401, 'INVALID_TOKEN', 'Invalid or expired token');
   }
 
-  await clearRefreshToken(user.id);
+  await clearResetToken(user.id);
 };
 
 export const getMe = async (userId: string): Promise<PublicUser> => {
