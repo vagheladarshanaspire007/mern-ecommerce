@@ -39,7 +39,7 @@ import {
   resetPasswordController,
   meController,
 } from '../controllers/auth.controller';
-import { asyncHandler } from '@/utils/asyncHandler';
+import { asyncHandler } from '../utils/asyncHandler';
 
 const router = Router();
 
