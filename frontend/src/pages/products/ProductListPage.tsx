@@ -197,11 +197,11 @@ const ProductListPage = () => {
               <>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 xl:grid-cols-4">
                   {productsQuery.isLoading
-                    ? INITIAL_SKELETONS.map((_, index) => <ProductCardSkeleton key={index} />)
+                    ? INITIAL_SKELETONS.map((key) => <ProductCardSkeleton key={key} />)
                     : products.map((product) => <ProductCard key={product.id} product={product} />)}
 
                   {productsQuery.isFetchingNextPage &&
-                    NEXT_SKELETONS.map((_, index) => <ProductCardSkeleton key={`next-${index}`} />)}
+                    NEXT_SKELETONS.map((key) => <ProductCardSkeleton key={`next-${key}`} />)}
                 </div>
 
                 <div ref={sentinelRef} className="h-10" aria-hidden="true" />
