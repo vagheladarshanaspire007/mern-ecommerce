@@ -29,8 +29,6 @@ const getStorage = (): Storage | null => {
 
 const storage = getStorage();
 
-// Generate expected password from email following password policies
-// Pattern: EmailPrefix + "123" + SpecialChar + Uppercase
 const generateExpectedPassword = (email: string): string => {
   const emailPrefix = email.toLowerCase().split('@')[0];
   const firstChar = emailPrefix.charAt(0).toUpperCase();
@@ -54,7 +52,6 @@ const DUMMY_EMAILS = [
   'jane@example.com',
 ];
 
-// Dummy users - only user data, no passwords stored
 const seedUsers: UserRecord[] = [
   {
     user: {
@@ -220,7 +217,6 @@ const createAccessToken = () => `mock-access-${crypto.randomUUID()}`;
 const createRefreshToken = () => `mock-refresh-${crypto.randomUUID()}`;
 
 const getCurrentUser = (): User | null => {
-  // Re-hydrate session in case of page reload or multi-tab.
   const session = loadSession();
   authState.currentUserId = session.currentUserId;
   authState.refreshToken = session.refreshToken;
@@ -255,6 +251,18 @@ const badRequestResponse = (message: string, code = 'BAD_REQUEST') =>
     { status: 400 }
   );
 
+const invalidCredentialsResponse = () =>
+  HttpResponse.json(
+    {
+      success: false,
+      error: {
+        code: 'INVALID_CREDENTIALS',
+        message: 'Invalid email or password.',
+      },
+    },
+    { status: 401 }
+  );
+
 const loginHandlers = endpointVariants('/auth/login').map((url) =>
   http.post(url, async ({ request }) => {
     const body = (await request.json().catch(() => null)) as {
@@ -271,45 +279,17 @@ const loginHandlers = endpointVariants('/auth/login').map((url) =>
     );
 
     if (!record) {
-      return HttpResponse.json(
-        {
-          success: false,
-          error: {
-            code: 'INVALID_CREDENTIALS',
-            message: 'Invalid email or password.',
-          },
-        },
-        { status: 401 }
-      );
+      return invalidCredentialsResponse();
     }
 
     const isDummyEmail = DUMMY_EMAILS.includes(body.email!.toLowerCase());
+
     if (isDummyEmail) {
       if (!verifyPasswordPattern(body.email!, body.password)) {
-        return HttpResponse.json(
-          {
-            success: false,
-            error: {
-              code: 'INVALID_CREDENTIALS',
-              message: 'Invalid email or password.',
-            },
-          },
-          { status: 401 }
-        );
+        return invalidCredentialsResponse();
       }
-    } else {
-      if (!record.password || record.password !== body.password) {
-        return HttpResponse.json(
-          {
-            success: false,
-            error: {
-              code: 'INVALID_CREDENTIALS',
-              message: 'Invalid email or password.',
-            },
-          },
-          { status: 401 }
-        );
-      }
+    } else if (!record.password || record.password !== body.password) {
+      return invalidCredentialsResponse();
     }
 
     authState.currentUserId = record.user.id;
@@ -420,6 +400,7 @@ const logoutHandlers = endpointVariants('/auth/logout').map((url) =>
     authState.accessToken = null;
     authState.refreshToken = null;
     clearSession();
+
     return HttpResponse.json(
       {
         success: true,
