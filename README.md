@@ -216,6 +216,13 @@ docker-compose up
 # 4. In a separate terminal, run database migrations
 docker-compose exec api npm run migrate
 
+# If this is your first time running migrations:
+#   npm run migrate up
+#
+# If you already ran the migration script before and switched branches:
+#   npm run migrate down 3
+#   npm run migrate up
+
 # 5. Access the apps
 #    Frontend:  http://localhost:3000
 #    API:       http://localhost:5000/api/health
@@ -234,6 +241,13 @@ npm run install:all
 # 2. Set up environment variables
 cp backend/.env.example backend/.env
 # Edit backend/.env with your local PostgreSQL/Redis credentials
+
+# If this is your first time running migrations:
+#   npm run migrate up
+#
+# If you already ran the migration script before and switched branches:
+#   npm run migrate down 3
+#   npm run migrate up
 
 # 3. Run database migrations
 cd backend && npm run migrate && cd ..
