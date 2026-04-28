@@ -15,7 +15,12 @@ type FilterSidebarProps = {
   onReset: () => void;
 };
 
-function FilterSidebarComponent({ filters, categories, onChange, onReset }: FilterSidebarProps) {
+function FilterSidebarComponent({
+  filters,
+  categories,
+  onChange,
+  onReset,
+}: Readonly<FilterSidebarProps>) {
   const sortedCategories = useMemo(
     () => [...categories].sort((a, b) => a.name.localeCompare(b.name)),
     [categories]

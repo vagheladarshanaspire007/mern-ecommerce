@@ -9,6 +9,9 @@ import { fetchCategories, fetchProducts, type ProductListItem } from '@/services
 const PAGE_LIMIT = 20;
 const SEARCH_DEBOUNCE_MS = 3000;
 
+const INITIAL_SKELETONS = Array.from({ length: 8 }, (_, i) => `skeleton-initial-${i}`);
+const NEXT_SKELETONS = Array.from({ length: 4 }, (_, i) => `skeleton-next-${i}`);
+
 type SearchParamsShape = {
   search: string;
   minPrice: string;
@@ -16,6 +19,10 @@ type SearchParamsShape = {
   category: string;
   inStock: boolean;
 };
+
+interface EmptyStateProps {
+  onReset: () => void;
+}
 
 function parseSearchParams(searchParams: URLSearchParams): SearchParamsShape {
   return {
@@ -34,7 +41,7 @@ function toNumber(value: string): number | undefined {
   return parsed;
 }
 
-function EmptyState({ onReset }: { onReset: () => void }) {
+function EmptyState({ onReset }: Readonly<EmptyStateProps>) {
   return (
     <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center shadow-sm">
       <h2 className="text-lg font-semibold text-slate-900">No products found</h2>
@@ -128,7 +135,7 @@ const ProductListPage = () => {
     if (!productsQuery.hasNextPage) return;
     if (productsQuery.isFetchingNextPage) return;
     if (productsQuery.isLoading) return;
-    void productsQuery.fetchNextPage();
+    productsQuery.fetchNextPage().catch(() => undefined);
   }, [productsQuery]);
 
   const { ref: sentinelRef } = useIntersectionObserver(shouldAutoFetchNext, {
@@ -190,15 +197,11 @@ const ProductListPage = () => {
               <>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 xl:grid-cols-4">
                   {productsQuery.isLoading
-                    ? Array.from({ length: 8 }).map((_, index) => (
-                        <ProductCardSkeleton key={index} />
-                      ))
+                    ? INITIAL_SKELETONS.map((_, index) => <ProductCardSkeleton key={index} />)
                     : products.map((product) => <ProductCard key={product.id} product={product} />)}
 
                   {productsQuery.isFetchingNextPage &&
-                    Array.from({ length: 4 }).map((_, index) => (
-                      <ProductCardSkeleton key={`next-${index}`} />
-                    ))}
+                    NEXT_SKELETONS.map((_, index) => <ProductCardSkeleton key={`next-${index}`} />)}
                 </div>
 
                 <div ref={sentinelRef} className="h-10" aria-hidden="true" />

@@ -12,7 +12,7 @@ const currencyFormatter = new Intl.NumberFormat('en-US', {
   currency: 'USD',
 });
 
-function ProductCardComponent({ product }: ProductCardProps) {
+function ProductCardComponent({ product }: Readonly<ProductCardProps>) {
   const dispatch = useAppDispatch();
 
   const isInStock = product.stock > 0;
