@@ -90,8 +90,6 @@ type OrderItemRow = {
   created_at: string;
 };
 
-type OrderDetailRow = OrderSummaryRow;
-
 const mapShippingAddress = (row: {
   shipping_full_name: string | null;
   shipping_address: string | null;
@@ -299,7 +297,7 @@ export async function getOrderById(orderId: string): Promise<OrderSummary | null
 }
 
 export async function getOrderDetail(orderId: string): Promise<OrderDetail | null> {
-  const orderResult = await query<OrderDetailRow>(
+  const orderResult = await query<OrderSummaryRow>(
     `
       SELECT
         o.id,
