@@ -52,67 +52,32 @@ const DUMMY_EMAILS = new Set([
   'jane@example.com',
 ]);
 
+const createSeedUser = (
+  id: string,
+  firstName: string,
+  lastName: string,
+  email: string,
+  role: User['role'],
+  emailVerified: boolean
+): UserRecord => ({
+  user: {
+    id,
+    firstName,
+    lastName,
+    email,
+    role,
+    emailVerified,
+    createdAt: now,
+    updatedAt: now,
+  },
+});
+
 const seedUsers: UserRecord[] = [
-  {
-    user: {
-      id: 'user_admin_001',
-      firstName: 'Admin',
-      lastName: 'User',
-      email: 'admin@example.com',
-      role: 'admin',
-      emailVerified: true,
-      createdAt: now,
-      updatedAt: now,
-    },
-  },
-  {
-    user: {
-      id: 'user_manager_001',
-      firstName: 'Manager',
-      lastName: 'Staff',
-      email: 'manager@example.com',
-      role: 'manager',
-      emailVerified: true,
-      createdAt: now,
-      updatedAt: now,
-    },
-  },
-  {
-    user: {
-      id: 'user_standard_001',
-      firstName: 'Standard',
-      lastName: 'User',
-      email: 'user@example.com',
-      role: 'user',
-      emailVerified: true,
-      createdAt: now,
-      updatedAt: now,
-    },
-  },
-  {
-    user: {
-      id: 'user_john_doe',
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john@example.com',
-      role: 'user',
-      emailVerified: false,
-      createdAt: now,
-      updatedAt: now,
-    },
-  },
-  {
-    user: {
-      id: 'user_jane_smith',
-      firstName: 'Jane',
-      lastName: 'Smith',
-      email: 'jane@example.com',
-      role: 'user',
-      emailVerified: true,
-      createdAt: now,
-      updatedAt: now,
-    },
-  },
+  createSeedUser('user_admin_001', 'Admin', 'User', 'admin@example.com', 'admin', true),
+  createSeedUser('user_manager_001', 'Manager', 'Staff', 'manager@example.com', 'manager', true),
+  createSeedUser('user_standard_001', 'Standard', 'User', 'user@example.com', 'user', true),
+  createSeedUser('user_john_doe', 'John', 'Doe', 'john@example.com', 'user', false),
+  createSeedUser('user_jane_smith', 'Jane', 'Smith', 'jane@example.com', 'user', true),
 ];
 
 if (seedUsers.length > 5) {
