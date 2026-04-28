@@ -11,10 +11,10 @@ const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address.'),
   password: z
     .string()
-    .min(
-      6,
-      'Password must be at least 8 characters long and must contain 1 uppercase,1 lowercase and 1 number .'
-    ),
+    .min(8, 'Password must be at least 8 characters long.')
+    .regex(/[A-Z]/, 'Password must contain:\n1 uppercase letter')
+    .regex(/[a-z]/, 'Password must contain:\n1 lowercase letter')
+    .regex(/\d/, 'Password must contain:\n1 number'),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;

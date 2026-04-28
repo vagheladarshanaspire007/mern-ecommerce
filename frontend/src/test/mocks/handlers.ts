@@ -44,13 +44,13 @@ const verifyPasswordPattern = (email: string, password: string): boolean => {
   return password === expectedPassword;
 };
 
-const DUMMY_EMAILS = [
+const DUMMY_EMAILS = new Set([
   'admin@example.com',
   'manager@example.com',
   'user@example.com',
   'john@example.com',
   'jane@example.com',
-];
+]);
 
 const seedUsers: UserRecord[] = [
   {
@@ -274,18 +274,18 @@ const loginHandlers = endpointVariants('/auth/login').map((url) =>
       return badRequestResponse('Email and password are required.');
     }
 
-    const record = userRecords.find(
-      ({ user }) => user.email.toLowerCase() === body.email!.toLowerCase()
-    );
+    const email = body.email.toLowerCase();
+
+    const record = userRecords.find(({ user }) => user.email.toLowerCase() === email);
 
     if (!record) {
       return invalidCredentialsResponse();
     }
 
-    const isDummyEmail = DUMMY_EMAILS.includes(body.email!.toLowerCase());
+    const isDummyEmail = DUMMY_EMAILS.has(email);
 
     if (isDummyEmail) {
-      if (!verifyPasswordPattern(body.email!, body.password)) {
+      if (!verifyPasswordPattern(email, body.password)) {
         return invalidCredentialsResponse();
       }
     } else if (!record.password || record.password !== body.password) {
@@ -318,9 +318,9 @@ const registerHandlers = endpointVariants('/auth/register').map((url) =>
       return badRequestResponse('First name, last name, email, and password are required.');
     }
 
-    const existing = userRecords.some(
-      ({ user }) => user.email.toLowerCase() === body.email!.toLowerCase()
-    );
+    const email = body.email.toLowerCase();
+
+    const existing = userRecords.some(({ user }) => user.email.toLowerCase() === email);
     if (existing) {
       return badRequestResponse('Email is already registered.', 'EMAIL_EXISTS');
     }
