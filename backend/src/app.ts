@@ -25,6 +25,8 @@ import cors from 'cors';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
+import fs from 'fs';
+import path from 'path';
 
 import { securityHeaders } from './middleware/security/headers';
 import { globalRateLimiter } from './middleware/security/rateLimiter';
@@ -41,6 +43,12 @@ import { uploadRouter } from './routes/upload.routes';
 import { healthRouter } from './routes/health.routes';
 
 export const app: Application = express();
+const UPLOAD_ROOT = path.resolve(process.cwd(), 'uploads');
+const UPLOAD_IMAGES_DIR = path.join(UPLOAD_ROOT, 'images');
+
+if (!fs.existsSync(UPLOAD_IMAGES_DIR)) {
+  fs.mkdirSync(UPLOAD_IMAGES_DIR, { recursive: true });
+}
 
 // ─── 1. Security Headers ────────────────────────────────────
 // helmet() sets ~14 HTTP headers that protect against common web vulnerabilities.
@@ -113,6 +121,7 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 // WHY compression: Gzip/deflate responses — reduces bandwidth by ~70%.
 // Threshold of 1KB means small responses are not compressed (not worth overhead).
 app.use(compression({ threshold: 1024 }));
+app.use('/uploads', express.static(UPLOAD_ROOT));
 
 // ─── 8. Global Rate Limiter ─────────────────────────────────
 // WHY: Prevents brute-force attacks and API abuse. Redis-backed so
