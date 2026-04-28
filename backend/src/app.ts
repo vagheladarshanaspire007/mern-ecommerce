@@ -25,8 +25,8 @@ import cors from 'cors';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import compression from 'compression';
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import { securityHeaders } from './middleware/security/headers';
 import { globalRateLimiter } from './middleware/security/rateLimiter';
