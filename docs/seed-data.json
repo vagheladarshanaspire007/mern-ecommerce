@@ -1,0 +1,400 @@
+{
+  "users": [
+    {
+      "key": "admin",
+      "first_name": "Admin",
+      "last_name": "User",
+      "email": "admin@shop.com",
+      "role": "admin",
+      "address": "123 Admin Street"
+    },
+    {
+      "key": "alice",
+      "first_name": "Alice",
+      "last_name": "Johnson",
+      "email": "alice@shop.com",
+      "role": "user",
+      "address": "456 Maple Ave"
+    },
+    {
+      "key": "bob",
+      "first_name": "Bob",
+      "last_name": "Smith",
+      "email": "bob@shop.com",
+      "role": "user",
+      "address": "789 Oak Drive"
+    }
+  ],
+  "categories": [
+    {
+      "key": "electronics",
+      "name": "Electronics",
+      "slug": "electronics"
+    },
+    {
+      "key": "fashion",
+      "name": "Fashion",
+      "slug": "fashion"
+    },
+    {
+      "key": "home",
+      "name": "Home & Living",
+      "slug": "home-living"
+    }
+  ],
+  "products": [
+    {
+      "key": "wireless-headphones",
+      "name": "Wireless Headphones",
+      "description": "Noise-cancelling over-ear headphones.",
+      "price": 129.99,
+      "stock": 30,
+      "categoryKey": "electronics",
+      "imageUrls": ["/images/products/wireless-headphones.jpg"]
+    },
+    {
+      "key": "smart-watch",
+      "name": "Smart Watch",
+      "description": "Fitness and notifications on your wrist.",
+      "price": 199.99,
+      "stock": 25,
+      "categoryKey": "electronics",
+      "imageUrls": ["/images/products/smart-watch.jpg"]
+    },
+    {
+      "key": "bluetooth-speaker",
+      "name": "Bluetooth Speaker",
+      "description": "Portable speaker with deep bass.",
+      "price": 79.99,
+      "stock": 40,
+      "categoryKey": "electronics",
+      "imageUrls": ["/images/products/bluetooth-speaker.jpg"]
+    },
+    {
+      "key": "gaming-mouse",
+      "name": "Gaming Mouse",
+      "description": "Ergonomic RGB gaming mouse.",
+      "price": 49.99,
+      "stock": 50,
+      "categoryKey": "electronics",
+      "imageUrls": ["/images/products/gaming-mouse.jpg"]
+    },
+    {
+      "key": "mechanical-keyboard",
+      "name": "Mechanical Keyboard",
+      "description": "Tactile mechanical keyboard with backlight.",
+      "price": 99.99,
+      "stock": 35,
+      "categoryKey": "electronics",
+      "imageUrls": ["/images/products/mechanical-keyboard.jpg"]
+    },
+    {
+      "key": "usb-c-hub",
+      "name": "USB-C Hub",
+      "description": "Multiport USB-C adapter hub.",
+      "price": 39.99,
+      "stock": 60,
+      "categoryKey": "electronics",
+      "imageUrls": ["/images/products/usb-c-hub.jpg"]
+    },
+    {
+      "key": "denim-jacket",
+      "name": "Denim Jacket",
+      "description": "Classic fit denim jacket.",
+      "price": 69.99,
+      "stock": 28,
+      "categoryKey": "fashion",
+      "imageUrls": ["/images/products/denim-jacket.jpg"]
+    },
+    {
+      "key": "running-shoes",
+      "name": "Running Shoes",
+      "description": "Lightweight running shoes for daily training.",
+      "price": 89.99,
+      "stock": 45,
+      "categoryKey": "fashion",
+      "imageUrls": ["/images/products/running-shoes.jpg"]
+    },
+    {
+      "key": "cotton-tshirt",
+      "name": "Cotton T-Shirt",
+      "description": "Soft premium cotton t-shirt.",
+      "price": 24.99,
+      "stock": 80,
+      "categoryKey": "fashion",
+      "imageUrls": ["/images/products/cotton-tshirt.jpg"]
+    },
+    {
+      "key": "leather-wallet",
+      "name": "Leather Wallet",
+      "description": "Genuine leather wallet with card slots.",
+      "price": 34.99,
+      "stock": 55,
+      "categoryKey": "fashion",
+      "imageUrls": ["/images/products/leather-wallet.jpg"]
+    },
+    {
+      "key": "sunglasses",
+      "name": "Polarized Sunglasses",
+      "description": "UV-protected polarized sunglasses.",
+      "price": 44.99,
+      "stock": 37,
+      "categoryKey": "fashion",
+      "imageUrls": ["/images/products/sunglasses.jpg"]
+    },
+    {
+      "key": "backpack",
+      "name": "Everyday Backpack",
+      "description": "Water-resistant backpack with laptop sleeve.",
+      "price": 59.99,
+      "stock": 42,
+      "categoryKey": "fashion",
+      "imageUrls": ["/images/products/backpack.jpg"]
+    },
+    {
+      "key": "desk-lamp",
+      "name": "LED Desk Lamp",
+      "description": "Dimmable LED desk lamp.",
+      "price": 29.99,
+      "stock": 52,
+      "categoryKey": "home",
+      "imageUrls": ["/images/products/desk-lamp.jpg"]
+    },
+    {
+      "key": "coffee-maker",
+      "name": "Coffee Maker",
+      "description": "Programmable drip coffee machine.",
+      "price": 109.99,
+      "stock": 20,
+      "categoryKey": "home",
+      "imageUrls": ["/images/products/coffee-maker.jpg"]
+    },
+    {
+      "key": "air-purifier",
+      "name": "Air Purifier",
+      "description": "HEPA filter air purifier for bedrooms.",
+      "price": 149.99,
+      "stock": 18,
+      "categoryKey": "home",
+      "imageUrls": ["/images/products/air-purifier.jpg"]
+    },
+    {
+      "key": "kitchen-knife-set",
+      "name": "Kitchen Knife Set",
+      "description": "Stainless steel 6-piece knife set.",
+      "price": 79.99,
+      "stock": 32,
+      "categoryKey": "home",
+      "imageUrls": ["/images/products/kitchen-knife-set.jpg"]
+    },
+    {
+      "key": "ceramic-vase",
+      "name": "Ceramic Vase",
+      "description": "Decorative handcrafted ceramic vase.",
+      "price": 35.5,
+      "stock": 22,
+      "categoryKey": "home",
+      "imageUrls": ["/images/products/ceramic-vase.jpg"]
+    },
+    {
+      "key": "throw-pillow-set",
+      "name": "Throw Pillow Set",
+      "description": "Set of two soft decorative pillows.",
+      "price": 39.99,
+      "stock": 27,
+      "categoryKey": "home",
+      "imageUrls": ["/images/products/throw-pillow-set.jpg"]
+    },
+    {
+      "key": "floor-rug",
+      "name": "Modern Floor Rug",
+      "description": "Minimalist area rug for living room.",
+      "price": 129.0,
+      "stock": 14,
+      "categoryKey": "home",
+      "imageUrls": ["/images/products/floor-rug.jpg"]
+    },
+    {
+      "key": "storage-box-set",
+      "name": "Storage Box Set",
+      "description": "Stackable storage boxes (set of 3).",
+      "price": 49.49,
+      "stock": 33,
+      "categoryKey": "home",
+      "imageUrls": ["/images/products/storage-box-set.jpg"]
+    }
+  ],
+  "orders": [
+    {
+      "key": "order-001",
+      "userEmail": "alice@shop.com",
+      "status": "pending"
+    },
+    {
+      "key": "order-002",
+      "userEmail": "bob@shop.com",
+      "status": "shipped"
+    },
+    {
+      "key": "order-003",
+      "userEmail": "alice@shop.com",
+      "status": "delivered"
+    },
+    {
+      "key": "order-004",
+      "userEmail": "bob@shop.com",
+      "status": "cancelled"
+    },
+    {
+      "key": "order-005",
+      "userEmail": "alice@shop.com",
+      "status": "pending"
+    }
+  ],
+  "orderItems": [
+    {
+      "orderKey": "order-001",
+      "productKey": "wireless-headphones",
+      "quantity": 1,
+      "unitPrice": 129.99
+    },
+    {
+      "orderKey": "order-001",
+      "productKey": "desk-lamp",
+      "quantity": 2,
+      "unitPrice": 29.99
+    },
+    {
+      "orderKey": "order-002",
+      "productKey": "running-shoes",
+      "quantity": 1,
+      "unitPrice": 89.99
+    },
+    {
+      "orderKey": "order-002",
+      "productKey": "backpack",
+      "quantity": 1,
+      "unitPrice": 59.99
+    },
+    {
+      "orderKey": "order-003",
+      "productKey": "coffee-maker",
+      "quantity": 1,
+      "unitPrice": 109.99
+    },
+    {
+      "orderKey": "order-003",
+      "productKey": "ceramic-vase",
+      "quantity": 1,
+      "unitPrice": 35.5
+    },
+    {
+      "orderKey": "order-004",
+      "productKey": "gaming-mouse",
+      "quantity": 1,
+      "unitPrice": 49.99
+    },
+    {
+      "orderKey": "order-004",
+      "productKey": "usb-c-hub",
+      "quantity": 1,
+      "unitPrice": 39.99
+    },
+    {
+      "orderKey": "order-005",
+      "productKey": "air-purifier",
+      "quantity": 1,
+      "unitPrice": 149.99
+    },
+    {
+      "orderKey": "order-005",
+      "productKey": "throw-pillow-set",
+      "quantity": 2,
+      "unitPrice": 39.99
+    }
+  ],
+  "reviews": [
+    {
+      "productKey": "wireless-headphones",
+      "userEmail": "alice@shop.com",
+      "rating": 5,
+      "reviewText": "Excellent sound and comfort."
+    },
+    {
+      "productKey": "smart-watch",
+      "userEmail": "bob@shop.com",
+      "rating": 4,
+      "reviewText": "Great tracking features."
+    },
+    {
+      "productKey": "running-shoes",
+      "userEmail": "alice@shop.com",
+      "rating": 5,
+      "reviewText": "Very light and durable."
+    },
+    {
+      "productKey": "denim-jacket",
+      "userEmail": "bob@shop.com",
+      "rating": 4,
+      "reviewText": "Good fit and quality."
+    },
+    {
+      "productKey": "coffee-maker",
+      "userEmail": "alice@shop.com",
+      "rating": 4,
+      "reviewText": "Brews quickly every morning."
+    },
+    {
+      "productKey": "air-purifier",
+      "userEmail": "bob@shop.com",
+      "rating": 5,
+      "reviewText": "Noticeably cleaner air."
+    },
+    {
+      "productKey": "desk-lamp",
+      "userEmail": "admin@shop.com",
+      "rating": 4,
+      "reviewText": "Solid brightness controls."
+    },
+    {
+      "productKey": "backpack",
+      "userEmail": "alice@shop.com",
+      "rating": 5,
+      "reviewText": "Perfect for daily use."
+    },
+    {
+      "productKey": "mechanical-keyboard",
+      "userEmail": "bob@shop.com",
+      "rating": 5,
+      "reviewText": "Great typing feedback."
+    },
+    {
+      "productKey": "kitchen-knife-set",
+      "userEmail": "admin@shop.com",
+      "rating": 4,
+      "reviewText": "Sharp and well-balanced."
+    }
+  ],
+  "cartItems": [
+    {
+      "userEmail": "alice@shop.com",
+      "productKey": "sunglasses",
+      "quantity": 1
+    },
+    {
+      "userEmail": "alice@shop.com",
+      "productKey": "floor-rug",
+      "quantity": 1
+    },
+    {
+      "userEmail": "bob@shop.com",
+      "productKey": "bluetooth-speaker",
+      "quantity": 1
+    },
+    {
+      "userEmail": "bob@shop.com",
+      "productKey": "storage-box-set",
+      "quantity": 2
+    }
+  ]
+}
