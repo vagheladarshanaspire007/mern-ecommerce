@@ -15,7 +15,7 @@ import {
   updateProductController,
 } from '../controllers/product.controller';
 import { asyncHandler } from '../utils/asyncHandler';
-import { authenticate, authorize, optionalAuth } from '@/middleware/auth/authenticate';
+import { authenticate, authorize, optionalAuth } from '../middleware/auth/authenticate';
 
 const router = Router();
 
