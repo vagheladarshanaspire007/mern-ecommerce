@@ -16,7 +16,7 @@ interface CartState {
 }
 
 function loadCartFromStorage(): CartItem[] {
-  if (typeof globalThis.window === 'undefined') return [];
+  if (globalThis.window === undefined) return [];
 
   try {
     const raw = globalThis.window.localStorage.getItem(CART_STORAGE_KEY);
@@ -27,14 +27,15 @@ function loadCartFromStorage(): CartItem[] {
 
     return parsed.filter(
       (item): item is CartItem =>
-        typeof item === 'object' &&
         item !== null &&
+        item instanceof Object &&
         typeof (item as CartItem).productId === 'string' &&
         typeof (item as CartItem).name === 'string' &&
         typeof (item as CartItem).price === 'number' &&
         typeof (item as CartItem).quantity === 'number' &&
         typeof (item as CartItem).stock === 'number' &&
-        typeof (item as CartItem).imageUrl === 'string'
+        ((item as CartItem).imageUrl === undefined ||
+          typeof (item as CartItem).imageUrl === 'string')
     );
   } catch {
     return [];
@@ -42,7 +43,7 @@ function loadCartFromStorage(): CartItem[] {
 }
 
 export function persistCartItems(items: CartItem[]) {
-  if (typeof globalThis.window === 'undefined') return;
+  if (globalThis.window === undefined) return;
 
   try {
     if (items.length === 0) {
