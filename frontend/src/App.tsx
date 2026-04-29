@@ -29,7 +29,7 @@ import { GuestRoute } from '@/components/layout/GuestRoute';
 import { AdminRoute } from '@/components/layout/AdminRoute';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PageLoader } from '@/components/ui/PageLoader';
-import { useSocket } from '@/hooks';
+import { useSocket } from './hooks/useSocket';
 import { useAppDispatch } from '@/store';
 import { clearUnreadCount } from '@/store/slices/uiSlice';
 import OrderHistoryPage from '@/pages/OrderHistoryPage';
@@ -44,7 +44,6 @@ const ForgotPasswordPage = lazy(() => import('@/pages/auth/ForgotPasswordPage'))
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
 const ProductListPage = lazy(() => import('@/pages/products/ProductListPage'));
 const ProductDetailPage = lazy(() => import('@/pages/products/ProductDetailPage'));
-const RealtimePreviewPage = lazy(() => import('@/pages/RealtimePreviewPage'));
 const CartPage = lazy(() => import('@/pages/CartPage'));
 const CheckoutPage = lazy(() => import('@/pages/CheckoutPage'));
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
@@ -78,7 +77,6 @@ export default function App() {
           <Route path="/" element={<Navigate to="/products" replace />} />
           <Route path="/products" element={<ProductListPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
-          <Route path="/realtime-preview" element={<RealtimePreviewPage />} />
 
           {/* ── Protected routes (login required) ────────────── */}
           <Route element={<ProtectedRoute />}>
