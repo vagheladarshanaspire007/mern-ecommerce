@@ -16,10 +16,10 @@ interface CartState {
 }
 
 function loadCartFromStorage(): CartItem[] {
-  if (typeof window === 'undefined') return [];
+  if (typeof globalThis.window === 'undefined') return [];
 
   try {
-    const raw = window.localStorage.getItem(CART_STORAGE_KEY);
+    const raw = globalThis.window.localStorage.getItem(CART_STORAGE_KEY);
     if (!raw) return [];
 
     const parsed = JSON.parse(raw) as unknown;
@@ -42,14 +42,14 @@ function loadCartFromStorage(): CartItem[] {
 }
 
 export function persistCartItems(items: CartItem[]) {
-  if (typeof window === 'undefined') return;
+  if (typeof globalThis.window === 'undefined') return;
 
   try {
     if (items.length === 0) {
-      window.localStorage.removeItem(CART_STORAGE_KEY);
+      globalThis.window.localStorage.removeItem(CART_STORAGE_KEY);
       return;
     }
-    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+    globalThis.window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
   } catch {
     // Ignore write errors (private mode/storage limits)
   }
