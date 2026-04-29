@@ -32,7 +32,6 @@ import { PageLoader } from '@/components/ui/PageLoader';
 import { useSocket } from './hooks/useSocket';
 import { useAppDispatch } from '@/store';
 import { clearUnreadCount } from '@/store/slices/uiSlice';
-import OrderHistoryPage from '@/pages/OrderHistoryPage';
 
 // ─── Lazy Loaded Pages ───────────────────────────────────────
 // WHY lazy(): Code splitting — each page is a separate JS chunk.
