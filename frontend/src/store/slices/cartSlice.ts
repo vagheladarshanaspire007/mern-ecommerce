@@ -1,41 +1,76 @@
-/**
- * Cart Slice — src/store/slices/cartSlice.ts
- * Day 42: Implement full cart functionality here.
- */
-
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface CartItem {
+const CART_STORAGE_KEY = 'cart';
+
+export interface CartItem {
   productId: string;
   name: string;
   price: number;
   quantity: number;
+  stock: number;
   imageUrl?: string;
 }
 
 interface CartState {
   items: CartItem[];
-  isOpen: boolean;
 }
 
-const initialState: CartState = {
-  items: [],
-  isOpen: false,
-};
+function loadCartFromStorage(): CartItem[] {
+  if (typeof window === 'undefined') return [];
+
+  try {
+    const raw = window.localStorage.getItem(CART_STORAGE_KEY);
+    if (!raw) return [];
+
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed.filter(
+      (item): item is CartItem =>
+        typeof item === 'object' &&
+        item !== null &&
+        typeof (item as CartItem).productId === 'string' &&
+        typeof (item as CartItem).name === 'string' &&
+        typeof (item as CartItem).price === 'number' &&
+        typeof (item as CartItem).quantity === 'number' &&
+        typeof (item as CartItem).stock === 'number' &&
+        typeof (item as CartItem).imageUrl === 'string'
+    );
+  } catch {
+    return [];
+  }
+}
+
+export function persistCartItems(items: CartItem[]) {
+  if (typeof window === 'undefined') return;
+
+  try {
+    if (items.length === 0) {
+      window.localStorage.removeItem(CART_STORAGE_KEY);
+      return;
+    }
+    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+  } catch {
+    // Ignore write errors (private mode/storage limits)
+  }
+}
+
+const initialState: CartState = { items: loadCartFromStorage() };
 
 const cartSlice = createSlice({
   name: 'cart',
   initialState,
   reducers: {
-    /**
-     * Add item or increment quantity if already in cart.
-     * WHY Immer: We write state.items.push() — looks mutating but RTK + Immer
-     * creates a new immutable state behind the scenes.
-     */
     addToCart: (state, action: PayloadAction<Omit<CartItem, 'quantity'>>) => {
       const existing = state.items.find((i) => i.productId === action.payload.productId);
       if (existing) {
-        existing.quantity += 1;
+        existing.stock = action.payload.stock;
+        existing.imageUrl = action.payload.imageUrl;
+        existing.price = action.payload.price;
+        existing.name = action.payload.name;
+        if (existing.quantity < existing.stock) {
+          existing.quantity += 1;
+        }
       } else {
         state.items.push({ ...action.payload, quantity: 1 });
       }
@@ -48,29 +83,21 @@ const cartSlice = createSlice({
     updateQuantity: (state, action: PayloadAction<{ productId: string; quantity: number }>) => {
       const item = state.items.find((i) => i.productId === action.payload.productId);
       if (item) {
-        if (action.payload.quantity <= 0) {
-          state.items = state.items.filter((i) => i.productId !== action.payload.productId);
-        } else {
-          item.quantity = action.payload.quantity;
-        }
+        const nextQuantity = Math.max(1, Math.min(action.payload.quantity, item.stock));
+        item.quantity = nextQuantity;
       }
     },
 
     clearCart: (state) => {
       state.items = [];
     },
-
-    toggleCart: (state) => {
-      state.isOpen = !state.isOpen;
-    },
   },
 });
 
-export const { addToCart, removeFromCart, updateQuantity, clearCart, toggleCart } =
-  cartSlice.actions;
+export const { addToCart, removeFromCart, updateQuantity, clearCart } = cartSlice.actions;
 
-// ─── Selectors ───────────────────────────────────────────────
-// WHY selectors: Encapsulate derived state — components don't compute totals
+export const selectCartItems = (state: { cart: CartState }) => state.cart.items;
+
 export const selectCartItemCount = (state: { cart: CartState }) =>
   state.cart.items.reduce((sum, item) => sum + item.quantity, 0);
 

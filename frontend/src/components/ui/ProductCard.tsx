@@ -9,7 +9,7 @@ type ProductCardProps = {
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
-  currency: 'USD',
+  currency: 'INR',
 });
 
 function ProductCardComponent({ product }: Readonly<ProductCardProps>) {
@@ -27,6 +27,7 @@ function ProductCardComponent({ product }: Readonly<ProductCardProps>) {
         name: product.name,
         price: Number(product.price),
         imageUrl: imageSrc,
+        stock: product.stock,
       })
     );
   };
