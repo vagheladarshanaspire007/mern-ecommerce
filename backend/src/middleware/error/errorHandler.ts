@@ -56,7 +56,7 @@ export const errorHandler = (
   // WHY separate: Zod errors have a rich structure we want to expose to the client
   if (err instanceof ZodError) {
     logger.warn('Validation error', { correlationId, errors: err.errors });
-    res.status(422).json({
+    res.status(400).json({
       success: false,
       error: {
         code: 'VALIDATION_ERROR',
