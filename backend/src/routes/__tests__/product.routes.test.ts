@@ -2,19 +2,7 @@ import {
   listProductsController,
   createProductController,
 } from '../../controllers/product.controller';
-
-type MockRes = {
-  status: jest.MockedFunction<(code: number) => MockRes>;
-  json: jest.MockedFunction<(body: unknown) => MockRes>;
-};
-
-const createMockRes = (): MockRes => {
-  const res = {} as MockRes;
-  res.status = jest.fn<MockRes, [number]>(() => res);
-  res.json = jest.fn<MockRes, [unknown]>(() => res);
-  return res;
-};
-
+import { createMockRes } from '../../test/utils/mockRes';
 jest.mock('../../services/product.service', () => ({
   listProducts: jest.fn(),
   getProductById: jest.fn(),

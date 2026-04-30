@@ -1,5 +1,12 @@
 import type { PoolClient } from 'pg';
 import type * as Database from '../../config/database';
+import {
+  mockOrderItemRow,
+  mockOrderRow,
+  mockProductRow,
+  testOrderItem,
+  testShippingAddress,
+} from '../../test/utils/testData';
 
 type TransactionCallback = Parameters<typeof Database.withTransaction>[0];
 
@@ -44,7 +51,7 @@ describe('order.service', () => {
     mockWithTransaction.mockImplementation(async (cb: TransactionCallback) => {
       const client = {
         query: jest.fn().mockResolvedValue({
-          rows: [{ id: 'p1', name: 'Widget', price: '10', stock: 1 }],
+          rows: [mockProductRow({ stock: 1 })],
         }),
       } as Pick<PoolClient, 'query'>;
       return cb(client as unknown as PoolClient);
@@ -53,15 +60,8 @@ describe('order.service', () => {
     await expect(
       orderService.createOrderService({
         userId: 'u1',
-        items: [{ productId: 'p1', quantity: 5 }],
-        shippingAddress: {
-          fullName: 'Jane',
-          address: 'Street',
-          city: 'City',
-          state: 'State',
-          pin: '000000',
-          phone: '9999999999',
-        },
+        items: [{ ...testOrderItem, quantity: 5 }],
+        shippingAddress: testShippingAddress,
       })
     ).rejects.toMatchObject({ statusCode: 409 });
   });
@@ -69,25 +69,8 @@ describe('order.service', () => {
   it('transaction rolls back if order_items insert fails', async () => {
     const query = jest
       .fn()
-      .mockResolvedValueOnce({ rows: [{ id: 'p1', name: 'Widget', price: '10', stock: 5 }] })
-      .mockResolvedValueOnce({
-        rows: [
-          {
-            id: 'o1',
-            user_id: 'u1',
-            status: 'pending',
-            total_amount: '10',
-            shipping_full_name: 'Jane',
-            shipping_address: 'Street',
-            shipping_city: 'City',
-            shipping_state: 'State',
-            shipping_pin: '000000',
-            shipping_phone: '9999999999',
-            created_at: 'now',
-            updated_at: 'now',
-          },
-        ],
-      })
+      .mockResolvedValueOnce({ rows: [mockProductRow()] })
+      .mockResolvedValueOnce({ rows: [mockOrderRow()] })
       .mockRejectedValueOnce(new Error('insert failed'));
 
     const client = { query };
@@ -110,15 +93,8 @@ describe('order.service', () => {
     await expect(
       orderService.createOrderService({
         userId: 'u1',
-        items: [{ productId: 'p1', quantity: 1 }],
-        shippingAddress: {
-          fullName: 'Jane',
-          address: 'Street',
-          city: 'City',
-          state: 'State',
-          pin: '000000',
-          phone: '9999999999',
-        },
+        items: [testOrderItem],
+        shippingAddress: testShippingAddress,
       })
     ).rejects.toThrow('insert failed');
   });
@@ -133,14 +109,7 @@ describe('order.service', () => {
       orderService.createOrderService({
         userId: 'u1',
         items: [],
-        shippingAddress: {
-          fullName: 'Jane',
-          address: 'Street',
-          city: 'City',
-          state: 'State',
-          pin: '000000',
-          phone: '9999999999',
-        },
+        shippingAddress: testShippingAddress,
       })
     ).rejects.toMatchObject({ statusCode: 400 });
   });
@@ -156,15 +125,8 @@ describe('order.service', () => {
     await expect(
       orderService.createOrderService({
         userId: 'u1',
-        items: [{ productId: 'p1', quantity: 1 }],
-        shippingAddress: {
-          fullName: 'Jane',
-          address: 'Street',
-          city: 'City',
-          state: 'State',
-          pin: '000000',
-          phone: '9999999999',
-        },
+        items: [testOrderItem],
+        shippingAddress: testShippingAddress,
       })
     ).rejects.toMatchObject({ statusCode: 400 });
   });
@@ -172,85 +134,12 @@ describe('order.service', () => {
   it('createOrderService success', async () => {
     const query = jest
       .fn()
-      .mockResolvedValueOnce({ rows: [{ id: 'p1', name: 'Widget', price: '10', stock: 5 }] })
-      .mockResolvedValueOnce({
-        rows: [
-          {
-            id: 'o1',
-            user_id: 'u1',
-            status: 'pending',
-            total_amount: '10',
-            shipping_full_name: 'Jane',
-            shipping_address: 'Street',
-            shipping_city: 'City',
-            shipping_state: 'State',
-            shipping_pin: '000000',
-            shipping_phone: '9999999999',
-            created_at: 'now',
-            updated_at: 'now',
-          },
-        ],
-      })
-      .mockResolvedValueOnce({
-        rows: [
-          {
-            id: 'oi1',
-            order_id: 'o1',
-            product_id: 'p1',
-            product_name: 'Widget',
-            quantity: 1,
-            unit_price: '10',
-            total_price: '10',
-            created_at: 'now',
-          },
-        ],
-      })
-      .mockResolvedValueOnce({
-        rows: [
-          {
-            id: 'o1',
-            user_id: 'u1',
-            status: 'pending',
-            total_amount: '10',
-            shipping_full_name: 'Jane',
-            shipping_address: 'Street',
-            shipping_city: 'City',
-            shipping_state: 'State',
-            shipping_pin: '000000',
-            shipping_phone: '9999999999',
-            created_at: 'now',
-            updated_at: 'now',
-          },
-        ],
-      })
-      .mockResolvedValueOnce({
-        rows: [
-          {
-            id: 'oi1',
-            order_id: 'o1',
-            product_id: 'p1',
-            product_name: 'Widget',
-            quantity: 1,
-            unit_price: '10',
-            total_price: '10',
-            created_at: 'now',
-          },
-        ],
-      })
-      .mockResolvedValueOnce({
-        rows: [
-          {
-            id: 'oi1',
-            order_id: 'o1',
-            product_id: 'p1',
-            product_name: 'Widget',
-            quantity: 1,
-            unit_price: '10',
-            total_price: '10',
-            created_at: 'now',
-          },
-        ],
-      });
+      .mockResolvedValueOnce({ rows: [mockProductRow()] })
+      .mockResolvedValueOnce({ rows: [mockOrderRow()] })
+      .mockResolvedValueOnce({ rows: [mockOrderItemRow()] })
+      .mockResolvedValueOnce({ rows: [mockOrderRow()] })
+      .mockResolvedValueOnce({ rows: [mockOrderItemRow()] })
+      .mockResolvedValueOnce({ rows: [mockOrderItemRow()] });
 
     mockWithTransaction.mockImplementation(async (cb: TransactionCallback) => {
       const client = { query } as Pick<PoolClient, 'query'>;
@@ -259,15 +148,8 @@ describe('order.service', () => {
 
     const result = await orderService.createOrderService({
       userId: 'u1',
-      items: [{ productId: 'p1', quantity: 1 }],
-      shippingAddress: {
-        fullName: 'Jane',
-        address: 'Street',
-        city: 'City',
-        state: 'State',
-        pin: '000000',
-        phone: '9999999999',
-      },
+      items: [testOrderItem],
+      shippingAddress: testShippingAddress,
     });
 
     expect(result.order.id).toBeDefined();
@@ -277,53 +159,10 @@ describe('order.service', () => {
   it('createOrderService order load failure 500', async () => {
     const query = jest
       .fn()
-      .mockResolvedValueOnce({ rows: [{ id: 'p1', name: 'Widget', price: '10', stock: 5 }] })
-      .mockResolvedValueOnce({
-        rows: [
-          {
-            id: 'o1',
-            user_id: 'u1',
-            status: 'pending',
-            total_amount: '10',
-            shipping_full_name: 'Jane',
-            shipping_address: 'Street',
-            shipping_city: 'City',
-            shipping_state: 'State',
-            shipping_pin: '000000',
-            shipping_phone: '9999999999',
-            created_at: 'now',
-            updated_at: 'now',
-          },
-        ],
-      })
-      .mockResolvedValueOnce({
-        rows: [
-          {
-            id: 'oi1',
-            order_id: 'o1',
-            product_id: 'p1',
-            product_name: 'Widget',
-            quantity: 1,
-            unit_price: '10',
-            total_price: '10',
-            created_at: 'now',
-          },
-        ],
-      })
-      .mockResolvedValueOnce({
-        rows: [
-          {
-            id: 'oi1',
-            order_id: 'o1',
-            product_id: 'p1',
-            product_name: 'Widget',
-            quantity: 1,
-            unit_price: '10',
-            total_price: '10',
-            created_at: 'now',
-          },
-        ],
-      })
+      .mockResolvedValueOnce({ rows: [mockProductRow()] })
+      .mockResolvedValueOnce({ rows: [mockOrderRow()] })
+      .mockResolvedValueOnce({ rows: [mockOrderItemRow()] })
+      .mockResolvedValueOnce({ rows: [mockOrderItemRow()] })
       .mockResolvedValueOnce({ rows: [] });
 
     mockWithTransaction.mockImplementation(async (cb: TransactionCallback) =>
@@ -333,15 +172,8 @@ describe('order.service', () => {
     await expect(
       orderService.createOrderService({
         userId: 'u1',
-        items: [{ productId: 'p1', quantity: 1 }],
-        shippingAddress: {
-          fullName: 'Jane',
-          address: 'Street',
-          city: 'City',
-          state: 'State',
-          pin: '000000',
-          phone: '9999999999',
-        },
+        items: [testOrderItem],
+        shippingAddress: testShippingAddress,
       })
     ).rejects.toMatchObject({ statusCode: 500 });
   });
@@ -350,38 +182,8 @@ describe('order.service', () => {
     const query = jest
       .fn()
       .mockResolvedValueOnce({ rows: [{ count: '1' }] })
-      .mockResolvedValueOnce({
-        rows: [
-          {
-            id: 'o1',
-            user_id: 'u1',
-            status: 'pending',
-            total_amount: '10',
-            shipping_full_name: 'Jane',
-            shipping_address: 'Street',
-            shipping_city: 'City',
-            shipping_state: 'State',
-            shipping_pin: '000000',
-            shipping_phone: '9999999999',
-            created_at: 'now',
-            updated_at: 'now',
-          },
-        ],
-      })
-      .mockResolvedValueOnce({
-        rows: [
-          {
-            id: 'oi1',
-            order_id: 'o1',
-            product_id: 'p1',
-            product_name: 'Widget',
-            quantity: 1,
-            unit_price: '10',
-            total_price: '10',
-            created_at: 'now',
-          },
-        ],
-      });
+      .mockResolvedValueOnce({ rows: [mockOrderRow()] })
+      .mockResolvedValueOnce({ rows: [mockOrderItemRow()] });
 
     mockWithTransaction.mockImplementation(async (cb: TransactionCallback) =>
       cb({ query } as unknown as PoolClient)
@@ -397,6 +199,7 @@ describe('order.service', () => {
     mockWithTransaction.mockImplementationOnce(async (cb: TransactionCallback) =>
       cb({ query: jest.fn().mockResolvedValueOnce({ rows: [] }) } as unknown as PoolClient)
     );
+
     await expect(orderService.getOrderDetailService('u1', 'o1')).rejects.toMatchObject({
       statusCode: 404,
     });
@@ -404,25 +207,11 @@ describe('order.service', () => {
     mockWithTransaction.mockImplementationOnce(async (cb: TransactionCallback) =>
       cb({
         query: jest.fn().mockResolvedValueOnce({
-          rows: [
-            {
-              id: 'o1',
-              user_id: 'owner',
-              status: 'pending',
-              total_amount: '10',
-              shipping_full_name: 'Jane',
-              shipping_address: 'Street',
-              shipping_city: 'City',
-              shipping_state: 'State',
-              shipping_pin: '000000',
-              shipping_phone: '9999999999',
-              created_at: 'now',
-              updated_at: 'now',
-            },
-          ],
+          rows: [mockOrderRow({ user_id: 'owner' })],
         }),
       } as unknown as PoolClient)
     );
+
     await expect(orderService.getOrderDetailService('u1', 'o1')).rejects.toMatchObject({
       statusCode: 403,
     });
@@ -433,38 +222,8 @@ describe('order.service', () => {
       cb({
         query: jest
           .fn()
-          .mockResolvedValueOnce({
-            rows: [
-              {
-                id: 'o1',
-                user_id: 'u1',
-                status: 'pending',
-                total_amount: '10',
-                shipping_full_name: 'Jane',
-                shipping_address: 'Street',
-                shipping_city: 'City',
-                shipping_state: 'State',
-                shipping_pin: '000000',
-                shipping_phone: '9999999999',
-                created_at: 'now',
-                updated_at: 'now',
-              },
-            ],
-          })
-          .mockResolvedValueOnce({
-            rows: [
-              {
-                id: 'oi1',
-                order_id: 'o1',
-                product_id: 'p1',
-                product_name: 'Widget',
-                quantity: 1,
-                unit_price: '10',
-                total_price: '10',
-                created_at: 'now',
-              },
-            ],
-          }),
+          .mockResolvedValueOnce({ rows: [mockOrderRow()] })
+          .mockResolvedValueOnce({ rows: [mockOrderItemRow()] }),
       } as unknown as PoolClient)
     );
 
@@ -482,6 +241,7 @@ describe('order.service', () => {
     mockWithTransaction.mockImplementationOnce(async (cb: TransactionCallback) =>
       cb({ query: jest.fn().mockResolvedValueOnce({ rows: [] }) } as unknown as PoolClient)
     );
+
     await expect(
       orderService.updateOrderStatusService({
         orderId: 'o1',
@@ -497,12 +257,15 @@ describe('order.service', () => {
         }),
       } as unknown as PoolClient)
     );
+
     const result = await orderService.updateOrderStatusService({
       orderId: 'o1',
       status: 'shipped',
       actorRole: 'admin',
     });
+
     expect(result).toEqual({ id: 'o1', userId: 'u1', status: 'shipped' });
+
     expect(mockEmit).toHaveBeenCalledWith('order:status-updated', {
       orderId: 'o1',
       status: 'shipped',
