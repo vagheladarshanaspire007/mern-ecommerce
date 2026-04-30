@@ -1,4 +1,6 @@
-@import 'tailwindcss'; /* Global styles */
+@import 'tailwindcss';
+
+/* Global styles */
 :root {
   --color-primary: #8e4585;
   --color-primary-dark: #996666;
