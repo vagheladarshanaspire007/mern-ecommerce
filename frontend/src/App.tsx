@@ -43,7 +43,9 @@ const ProductDetailPage = lazy(() => import('@/pages/products/ProductDetailPage'
 const CartPage = lazy(() => import('@/pages/CartPage'));
 const CheckoutPage = lazy(() => import('@/pages/CheckoutPage'));
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
+const OrderHistoryPage = lazy(() => import('@/pages/OrderHistoryPage'));
 const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'));
+const AdminProductForm = lazy(() => import('@/pages/admin/AdminProductForm'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
 export default function App() {
@@ -69,11 +71,14 @@ export default function App() {
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/orders" element={<OrderHistoryPage />} />
           </Route>
 
           {/* ── Admin routes (admin role required) ───────────── */}
           <Route element={<AdminRoute />}>
             <Route path="/admin" element={<AdminDashboardPage />} />
+            <Route path="/admin/products/new" element={<AdminProductForm />} />
+            <Route path="/admin/products/:id/edit" element={<AdminProductForm />} />
             <Route path="/admin/*" element={<AdminDashboardPage />} />
           </Route>
         </Route>
