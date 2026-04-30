@@ -101,6 +101,14 @@ const authSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+    updateCurrentUser: (state, action: PayloadAction<Pick<User, 'firstName' | 'lastName'>>) => {
+      if (!state.user) return;
+
+      state.user = {
+        ...state.user,
+        ...action.payload,
+      };
+    },
   },
   extraReducers: (builder) => {
     // ── Initialize ──────────────────────────────────────────
@@ -112,6 +120,9 @@ const authSlice = createSlice({
         state.isInitialized = true;
       })
       .addCase(initializeAuth.rejected, (state) => {
+        state.user = null;
+        state.accessToken = null;
+        state.isAuthenticated = false;
         state.isInitialized = true; // Mark initialized even if no session
       })
 
@@ -136,11 +147,12 @@ const authSlice = createSlice({
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(registerUser.fulfilled, (state, action) => {
+      .addCase(registerUser.fulfilled, (state) => {
         state.isLoading = false;
-        state.user = action.payload.user;
-        state.accessToken = action.payload.accessToken;
-        state.isAuthenticated = true;
+        // Registration success should not auto-login in this app flow.
+        state.user = null;
+        state.accessToken = null;
+        state.isAuthenticated = false;
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.isLoading = false;
@@ -148,9 +160,16 @@ const authSlice = createSlice({
       })
 
       // ── Logout ───────────────────────────────────────────
-      .addCase(logoutUser.fulfilled, () => initialState);
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.user = null;
+        state.accessToken = null;
+        state.isAuthenticated = false;
+        state.isLoading = false;
+        state.error = null;
+        state.isInitialized = true;
+      });
   },
 });
 
-export const { setAccessToken, clearError } = authSlice.actions;
+export const { setAccessToken, clearError, updateCurrentUser } = authSlice.actions;
 export default authSlice.reducer;

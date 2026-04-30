@@ -65,5 +65,10 @@
     "src/**/*.{css,json}": [
       "prettier --write"
     ]
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
   }
 }
