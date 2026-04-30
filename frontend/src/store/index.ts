@@ -20,11 +20,28 @@
  * ============================================================
  */
 
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, Middleware, isAction, isAnyOf } from '@reduxjs/toolkit';
 import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux';
 import authReducer from './slices/authSlice';
-import cartReducer from './slices/cartSlice';
+import cartReducer, {
+  addToCart,
+  clearCart,
+  persistCartItems,
+  removeFromCart,
+  updateQuantity,
+} from './slices/cartSlice';
 import uiReducer from './slices/uiSlice';
+
+const cartPersistenceMiddleware: Middleware = (storeAPI) => (next) => (action) => {
+  const result = next(action);
+
+  if (isAction(action) && isAnyOf(addToCart, removeFromCart, updateQuantity, clearCart)(action)) {
+    const cartItems = storeAPI.getState().cart.items;
+    persistCartItems(cartItems);
+  }
+
+  return result;
+};
 
 export const store = configureStore({
   reducer: {
@@ -40,7 +57,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
       },
-    }),
+    }).concat(cartPersistenceMiddleware),
   devTools: import.meta.env.DEV, // WHY: Only expose DevTools in development
 });
 
