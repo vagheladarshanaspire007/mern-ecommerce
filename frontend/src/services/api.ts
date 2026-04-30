@@ -77,13 +77,23 @@ api.interceptors.response.use(
     const originalRequest = error.config as InternalAxiosRequestConfig & {
       _retry?: boolean;
     };
+    const requestUrl = originalRequest.url ?? '';
+    const hasAccessToken = Boolean(store.getState().auth.accessToken);
+    const isAuthEndpoint =
+      requestUrl.includes('/auth/login') ||
+      requestUrl.includes('/auth/register') ||
+      requestUrl.includes('/auth/forgot-password') ||
+      requestUrl.includes('/auth/reset-password') ||
+      requestUrl.includes('/auth/logout');
 
     // Only intercept 401s that haven't already been retried
     // and are not from the refresh endpoint itself (prevent infinite loop)
     if (
       error.response?.status === 401 &&
+      hasAccessToken &&
+      !isAuthEndpoint &&
       !originalRequest._retry &&
-      !originalRequest.url?.includes('/auth/refresh')
+      !requestUrl.includes('/auth/refresh')
     ) {
       if (isRefreshing) {
         // Another refresh is in progress — queue this request

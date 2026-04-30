@@ -23,6 +23,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
 import { store } from '@/store';
+import { initializeAuth } from '@/store/slices/authSlice';
 import App from './App';
 import './index.css';
 
@@ -45,15 +46,24 @@ const queryClient = new QueryClient({
 });
 
 async function enableMocking() {
-  if (import.meta.env.DEV) {
-    const { worker } = await import('@/mocks/browser');
-    await worker.start({
-      onUnhandledRequest: 'bypass',
-    });
-  }
+  if (!import.meta.env.DEV) return;
+
+  const { worker } = await import('@/test/mocks/browser');
+  await worker.start({
+    onUnhandledRequest: (request) => {
+      const { pathname } = new URL(request.url);
+      if (pathname.startsWith('/api/')) {
+        // Keep visibility for API endpoints we forgot to mock.
+        console.warn(`[MSW] Unhandled ${request.method} request to ${request.url}`);
+      }
+    },
+  });
 }
 
-void enableMocking().then(() => {
+async function bootstrap() {
+  await enableMocking();
+  await store.dispatch(initializeAuth());
+
   ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
       {/*
@@ -85,4 +95,6 @@ void enableMocking().then(() => {
       </Provider>
     </React.StrictMode>
   );
-});
+}
+
+void bootstrap();
