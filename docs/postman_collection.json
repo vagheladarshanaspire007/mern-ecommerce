@@ -1,0 +1,217 @@
+{
+	"info": {
+		"_postman_id": "d6476c59-d76a-473f-b176-dda4b701a21a",
+		"name": "Auth",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "52265587",
+		"_collection_link": "https://tejas-rajput-7465306.postman.co/workspace/tejas-'s-Workspace~1449d8cc-8d70-45b8-8422-5549faa55574/collection/52265587-d6476c59-d76a-473f-b176-dda4b701a21a?action=share&source=collection_link&creator=52265587"
+	},
+	"item": [
+		{
+			"name": "Register",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\":\"qwertyuio\",\n    \"lastName\":\"asdfghjk\",\n    \"email\":\"t@p.com\",\n    \"password\":\"QW@!qw21\",\n    \"confirmPassword\":\"QW@!qw21\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/v1/auth/register",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\":\"t@p.com\",\n    \"password\":\"QW@!qw21\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/v1/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Refresh",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\":\"qwertyuio\",\n    \"lastName\":\"asdfghjk\",\n    \"email\":\"t@p.com\",\n    \"password\":\"QW@!qw21\",\n    \"confirmPassword\":\"QW@!qw21\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/v1/auth/refresh",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"refresh"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Me",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiOTA1MzY3Mi1mODNkLTQ0MWEtOGU4ZS02OTc1MzcyNTg3ZWIiLCJlbWFpbCI6InRAcC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc3NjkzOTI3MiwiZXhwIjoxNzc2OTQwMTcyfQ.79uU2Syb-1cjrWndO36XCt3_fLXDfgVqNf3ZJavtKfk",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5000/api/v1/auth/me",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logout",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJiOTA1MzY3Mi1mODNkLTQ0MWEtOGU4ZS02OTc1MzcyNTg3ZWIiLCJlbWFpbCI6InRAcC5jb20iLCJyb2xlIjoidXNlciIsImlhdCI6MTc3NjkzOTI3MiwiZXhwIjoxNzc2OTQwMTcyfQ.79uU2Syb-1cjrWndO36XCt3_fLXDfgVqNf3ZJavtKfk",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:5000/api/v1/auth/logout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"logout"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Forget Password",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\":\"t@p.com\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/v1/auth/forgot-password",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"forgot-password"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Reset Password",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"token\":\"b1e9b7dd-daec-44ab-85a7-4406a13b422a\",\n    \"password\":\"QW@!qw21\",\n    \"confirmPassword\":\"QW@!qw21\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/api/v1/auth/reset-password",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"v1",
+						"auth",
+						"reset-password"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
