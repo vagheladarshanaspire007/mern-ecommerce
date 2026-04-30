@@ -21,7 +21,11 @@
  */
 
 import { Router } from 'express';
-import { authRateLimiter, passwordResetRateLimiter } from '../middleware/security/rateLimiter';
+import {
+  loginRateLimiter,
+  passwordResetRateLimiter,
+  registerRateLimiter,
+} from '../middleware/security/rateLimiter';
 import { authenticate } from '../middleware/auth/authenticate';
 import { validateRequest } from '../middleware/validation/validateRequest';
 import {
@@ -30,67 +34,52 @@ import {
   forgotPasswordSchema,
   resetPasswordSchema,
 } from '../validators/auth.validator';
-
-// TODO (Day 8 — Week 2): Import and implement these controllers
-// import { register, login, refresh, logout, forgotPassword, resetPassword, getMe } from '../controllers/auth.controller';
+import {
+  registerController,
+  loginController,
+  refreshController,
+  logoutController,
+  forgotPasswordController,
+  resetPasswordController,
+  meController,
+} from '../controllers/auth.controller';
+import { asyncHandler } from '../utils/asyncHandler';
+import { ROUTES } from '../constants/routes';
 
 const router = Router();
 
-// ─── Public Routes ───────────────────────────────────────────
-
-// WHY authRateLimiter on register: Prevent automated account creation (spam)
+// Public
 router.post(
-  '/register',
-  authRateLimiter,
+  ROUTES.AUTH.REGISTER,
+  registerRateLimiter,
   validateRequest(registerSchema),
-  // register,  ← TODO: uncomment when controller is implemented
-  (_req, res) => res.status(501).json({ message: 'TODO: Implement register controller' })
+  asyncHandler(registerController)
 );
 
 router.post(
-  '/login',
-  authRateLimiter,
+  ROUTES.AUTH.LOGIN,
+  loginRateLimiter,
   validateRequest(loginSchema),
-  // login,
-  (_req, res) => res.status(501).json({ message: 'TODO: Implement login controller' })
+  asyncHandler(loginController)
 );
 
-// WHY no auth on refresh: The refresh token IS the credential (in cookie)
-router.post(
-  '/refresh',
-  // refresh,
-  (_req, res) => res.status(501).json({ message: 'TODO: Implement refresh controller' })
-);
+router.post(ROUTES.AUTH.REFRESH, asyncHandler(refreshController));
 
 router.post(
-  '/forgot-password',
+  ROUTES.AUTH.FORGOT_PASSWORD,
   passwordResetRateLimiter,
   validateRequest(forgotPasswordSchema),
-  // forgotPassword,
-  (_req, res) => res.status(501).json({ message: 'TODO: Implement forgotPassword controller' })
+  asyncHandler(forgotPasswordController)
 );
 
 router.post(
-  '/reset-password',
+  ROUTES.AUTH.RESET_PASSWORD,
   validateRequest(resetPasswordSchema),
-  // resetPassword,
-  (_req, res) => res.status(501).json({ message: 'TODO: Implement resetPassword controller' })
+  asyncHandler(resetPasswordController)
 );
 
-// ─── Protected Routes ────────────────────────────────────────
-
-router.post(
-  '/logout',
-  authenticate,
-  // logout,
-  (_req, res) => res.status(501).json({ message: 'TODO: Implement logout controller' })
-);
-
-router.get(
-  '/me',
-  authenticate,
-  // getMe,
-  (req, res) => res.json({ message: 'TODO: Implement getMe controller', user: req.user })
-);
+router.post(ROUTES.AUTH.LOGOUT, asyncHandler(logoutController));
+// Protected
+router.get(ROUTES.AUTH.ME, authenticate, asyncHandler(meController));
 
 export { router as authRouter };

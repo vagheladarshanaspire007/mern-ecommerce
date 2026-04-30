@@ -72,13 +72,42 @@ export interface PaginatedResponse<T> {
 
 // ── product.types.ts ─────────────────────────────────────────
 
+export interface ProductImage {
+  id?: string;
+  url: string;
+  alt?: string;
+}
+
+export interface Review {
+  id: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
+  reviewer: {
+    id?: string;
+    firstName: string;
+    lastName?: string;
+  };
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  slug?: string;
+}
+
 export interface Product {
   id: string;
   name: string;
   description: string;
   price: number;
   stock: number;
+  category?: Category | null;
   imageUrls: string[];
+  images: ProductImage[];
+  averageRating: number;
+  reviewCount: number;
+  reviews: Review[];
   isActive: boolean;
   createdAt: string;
   updatedAt: string;
@@ -91,6 +120,21 @@ export interface ProductFilters {
   inStock?: boolean;
   cursor?: string;
   limit?: number;
+}
+
+export interface ProductMutationPayload {
+  name: string;
+  description: string;
+  price: number;
+  stock: number;
+  categoryId: string;
+  imageUrl?: string;
+}
+
+export interface AdminProductFormValues extends ProductMutationPayload {}
+
+export interface UploadImageResponse {
+  url: string;
 }
 
 // ── order.types.ts ────────────────────────────────────────────

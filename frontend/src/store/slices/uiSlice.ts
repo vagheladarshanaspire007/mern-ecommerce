@@ -9,12 +9,16 @@ interface UIState {
   isSidebarOpen: boolean;
   activeModal: string | null;
   isGlobalLoading: boolean;
+  unreadCount: number;
+  isSocketConnected: boolean;
 }
 
 const initialState: UIState = {
   isSidebarOpen: false,
   activeModal: null,
   isGlobalLoading: false,
+  unreadCount: 0,
+  isSocketConnected: false,
 };
 
 const uiSlice = createSlice({
@@ -33,8 +37,25 @@ const uiSlice = createSlice({
     setGlobalLoading: (state, action: PayloadAction<boolean>) => {
       state.isGlobalLoading = action.payload;
     },
+    incrementUnreadCount: (state) => {
+      state.unreadCount += 1;
+    },
+    clearUnreadCount: (state) => {
+      state.unreadCount = 0;
+    },
+    setSocketConnected: (state, action: PayloadAction<boolean>) => {
+      state.isSocketConnected = action.payload;
+    },
   },
 });
 
-export const { toggleSidebar, openModal, closeModal, setGlobalLoading } = uiSlice.actions;
+export const {
+  toggleSidebar,
+  openModal,
+  closeModal,
+  setGlobalLoading,
+  incrementUnreadCount,
+  clearUnreadCount,
+  setSocketConnected,
+} = uiSlice.actions;
 export default uiSlice.reducer;
