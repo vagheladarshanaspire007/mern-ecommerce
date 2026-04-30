@@ -24,6 +24,7 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosError } from 'axios';
 import { store } from '@/store';
 import { setAccessToken, logoutUser } from '@/store/slices/authSlice';
+import { InsufficientStockDetail } from '@/types/checkout.types';
 
 const BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
 const REQUEST_TIMEOUT = 15_000; // 15 seconds
@@ -144,13 +145,23 @@ api.interceptors.response.use(
  * WHY: Keeps error handling in components simple — always the same structure.
  */
 function normalizeError(error: AxiosError): Error {
-  const data = error.response?.data as { error?: { message?: string; code?: string } } | undefined;
+  const data = error.response?.data as
+    | {
+        error?: {
+          message?: string;
+          code?: string;
+          details?: InsufficientStockDetail[];
+        };
+      }
+    | undefined;
 
   const message = data?.error?.message || error.message || 'An unexpected error occurred';
 
   const normalizedError = new Error(message);
-  (normalizedError as Error & { code?: string; status?: number }).code = data?.error?.code;
+  (normalizedError as Error & { code?: string; status?: number; details?: unknown[] }).code =
+    data?.error?.code;
   (normalizedError as Error & { status?: number }).status = error.response?.status;
+  (normalizedError as Error & { details?: unknown[] }).details = data?.error?.details;
   return normalizedError;
 }
 
