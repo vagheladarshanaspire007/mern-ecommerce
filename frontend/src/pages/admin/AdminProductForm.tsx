@@ -33,6 +33,11 @@ export default function AdminProductForm() {
   const [imageError, setImageError] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadedImageUrl, setUploadedImageUrl] = useState('');
+  useEffect(() => {
+    document.title = isEditMode
+      ? 'Edit Product | MERN E-Commerce'
+      : 'Create Product | MERN E-Commerce';
+  }, [isEditMode]);
 
   const { data: product, isLoading: isProductLoading } = useQuery({
     queryKey: ['product', id],
@@ -327,6 +332,9 @@ export default function AdminProductForm() {
               <img
                 src={uploadedImageUrl}
                 alt="Uploaded product preview"
+                loading="lazy"
+                width={1024}
+                height={512}
                 className="h-64 w-full object-cover"
               />
             </div>

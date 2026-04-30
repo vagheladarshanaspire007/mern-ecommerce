@@ -86,7 +86,6 @@ export default function App() {
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/orders" element={<OrderHistoryPage />} />
             <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/orders" element={<OrderHistoryPage />} />
           </Route>
 
           {/* ── Admin routes (admin role required) ───────────── */}

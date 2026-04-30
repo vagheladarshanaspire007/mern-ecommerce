@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
@@ -11,6 +12,10 @@ const forgotPasswordSchema = z.object({
 type ForgotPasswordValues = z.infer<typeof forgotPasswordSchema>;
 
 export default function ForgotPasswordPage() {
+  useEffect(() => {
+    document.title = 'Forgot Password | MERN E-Commerce';
+  }, []);
+
   const {
     register,
     handleSubmit,

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
 import { DataTable, type Column } from '@/components/ui/DataTable';
@@ -64,6 +65,10 @@ const columns: Column<Order>[] = [
 ];
 
 const OrderHistoryPage = () => {
+  useEffect(() => {
+    document.title = 'Order History | MERN E-Commerce';
+  }, []);
+
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['order-history'],
     queryFn: async () => {

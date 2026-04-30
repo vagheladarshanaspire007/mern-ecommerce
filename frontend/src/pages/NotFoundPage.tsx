@@ -1,6 +1,11 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 const NotFoundPage = () => {
+  useEffect(() => {
+    document.title = 'Page Not Found | MERN E-Commerce';
+  }, []);
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-900 px-4 py-10">
       <section className="w-full max-w-2xl rounded-3xl border border-gray-700 bg-gray-800 p-10 text-center shadow-lg">

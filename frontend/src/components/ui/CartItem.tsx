@@ -49,6 +49,9 @@ export default function CartItem({ item, variant = 'full' }: Readonly<CartItemPr
       <img
         src={item.imageUrl}
         alt={item.name}
+        loading="lazy"
+        width={96}
+        height={96}
         className={`${isCompact ? 'h-16 w-16' : 'h-20 w-20 sm:h-24 sm:w-24'} rounded-xl object-cover`}
       />
 

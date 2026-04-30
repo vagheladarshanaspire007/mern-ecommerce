@@ -47,6 +47,9 @@ const ProfilePage = () => {
   const [demoUser, setDemoUser] = useState(dummyUser);
   const [saveMessage, setSaveMessage] = useState('');
   const activeUser = user ?? demoUser;
+  useEffect(() => {
+    document.title = 'Profile | MERN E-Commerce';
+  }, []);
 
   const {
     register,

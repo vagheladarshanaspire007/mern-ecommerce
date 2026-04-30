@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 
 import { OrderConfirmation } from '@/components/checkout/OrderConfirmation';
@@ -102,6 +102,9 @@ export default function CheckoutPage() {
   const [insufficientStockIssues, setInsufficientStockIssues] = useState<InsufficientStockIssue[]>(
     []
   );
+  useEffect(() => {
+    document.title = 'Checkout | MERN E-Commerce';
+  }, []);
 
   const estimatedDelivery = useMemo(
     () => (order ? formatEstimatedDelivery(order.createdAt) : ''),

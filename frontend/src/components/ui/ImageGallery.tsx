@@ -27,7 +27,9 @@ export function ImageGallery({ images, productName }: Readonly<ImageGalleryProps
           src={selectedImage.url}
           alt={selectedImage.alt ?? `${productName} image ${selectedIndex + 1}`}
           loading="lazy"
-          className="h-[420px] w-full object-cover"
+          width={1200}
+          height={900}
+          className="h-105 w-full object-cover"
         />
       </div>
 
@@ -50,6 +52,8 @@ export function ImageGallery({ images, productName }: Readonly<ImageGalleryProps
               src={image.url}
               alt={image.alt ?? `${productName} thumbnail ${index + 1}`}
               loading="lazy"
+              width={160}
+              height={80}
               className="h-20 w-full object-cover"
             />
           </button>
