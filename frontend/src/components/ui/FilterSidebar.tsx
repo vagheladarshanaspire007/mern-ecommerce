@@ -1,5 +1,5 @@
 import { memo, useMemo } from 'react';
-import type { ProductCategory } from '@/services/product.service';
+import type { Category } from '@/types/auth.types';
 
 export interface ProductFiltersState {
   minPrice: string;
@@ -10,7 +10,7 @@ export interface ProductFiltersState {
 
 type FilterSidebarProps = {
   filters: ProductFiltersState;
-  categories: ProductCategory[];
+  categories: Category[];
   onChange: (next: ProductFiltersState) => void;
   onReset: () => void;
 };

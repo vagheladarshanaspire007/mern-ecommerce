@@ -1,15 +1,15 @@
 import { memo } from 'react';
 import { useAppDispatch } from '@/store';
 import { addToCart } from '@/store/slices/cartSlice';
-import type { ProductListItem } from '@/services/product.service';
+import type { Product } from '@/types/auth.types';
 
 type ProductCardProps = {
-  product: ProductListItem;
+  product: Product;
 };
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
-  currency: 'USD',
+  currency: 'INR',
 });
 
 function ProductCardComponent({ product }: Readonly<ProductCardProps>) {

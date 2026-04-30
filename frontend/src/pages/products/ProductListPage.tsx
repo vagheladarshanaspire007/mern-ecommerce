@@ -7,7 +7,7 @@ import ProductCard, { ProductCardSkeleton } from '@/components/ui/ProductCard';
 import { fetchCategories, fetchProducts, type ProductListItem } from '@/services/product.service';
 
 const PAGE_LIMIT = 20;
-const SEARCH_DEBOUNCE_MS = 3000;
+const SEARCH_DEBOUNCE_MS = 300;
 
 const INITIAL_SKELETONS = Array.from({ length: 8 }, (_, i) => `skeleton-initial-${i}`);
 const NEXT_SKELETONS = Array.from({ length: 4 }, (_, i) => `skeleton-next-${i}`);

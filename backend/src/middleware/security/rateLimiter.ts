@@ -48,26 +48,41 @@ export const globalRateLimiter = rateLimit({
 
 // ─── Auth Rate Limiter (Strict) ──────────────────────────────
 // Apply this ONLY to /auth/login and /auth/register
-export const authRateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // Only 5 login attempts per 15 min
-  skipSuccessfulRequests: true, // Don't count successful logins
+export const loginRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  skipSuccessfulRequests: true,
   standardHeaders: true,
   legacyHeaders: false,
   handler: (_req: Request, res: Response): void => {
     res.status(429).json({
       success: false,
       error: {
-        code: 'AUTH_RATE_LIMIT_EXCEEDED',
-        message: 'Too many login attempts. Please wait 15 minutes.',
+        code: 'RATE_LIMIT_EXCEEDED',
+        message: 'Too many requests. Please try again later.',
       },
     });
   },
 });
 
-// ─── Password Reset Rate Limiter ─────────────────────────────
+export const registerRateLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (_req: Request, res: Response): void => {
+    res.status(429).json({
+      success: false,
+      error: {
+        code: 'RATE_LIMIT_EXCEEDED',
+        message: 'Too many requests. Please try again later.',
+      },
+    });
+  },
+});
+
 export const passwordResetRateLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
+  windowMs: 60 * 60 * 1000,
   max: 3,
   standardHeaders: true,
   legacyHeaders: false,
@@ -75,8 +90,8 @@ export const passwordResetRateLimiter = rateLimit({
     res.status(429).json({
       success: false,
       error: {
-        code: 'RESET_RATE_LIMIT_EXCEEDED',
-        message: 'Too many password reset requests. Please wait 1 hour.',
+        code: 'RATE_LIMIT_EXCEEDED',
+        message: 'Too many requests. Please try again later.',
       },
     });
   },

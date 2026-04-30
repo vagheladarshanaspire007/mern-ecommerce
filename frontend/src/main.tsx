@@ -23,6 +23,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 
 import { store } from '@/store';
+import { initializeAuth } from '@/store/slices/authSlice';
 import App from './App';
 import './index.css';
 
@@ -44,34 +45,56 @@ const queryClient = new QueryClient({
   },
 });
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    {/*
-      WHY StrictMode:
-      - Detects side effects by running effects twice in development
-      - Warns about deprecated lifecycle methods
-      - Helps surface bugs early — ONLY in development, no prod overhead
-    */}
-    <Provider store={store}>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <App />
-          {/*
-            WHY Toaster here (not in App):
-            Toast notifications need to be at the top level so they
-            render above all modals and overlays (z-index layer)
-          */}
-          <Toaster
-            position="top-right"
-            toastOptions={{
-              duration: 4000,
-              style: { maxWidth: '400px' },
-              success: { duration: 3000 },
-              error: { duration: 5000 },
-            }}
-          />
-        </BrowserRouter>
-      </QueryClientProvider>
-    </Provider>
-  </React.StrictMode>
-);
+async function enableMocking() {
+  if (import.meta.env.VITE_ENABLE_MSW !== 'true') return;
+
+  const { worker } = await import('@/test/mocks/browser');
+  await worker.start({
+    onUnhandledRequest: (request) => {
+      const { pathname } = new URL(request.url);
+      if (pathname.startsWith('/api/')) {
+        // Keep visibility for API endpoints we forgot to mock.
+        console.warn(`[MSW] Unhandled ${request.method} request to ${request.url}`);
+      }
+    },
+  });
+}
+
+async function bootstrap() {
+  await enableMocking();
+  await store.dispatch(initializeAuth());
+
+  ReactDOM.createRoot(document.getElementById('root')!).render(
+    <React.StrictMode>
+      {/*
+        WHY StrictMode:
+        - Detects side effects by running effects twice in development
+        - Warns about deprecated lifecycle methods
+        - Helps surface bugs early — ONLY in development, no prod overhead
+      */}
+      <Provider store={store}>
+        <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <App />
+            {/*
+              WHY Toaster here (not in App):
+              Toast notifications need to be at the top level so they
+              render above all modals and overlays (z-index layer)
+            */}
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                duration: 4000,
+                style: { maxWidth: '400px' },
+                success: { duration: 3000 },
+                error: { duration: 5000 },
+              }}
+            />
+          </BrowserRouter>
+        </QueryClientProvider>
+      </Provider>
+    </React.StrictMode>
+  );
+}
+
+void bootstrap();

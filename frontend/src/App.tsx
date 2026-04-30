@@ -21,14 +21,17 @@
  * ============================================================
  */
 
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { lazy, Suspense } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { lazy, Suspense, useEffect } from 'react';
 
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute';
 import { GuestRoute } from '@/components/layout/GuestRoute';
 import { AdminRoute } from '@/components/layout/AdminRoute';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PageLoader } from '@/components/ui/PageLoader';
+import { useSocket } from './hooks/useSocket';
+import { useAppDispatch } from '@/store';
+import { clearUnreadCount } from '@/store/slices/uiSlice';
 
 // ─── Lazy Loaded Pages ───────────────────────────────────────
 // WHY lazy(): Code splitting — each page is a separate JS chunk.
@@ -43,10 +46,23 @@ const ProductDetailPage = lazy(() => import('@/pages/products/ProductDetailPage'
 const CartPage = lazy(() => import('@/pages/CartPage'));
 const CheckoutPage = lazy(() => import('@/pages/CheckoutPage'));
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
+const OrderHistoryPage = lazy(() => import('@/pages/OrderHistoryPage'));
 const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'));
+const AdminProductForm = lazy(() => import('@/pages/admin/AdminProductForm'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
 export default function App() {
+  const dispatch = useAppDispatch();
+  const location = useLocation();
+
+  useSocket();
+
+  useEffect(() => {
+    if (location.pathname.startsWith('/orders')) {
+      dispatch(clearUnreadCount());
+    }
+  }, [dispatch, location.pathname]);
+
   return (
     <Suspense fallback={<PageLoader />}>
       <Routes>
@@ -68,12 +84,16 @@ export default function App() {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/orders" element={<OrderHistoryPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/orders" element={<OrderHistoryPage />} />
           </Route>
 
           {/* ── Admin routes (admin role required) ───────────── */}
           <Route element={<AdminRoute />}>
             <Route path="/admin" element={<AdminDashboardPage />} />
+            <Route path="/admin/products/new" element={<AdminProductForm />} />
+            <Route path="/admin/products/:id/edit" element={<AdminProductForm />} />
             <Route path="/admin/*" element={<AdminDashboardPage />} />
           </Route>
         </Route>
