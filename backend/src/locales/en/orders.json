@@ -1,0 +1,7 @@
+{
+  "order_created": "Order created successfully",
+  "order_not_found": "Order not found",
+  "insufficient_stock": "Some items are out of stock",
+  "unauthorized": "Authentication required",
+  "forbidden": "Access denied"
+}

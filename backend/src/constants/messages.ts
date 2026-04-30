@@ -9,3 +9,10 @@ export const AUTH_MESSAGES = {
   INVALID_CREDENTIALS: 'auth.invalid_credentials',
   EMAIL_ALREADY_EXISTS: 'auth.email_already_exists',
 } as const;
+export const ORDER_MESSAGES = {
+  ORDER_CREATED: 'orders.order_created',
+  ORDER_NOT_FOUND: 'orders.order_not_found',
+  INSUFFICIENT_STOCK: 'orders.insufficient_stock',
+  UNAUTHORIZED: 'orders.unauthorized',
+  FORBIDDEN: 'orders.forbidden',
+} as const;
