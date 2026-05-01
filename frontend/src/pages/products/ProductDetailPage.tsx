@@ -120,6 +120,7 @@ export default function ProductDetailPage() {
                   productId: product.id,
                   name: product.name,
                   price: product.price,
+                  stock: product.stock,
                   imageUrl: product.images[0]?.url,
                 })
               )

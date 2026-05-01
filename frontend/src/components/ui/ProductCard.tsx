@@ -27,6 +27,7 @@ function ProductCardComponent({ product }: Readonly<ProductCardProps>) {
         name: product.name,
         price: Number(product.price),
         imageUrl: imageSrc,
+        stock: product.stock,
       })
     );
   };
