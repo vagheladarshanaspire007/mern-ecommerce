@@ -112,6 +112,12 @@ export default function CheckoutPage() {
   );
   const progressPercentage = (currentStep / stepLabels.length) * 100;
 
+  useEffect(() => {
+    if (currentStep === 3 && order) {
+      dispatch(clearCart());
+    }
+  }, [currentStep, dispatch, order]);
+
   if (cartItems.length === 0 && currentStep !== 3) {
     return <Navigate to="/cart" replace />;
   }
@@ -145,7 +151,6 @@ export default function CheckoutPage() {
     try {
       const createdOrder = await createOrder(payload);
       setOrder(createdOrder);
-      dispatch(clearCart());
       setCurrentStep(3);
     } catch (error) {
       const apiError: ApiErrorWithMetadata =

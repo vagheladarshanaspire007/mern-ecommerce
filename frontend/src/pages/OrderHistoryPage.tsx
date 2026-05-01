@@ -27,9 +27,9 @@ const formatDate = (date: string) =>
   }).format(new Date(date));
 
 const formatCurrency = (amount: number) =>
-  new Intl.NumberFormat('en-US', {
+  new Intl.NumberFormat('en-IN', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'INR',
   }).format(amount);
 
 const columns: Column<Order>[] = [

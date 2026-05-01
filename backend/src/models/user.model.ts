@@ -109,6 +109,19 @@ export const findUserById = async (id: string): Promise<UserRow | null> => {
   return result.rows[0] ?? null;
 };
 
+export const listUsers = async (): Promise<PublicUser[]> => {
+  const result = await query<UserRow>(
+    `
+      SELECT *
+      FROM users
+      WHERE deleted_at IS NULL
+      ORDER BY created_at DESC, id DESC
+    `
+  );
+
+  return result.rows.map(toPublicUser);
+};
+
 export const updateUserPassword = async (
   userId: string,
   passwordHash: string

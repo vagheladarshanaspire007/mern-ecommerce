@@ -3,6 +3,8 @@
  */
 import { Router } from 'express';
 import { authenticate, authorize } from '../middleware/auth/authenticate';
+import { listUsers } from '../models/user.model';
+import { asyncHandler } from '../utils/asyncHandler';
 
 const router = Router();
 
@@ -22,8 +24,19 @@ router.patch('/change-password', (_req, res) =>
 );
 
 // Admin only
-router.get('/', authorize('admin'), (_req, res) =>
-  res.status(501).json({ message: 'TODO: List all users (admin)' })
+router.get(
+  '/',
+  authorize('admin'),
+  asyncHandler(async (_req, res) => {
+    const users = await listUsers();
+
+    res.status(200).json({
+      success: true,
+      data: {
+        items: users,
+      },
+    });
+  })
 );
 
 router.delete('/:id', authorize('admin'), (_req, res) =>

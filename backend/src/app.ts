@@ -41,6 +41,7 @@ import { userRouter } from './routes/user.routes';
 import { productRouter } from './routes/product.routes';
 import { uploadRouter } from './routes/upload.routes';
 import { healthRouter } from './routes/health.routes';
+import { orderRouter } from './routes/order.routes';
 
 export const app: Application = express();
 const UPLOAD_ROOT = path.resolve(process.cwd(), 'uploads');
@@ -136,6 +137,7 @@ app.use(`${API_PREFIX}/auth`, authRouter); // Registration, login, refresh, logo
 app.use(`${API_PREFIX}/users`, userRouter); // User CRUD (protected)
 app.use(`${API_PREFIX}/products`, productRouter); // Product CRUD (Day 41-43 feature)
 app.use(`${API_PREFIX}/upload`, uploadRouter); // File uploads via Multer
+app.use(`${API_PREFIX}/orders`, orderRouter); // Order CRUD (protected)
 
 // ─── 10. 404 Handler ────────────────────────────────────────
 // Catches requests to routes that don't exist

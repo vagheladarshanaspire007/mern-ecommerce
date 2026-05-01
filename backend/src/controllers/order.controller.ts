@@ -87,7 +87,7 @@ export async function listOrdersController(
   const page = req.query.page;
   const limit = req.query.limit;
 
-  const result = await listOrdersService(user.userId, page, limit);
+  const result = await listOrdersService(user.userId, user.role, page, limit);
 
   res.status(200).json({
     success: true,

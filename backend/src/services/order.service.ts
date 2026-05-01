@@ -349,23 +349,43 @@ export async function createOrderService(
 
 export async function listOrdersService(
   userId: string,
+  role: string,
   page: number,
   limit: number
 ): Promise<OrderListResult> {
   return withTransaction(async (client) => {
     const offset = (page - 1) * limit;
-
-    const countResult = await client.query<{ count: string }>(
+    const isAdmin = role === 'admin';
+    const countQuery = isAdmin
+      ? `
+        SELECT COUNT(*)::text AS count
+        FROM orders
       `
+      : `
         SELECT COUNT(*)::text AS count
         FROM orders
         WHERE user_id = $1
-      `,
-      [userId]
-    );
-
-    const orderResult = await client.query<OrderRow>(
+      `;
+    const listQuery = isAdmin
+      ? `
+        SELECT
+          id,
+          user_id,
+          status,
+          total_amount::text AS total_amount,
+          shipping_full_name,
+          shipping_address,
+          shipping_city,
+          shipping_state,
+          shipping_pin,
+          shipping_phone,
+          created_at::text AS created_at,
+          updated_at::text AS updated_at
+        FROM orders
+        ORDER BY created_at DESC, id DESC
+        LIMIT $1 OFFSET $2
       `
+      : `
         SELECT
           id,
           user_id,
@@ -383,8 +403,13 @@ export async function listOrdersService(
         WHERE user_id = $1
         ORDER BY created_at DESC, id DESC
         LIMIT $2 OFFSET $3
-      `,
-      [userId, limit, offset]
+      `;
+
+    const countResult = await client.query<{ count: string }>(countQuery, isAdmin ? [] : [userId]);
+
+    const orderResult = await client.query<OrderRow>(
+      listQuery,
+      isAdmin ? [limit, offset] : [userId, limit, offset]
     );
 
     const orders: OrderDetail[] = [];

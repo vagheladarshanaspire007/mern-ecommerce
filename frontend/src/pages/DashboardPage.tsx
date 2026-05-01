@@ -12,7 +12,7 @@ const summaryCards = [
   },
   {
     label: 'Total spent',
-    value: '$1,248',
+    value: '₹1,248',
     description: 'Lifetime spend on purchases in this dashboard.',
     icon: ShoppingBag,
   },
