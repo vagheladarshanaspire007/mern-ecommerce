@@ -185,6 +185,27 @@ const migrations: Migration[] = [
       DROP TABLE IF EXISTS cart_items;
     `,
   },
+  {
+    id: '009_add_shipping_address_to_orders',
+    up: `
+    ALTER TABLE orders
+      ADD COLUMN IF NOT EXISTS shipping_full_name VARCHAR(120),
+      ADD COLUMN IF NOT EXISTS shipping_address VARCHAR(255),
+      ADD COLUMN IF NOT EXISTS shipping_city VARCHAR(80),
+      ADD COLUMN IF NOT EXISTS shipping_state VARCHAR(80),
+      ADD COLUMN IF NOT EXISTS shipping_pin VARCHAR(20),
+      ADD COLUMN IF NOT EXISTS shipping_phone VARCHAR(20);
+  `,
+    down: `
+    ALTER TABLE orders
+      DROP COLUMN IF EXISTS shipping_phone,
+      DROP COLUMN IF EXISTS shipping_pin,
+      DROP COLUMN IF EXISTS shipping_state,
+      DROP COLUMN IF EXISTS shipping_city,
+      DROP COLUMN IF EXISTS shipping_address,
+      DROP COLUMN IF EXISTS shipping_full_name;
+  `,
+  },
 ];
 
 async function migrateUp() {
