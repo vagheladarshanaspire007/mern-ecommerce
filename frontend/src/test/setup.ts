@@ -15,7 +15,7 @@
  * ============================================================
  */
 
-import '@testing-library/jest-dom';
+import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
 import { afterAll, afterEach, beforeAll, vi } from 'vitest';
 import { server } from '@/mocks/server';
@@ -54,18 +54,22 @@ Object.defineProperty(window, 'matchMedia', {
 
 // Mock IntersectionObserver — not available in jsdom
 // WHY: Used by our useIntersectionObserver hook (infinite scroll)
-globalThis.IntersectionObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  disconnect: vi.fn(),
-  unobserve: vi.fn(),
-}));
+globalThis.IntersectionObserver = vi.fn().mockImplementation(function MockIntersectionObserver() {
+  return {
+    observe: vi.fn(),
+    disconnect: vi.fn(),
+    unobserve: vi.fn(),
+  };
+});
 
 // Mock ResizeObserver
-globalThis.ResizeObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  disconnect: vi.fn(),
-  unobserve: vi.fn(),
-}));
+globalThis.ResizeObserver = vi.fn().mockImplementation(function MockResizeObserver() {
+  return {
+    observe: vi.fn(),
+    disconnect: vi.fn(),
+    unobserve: vi.fn(),
+  };
+});
 
 // Suppress console.error in tests (expected errors from error boundaries etc.)
 // Remove this if you want to see all console errors during testing
