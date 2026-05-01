@@ -16,7 +16,7 @@ type CartStateShape = { cart: { items: CartItem[] } };
 
 describe('cartSlice', () => {
   afterEach(() => {
-    window.localStorage.clear();
+    globalThis.localStorage.clear();
     vi.restoreAllMocks();
     vi.resetModules();
   });
@@ -177,15 +177,15 @@ describe('cartSlice', () => {
 
     persistCartItems(items);
 
-    expect(window.localStorage.getItem('cart')).toBe(JSON.stringify(items));
+    expect(globalThis.localStorage.getItem('cart')).toBe(JSON.stringify(items));
   });
 
   it('persistCartItems removes localStorage entry when items are empty', () => {
-    window.localStorage.setItem('cart', JSON.stringify([{ ...baseItem, quantity: 2 }]));
+    globalThis.localStorage.setItem('cart', JSON.stringify([{ ...baseItem, quantity: 2 }]));
 
     persistCartItems([]);
 
-    expect(window.localStorage.getItem('cart')).toBeNull();
+    expect(globalThis.localStorage.getItem('cart')).toBeNull();
   });
 
   it('persistCartItems swallows localStorage write errors', () => {
@@ -198,7 +198,7 @@ describe('cartSlice', () => {
   });
 
   it('loads valid cart items from localStorage on module init', async () => {
-    window.localStorage.setItem('cart', JSON.stringify([{ ...baseItem, quantity: 2 }]));
+    globalThis.localStorage.setItem('cart', JSON.stringify([{ ...baseItem, quantity: 2 }]));
 
     const module = await import('@/store/slices/cartSlice');
 
@@ -208,7 +208,7 @@ describe('cartSlice', () => {
   });
 
   it('ignores malformed or invalid localStorage cart data on module init', async () => {
-    window.localStorage.setItem(
+    globalThis.localStorage.setItem(
       'cart',
       JSON.stringify([{ ...baseItem, quantity: 2 }, { invalid: true }])
     );
@@ -220,7 +220,7 @@ describe('cartSlice', () => {
   });
 
   it('falls back to an empty cart when localStorage contains invalid JSON', async () => {
-    window.localStorage.setItem('cart', '{invalid-json');
+    globalThis.localStorage.setItem('cart', '{invalid-json');
 
     const module = await import('@/store/slices/cartSlice');
     const nextState = module.default(undefined, { type: 'unknown' });

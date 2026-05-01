@@ -47,8 +47,8 @@ describe('LoginPage', () => {
     render(<LoginPage />);
     const form = screen.getByRole('button', { name: /sign in/i }).closest('form');
 
-    expect(form).not.toBeNull();
-    fireEvent.submit(form!);
+    if (!form) throw new Error('Form element not found');
+    fireEvent.submit(form);
 
     expect(await screen.findByText(/please enter a valid email address/i)).toBeInTheDocument();
     expect(
