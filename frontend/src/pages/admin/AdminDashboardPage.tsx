@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Boxes, ClipboardList, Users } from 'lucide-react';
 
 const adminTabs = [
@@ -43,6 +43,9 @@ const AdminDashboardPage = () => {
   const [activeTab, setActiveTab] = useState<AdminTabId>('products');
   const activeTabConfig = adminTabs.find((tab) => tab.id === activeTab) ?? adminTabs[0];
   const activeSkeleton = skeletonConfig[activeTab];
+  useEffect(() => {
+    document.title = 'Admin Dashboard | MERN E-Commerce';
+  }, []);
 
   return (
     <div className="mx-auto min-h-screen max-w-full space-y-8 bg-gray-900 px-4 py-6">

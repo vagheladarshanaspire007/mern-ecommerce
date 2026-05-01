@@ -66,11 +66,12 @@ export default defineConfig({
       output: {
         // WHY manualChunks: Split vendor libraries into separate bundles.
         // Users cache vendor.js between deploys → only app.js redownloaded.
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          router: ['react-router-dom'],
-          redux: ['@reduxjs/toolkit', 'react-redux'],
-          query: ['@tanstack/react-query'],
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return;
+          if (id.includes('react-router-dom')) return 'router';
+          if (id.includes('@reduxjs/toolkit') || id.includes('react-redux')) return 'redux';
+          if (id.includes('@tanstack/react-query')) return 'query';
+          if (id.includes('react') || id.includes('react-dom')) return 'vendor';
         },
       },
     },

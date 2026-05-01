@@ -39,6 +39,8 @@ function ProductCardComponent({ product }: Readonly<ProductCardProps>) {
           src={imageSrc}
           alt={product.name}
           loading="lazy"
+          width={600}
+          height={400}
           className="h-48 w-full object-cover transition duration-300 group-hover:scale-[1.02]"
         />
         <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/5 to-transparent" />

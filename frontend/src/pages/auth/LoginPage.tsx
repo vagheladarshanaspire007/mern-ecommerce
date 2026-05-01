@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
@@ -32,6 +33,9 @@ export default function LoginPage() {
   const location = useLocation();
   const [searchParams] = useSearchParams();
   const { isLoading } = useAppSelector((state) => state.auth);
+  useEffect(() => {
+    document.title = 'Login | MERN E-Commerce';
+  }, []);
 
   const {
     register,

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingBag, Heart, Receipt, ArrowRight } from 'lucide-react';
 import { useAppSelector } from '@/store';
@@ -39,6 +40,9 @@ const quickLinks = [
 const DashboardPage = () => {
   const user = useAppSelector((state) => state.auth.user);
   const firstName = user?.firstName?.trim() || 'there';
+  useEffect(() => {
+    document.title = 'Dashboard | MERN E-Commerce';
+  }, []);
 
   return (
     <div className="mx-auto max-w-full space-y-8 px-4 py-6 bg-gray-900 min-h-screen">

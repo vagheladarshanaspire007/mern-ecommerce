@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
@@ -43,6 +44,9 @@ export default function RegisterPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { isLoading } = useAppSelector((state) => state.auth);
+  useEffect(() => {
+    document.title = 'Register | MERN E-Commerce';
+  }, []);
 
   const {
     register,

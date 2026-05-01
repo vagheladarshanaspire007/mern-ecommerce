@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { clearCart, selectCartItems, selectCartTotal } from '@/store/slices/cartSlice';
@@ -29,6 +30,9 @@ export default function CartPage() {
   const items = useAppSelector(selectCartItems);
   const subtotal = useAppSelector(selectCartTotal);
   const dispatch = useAppDispatch();
+  useEffect(() => {
+    document.title = 'Your Cart | MERN E-Commerce';
+  }, []);
 
   if (items.length === 0) {
     return (

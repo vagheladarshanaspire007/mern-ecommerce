@@ -59,6 +59,9 @@ function EmptyState({ onReset }: Readonly<EmptyStateProps>) {
 
 const ProductListPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
+  useEffect(() => {
+    document.title = 'Products | MERN E-Commerce';
+  }, []);
 
   const initialParams = useMemo(() => parseSearchParams(searchParams), [searchParams]);
 

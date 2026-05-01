@@ -102,6 +102,9 @@ export function UserMenu({ user, isAuthenticated, onNavigate }: Readonly<UserMen
           <img
             src={avatarSrc}
             alt={`${user?.firstName ?? 'User'} avatar`}
+            loading="lazy"
+            width={40}
+            height={40}
             className="h-full w-full rounded-full object-cover"
             onError={() => {
               setHasImageError(true);

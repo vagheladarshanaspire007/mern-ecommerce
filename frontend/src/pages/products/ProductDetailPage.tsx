@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronRight, ShoppingCart } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
@@ -44,6 +45,11 @@ export default function ProductDetailPage() {
     queryFn: () => productService.getProductById(id),
     enabled: Boolean(id),
   });
+  useEffect(() => {
+    document.title = product
+      ? `${product.name} | MERN E-Commerce`
+      : 'Product Details | MERN E-Commerce';
+  }, [product]);
 
   if (isLoading) {
     return <PageLoader />;
