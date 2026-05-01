@@ -8,14 +8,44 @@ import type {
 } from '@/types/auth.types';
 import api from './api';
 
+/* -------------------- TYPES -------------------- */
+
+export interface ProductQueryParams {
+  search?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  category?: string;
+  inStock?: boolean;
+  cursor?: string;
+  limit?: number;
+}
+
+export type ProductListItem = Product;
+export type ProductCategory = Category;
+
+export interface ProductListResult {
+  items: ProductListItem[];
+  nextCursor: string | null;
+}
+
 type ProductLike = Partial<Product> & Pick<Product, 'id' | 'name'>;
+
+/* -------------------- HELPERS -------------------- */
 
 function unwrapData<T>(response: T | ApiResponse<T>): T {
   if (typeof response === 'object' && response !== null && 'data' in response) {
     return response.data;
   }
-
   return response;
+}
+
+function toSafeNumber(value: unknown, fallback = 0): number {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string') {
+    const parsed = Number(value);
+    if (Number.isFinite(parsed)) return parsed;
+  }
+  return fallback;
 }
 
 function normalizeProduct(product: ProductLike): Product {
@@ -36,13 +66,13 @@ function normalizeProduct(product: ProductLike): Product {
     id: product.id,
     name: product.name,
     description: product.description ?? '',
-    price: product.price ?? 0,
-    stock: product.stock ?? 0,
+    price: toSafeNumber(product.price),
+    stock: toSafeNumber(product.stock),
     category: product.category ?? null,
-    imageUrls: images.map((image) => image.url),
+    imageUrls: images.map((img) => img.url),
     images,
-    averageRating: product.averageRating ?? 0,
-    reviewCount: product.reviewCount ?? product.reviews?.length ?? 0,
+    averageRating: toSafeNumber(product.averageRating),
+    reviewCount: toSafeNumber(product.reviewCount, product.reviews?.length ?? 0),
     reviews: product.reviews ?? [],
     isActive: product.isActive ?? true,
     createdAt: product.createdAt ?? new Date().toISOString(),
@@ -59,13 +89,40 @@ function normalizeCategories(response: Category[] | { categories: Category[] }):
   return Array.isArray(response) ? response : response.categories;
 }
 
-function normalizeUploadResponse(
+function normalizeProductListResult(
   response:
-    | UploadImageResponse
+    | ProductLike[]
+    | PaginatedResponse<ProductLike>
     | {
-        imageUrl?: string;
-        file?: { path?: string };
+        data?: ProductLike[];
+        items?: ProductLike[];
+        pagination?: { nextCursor?: string | null; hasMore?: boolean };
+        nextCursor?: string | null;
       }
+): ProductListResult {
+  if (Array.isArray(response)) {
+    return { items: response.map(normalizeProduct), nextCursor: null };
+  }
+
+  if ('items' in response && Array.isArray(response.items)) {
+    return {
+      items: response.items.map(normalizeProduct),
+      nextCursor: null,
+    };
+  }
+
+  if ('data' in response && Array.isArray(response.data)) {
+    return {
+      items: response.data.map(normalizeProduct),
+      nextCursor: response.pagination?.nextCursor ?? response.nextCursor ?? null,
+    };
+  }
+
+  return { items: [], nextCursor: null };
+}
+
+function normalizeUploadResponse(
+  response: UploadImageResponse | { imageUrl?: string; file?: { path?: string } }
 ): UploadImageResponse {
   const url =
     ('url' in response ? response.url : undefined) ??
@@ -73,11 +130,13 @@ function normalizeUploadResponse(
     ('file' in response ? response.file?.path : undefined);
 
   if (!url) {
-    throw new Error('Upload completed but the server did not return an image URL.');
+    throw new Error('Upload completed but no image URL returned.');
   }
 
   return { url };
 }
+
+/* -------------------- SERVICE -------------------- */
 
 export const productService = {
   async getProductById(id: string): Promise<Product> {
@@ -85,19 +144,29 @@ export const productService = {
     return normalizeProduct(unwrapData(data));
   },
 
-  async listProducts(): Promise<Product[]> {
-    const { data } = await api.get<
-      | ApiResponse<ProductLike[] | PaginatedResponse<ProductLike>>
-      | ProductLike[]
-      | PaginatedResponse<ProductLike>
-    >('/products');
+  async listProducts(params?: ProductQueryParams): Promise<Product[]> {
+    const { data } = await api.get<ApiResponse<ProductLike[] | PaginatedResponse<ProductLike>>>(
+      '/products',
+      {
+        params: {
+          search: params?.search,
+          minPrice: params?.minPrice,
+          maxPrice: params?.maxPrice,
+          categoryId: params?.category,
+          inStock: typeof params?.inStock === 'boolean' ? String(params.inStock) : undefined,
+          cursor: params?.cursor,
+          limit: params?.limit ?? 20,
+        },
+      }
+    );
+
     return normalizeProducts(unwrapData(data));
   },
 
   async getProductCategories(): Promise<Category[]> {
-    const { data } = await api.get<
-      ApiResponse<Category[] | { categories: Category[] }> | Category[]
-    >('/products/categories');
+    const { data } =
+      await api.get<ApiResponse<Category[] | { categories: Category[] }>>('/products/categories');
+
     return normalizeCategories(unwrapData(data));
   },
 
@@ -140,3 +209,58 @@ export const productService = {
     return normalizeUploadResponse(unwrapData(data));
   },
 };
+
+export async function fetchProducts(params?: ProductQueryParams): Promise<ProductListResult> {
+  const { data } = await api.get<
+    | ApiResponse<ProductLike[] | PaginatedResponse<ProductLike>>
+    | {
+        success: boolean;
+        data: ProductLike[];
+        pagination?: { nextCursor?: string | null; hasMore?: boolean };
+      }
+  >('/products', {
+    params: {
+      search: params?.search,
+      minPrice: params?.minPrice,
+      maxPrice: params?.maxPrice,
+      categoryId: params?.category,
+      inStock: typeof params?.inStock === 'boolean' ? String(params.inStock) : undefined,
+      cursor: params?.cursor,
+      limit: params?.limit ?? 20,
+    },
+  });
+
+  const response = data as {
+    data?: ProductLike[] | PaginatedResponse<ProductLike>;
+    pagination?: { nextCursor?: string | null; hasMore?: boolean };
+    nextCursor?: string | null;
+  };
+
+  const payload = response?.data;
+  if (Array.isArray(payload)) {
+    return normalizeProductListResult({
+      data: payload,
+      pagination: response.pagination,
+      nextCursor: response.nextCursor,
+    });
+  }
+
+  if (
+    payload &&
+    typeof payload === 'object' &&
+    'items' in payload &&
+    Array.isArray(payload.items)
+  ) {
+    return normalizeProductListResult({
+      items: payload.items,
+      pagination: response.pagination,
+      nextCursor: response.nextCursor,
+    });
+  }
+
+  return { items: [], nextCursor: null };
+}
+
+export async function fetchCategories(): Promise<ProductCategory[]> {
+  return productService.getProductCategories();
+}
