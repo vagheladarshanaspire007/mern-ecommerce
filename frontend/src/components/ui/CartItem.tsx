@@ -5,6 +5,7 @@ import {
   updateQuantity,
   type CartItem as CartItemData,
 } from '@/store/slices/cartSlice';
+import { DEFAULT_IMAGE_PLACEHOLDER, resolveImageUrl } from '@/utils/resolveImageUrl';
 
 type CartItemVariant = 'compact' | 'full';
 
@@ -47,12 +48,15 @@ export default function CartItem({ item, variant = 'full' }: Readonly<CartItemPr
       }`}
     >
       <img
-        src={item.imageUrl}
+        src={resolveImageUrl(item.imageUrl)}
         alt={item.name}
         loading="lazy"
         width={96}
         height={96}
         className={`${isCompact ? 'h-16 w-16' : 'h-20 w-20 sm:h-24 sm:w-24'} rounded-xl object-cover`}
+        onError={(event) => {
+          event.currentTarget.src = DEFAULT_IMAGE_PLACEHOLDER;
+        }}
       />
 
       <div className="flex min-w-0 flex-1 flex-col">

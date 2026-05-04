@@ -9,7 +9,7 @@ const stockField = z.coerce
   .number()
   .int('Stock must be an integer')
   .min(0, 'Stock cannot be negative');
-const imageUrlsField = z.array(z.string().url('Invalid image URL')).optional();
+const imageUrlsField = z.array(z.string()).optional();
 const categoryIdField = uuidField;
 
 const cursorField = z.string().min(1).optional();

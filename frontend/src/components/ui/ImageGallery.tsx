@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import clsx from 'clsx';
 import type { ProductImage } from '@/types/auth.types';
+import { DEFAULT_IMAGE_PLACEHOLDER, resolveImageUrl } from '@/utils/resolveImageUrl';
 
 interface ImageGalleryProps {
   images: ProductImage[];
   productName: string;
 }
 
-const fallbackImage = {
+const fallbackImage: ProductImage = {
   id: 'fallback-image',
   url: 'https://placehold.co/1200x900/e5e7eb/6b7280?text=No+Image',
   alt: 'Product image unavailable',
@@ -24,12 +25,15 @@ export function ImageGallery({ images, productName }: Readonly<ImageGalleryProps
       <div className="overflow-hidden rounded-3xl border border-gray-700 bg-gray-800 shadow-md">
         <img
           key={selectedImage.id}
-          src={selectedImage.url}
+          src={resolveImageUrl(selectedImage.url)}
           alt={selectedImage.alt ?? `${productName} image ${selectedIndex + 1}`}
           loading="lazy"
           width={1200}
           height={900}
           className="h-105 w-full object-cover"
+          onError={(event) => {
+            event.currentTarget.src = DEFAULT_IMAGE_PLACEHOLDER;
+          }}
         />
       </div>
 
@@ -49,12 +53,15 @@ export function ImageGallery({ images, productName }: Readonly<ImageGalleryProps
             aria-pressed={index === selectedIndex}
           >
             <img
-              src={image.url}
+              src={resolveImageUrl(image.url)}
               alt={image.alt ?? `${productName} thumbnail ${index + 1}`}
               loading="lazy"
               width={160}
               height={80}
               className="h-20 w-full object-cover"
+              onError={(event) => {
+                event.currentTarget.src = DEFAULT_IMAGE_PLACEHOLDER;
+              }}
             />
           </button>
         ))}

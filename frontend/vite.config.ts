@@ -27,6 +27,12 @@ export default defineConfig({
     tailwindcss(),
   ],
 
+  test: {
+    environment: 'jsdom',
+    setupFiles: ['./src/test/setup.ts'],
+    globals: true,
+  },
+
   resolve: {
     alias: {
       // WHY path aliases: Import from '@/components/Button' instead of
@@ -60,7 +66,7 @@ export default defineConfig({
 
   build: {
     outDir: 'dist',
-    sourcemap: false, // WHY false in prod: Don't expose source to users
+    sourcemap: false,
     chunkSizeWarningLimit: 500,
     rollupOptions: {
       output: {

@@ -84,27 +84,25 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-50 via-white to-sky-50 px-4 py-12">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-24 top-24 h-72 w-72 rounded-full bg-sky-200/40 blur-3xl" />
-        <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-blue-200/40 blur-3xl" />
-      </div>
-
-      <div className="relative mx-auto w-full max-w-md">
-        <div className="rounded-2xl border border-slate-200/70 bg-white/80 p-6 shadow-xl shadow-slate-200/40 backdrop-blur">
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-900">Create account</h1>
-          <p className="mt-1 text-sm text-slate-600">Get started in under a minute.</p>
+    <div className="min-h-screen bg-gray-900 px-4 py-12">
+      <div className="mx-auto w-full max-w-md">
+        <div className="rounded-3xl border border-gray-700 bg-gray-800 p-8 shadow-lg">
+          <p className="text-sm font-medium uppercase tracking-widest text-indigo-400">
+            New account
+          </p>
+          <h1 className="mt-3 text-3xl font-bold tracking-tight text-white">Create account</h1>
+          <p className="mt-2 text-sm text-gray-300">Get started in under a minute.</p>
 
           <form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)} noValidate>
             <div>
-              <label htmlFor="name" className="mb-1 block text-sm font-medium text-slate-700">
+              <label htmlFor="name" className="mb-1 block text-sm font-medium text-gray-300">
                 Name
               </label>
               <input
                 id="name"
                 type="text"
                 autoComplete="name"
-                className="w-full rounded-lg border border-slate-300 bg-white/70 px-3 py-2 text-slate-900 shadow-sm outline-none transition focus:border-sky-500 focus:ring-4 focus:ring-sky-200"
+                className="w-full rounded-2xl border border-gray-600 bg-gray-900 px-4 py-3 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                 {...register('name')}
               />
               {errors.name ? (
@@ -113,14 +111,14 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label htmlFor="email" className="mb-1 block text-sm font-medium text-slate-700">
+              <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-300">
                 Email
               </label>
               <input
                 id="email"
                 type="email"
                 autoComplete="email"
-                className="w-full rounded-lg border border-slate-300 bg-white/70 px-3 py-2 text-slate-900 shadow-sm outline-none transition focus:border-sky-500 focus:ring-4 focus:ring-sky-200"
+                className="w-full rounded-2xl border border-gray-600 bg-gray-900 px-4 py-3 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                 {...register('email')}
               />
               {errors.email ? (
@@ -129,14 +127,14 @@ export default function RegisterPage() {
             </div>
 
             <div>
-              <label htmlFor="password" className="mb-1 block text-sm font-medium text-slate-700">
+              <label htmlFor="password" className="mb-1 block text-sm font-medium text-gray-300">
                 Password
               </label>
               <input
                 id="password"
                 type="password"
                 autoComplete="new-password"
-                className="w-full rounded-lg border border-slate-300 bg-white/70 px-3 py-2 text-slate-900 shadow-sm outline-none transition focus:border-sky-500 focus:ring-4 focus:ring-sky-200"
+                className="w-full rounded-2xl border border-gray-600 bg-gray-900 px-4 py-3 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                 {...register('password')}
               />
               {errors.password ? (
@@ -147,7 +145,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="confirmPassword"
-                className="mb-1 block text-sm font-medium text-gray-700"
+                className="mb-1 block text-sm font-medium text-gray-300"
               >
                 Confirm password
               </label>
@@ -155,7 +153,7 @@ export default function RegisterPage() {
                 id="confirmPassword"
                 type="password"
                 autoComplete="new-password"
-                className="w-full rounded-lg border border-slate-300 bg-white/70 px-3 py-2 text-slate-900 shadow-sm outline-none transition focus:border-sky-500 focus:ring-4 focus:ring-sky-200"
+                className="w-full rounded-2xl border border-gray-600 bg-gray-900 px-4 py-3 text-sm text-white outline-none transition placeholder:text-gray-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                 {...register('confirmPassword')}
               />
               {errors.confirmPassword ? (
@@ -166,15 +164,15 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isLoading || !isValid}
-              className="w-full rounded-lg bg-gradient-to-r from-sky-600 to-blue-700 px-4 py-2 font-medium text-white shadow-sm ring-1 ring-black/10 transition hover:from-sky-500 hover:to-blue-600 disabled:cursor-not-allowed disabled:opacity-60"
+              className="w-full rounded-full bg-indigo-500 px-5 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-indigo-400 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isLoading ? 'Creating account...' : 'Create account'}
             </button>
           </form>
 
-          <p className="mt-5 text-sm text-slate-600">
+          <p className="mt-5 text-sm text-gray-300">
             Already have an account?{' '}
-            <Link to="/login" className="font-medium text-sky-700 hover:text-sky-800">
+            <Link to="/login" className="font-medium text-indigo-300 hover:text-indigo-200">
               Sign in
             </Link>
           </p>

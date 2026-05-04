@@ -4,6 +4,7 @@ import { logoutUser } from '@/store/slices/authSlice';
 import { clearCart } from '@/store/slices/cartSlice';
 import { useAppDispatch } from '@/store';
 import type { User } from '@/types/auth.types';
+import { resolveImageUrl } from '@/utils/resolveImageUrl';
 
 interface UserMenuProps {
   user: User | null;
@@ -30,7 +31,7 @@ export function UserMenu({ user, isAuthenticated, onNavigate }: Readonly<UserMen
     return `${first}${last}`.toUpperCase() || 'U';
   }, [user]);
 
-  const avatarSrc = user?.profileImageUrl ?? '';
+  const avatarSrc = resolveImageUrl(user?.profileImageUrl);
 
   useEffect(() => {
     setHasImageError(false);
@@ -98,7 +99,7 @@ export function UserMenu({ user, isAuthenticated, onNavigate }: Readonly<UserMen
         aria-expanded={isOpen}
         onClick={() => setIsOpen((previous) => !previous)}
       >
-        {avatarSrc && !hasImageError ? (
+        {user?.profileImageUrl && !hasImageError ? (
           <img
             src={avatarSrc}
             alt={`${user?.firstName ?? 'User'} avatar`}

@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Navigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 import { OrderConfirmation } from '@/components/checkout/OrderConfirmation';
@@ -118,10 +117,6 @@ export default function CheckoutPage() {
       dispatch(clearCart());
     }
   }, [currentStep, dispatch, order]);
-
-  if (cartItems.length === 0 && currentStep !== 3) {
-    return <Navigate to="/cart" replace />;
-  }
 
   const handleShippingSubmit = (values: ShippingAddress) => {
     setShippingAddress(values);

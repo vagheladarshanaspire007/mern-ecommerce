@@ -42,13 +42,13 @@ function toNumber(value: string): number | undefined {
 
 function EmptyState({ onReset }: Readonly<EmptyStateProps>) {
   return (
-    <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center shadow-sm">
-      <h2 className="text-lg font-semibold text-slate-900">No products found</h2>
-      <p className="mt-2 text-sm text-slate-600">Try adjusting your search or filters.</p>
+    <div className="rounded-3xl border border-dashed border-slate-700 bg-slate-900/80 p-10 text-center shadow-2xl shadow-slate-950/30">
+      <h2 className="text-lg font-semibold text-slate-100">No products found</h2>
+      <p className="mt-2 text-sm text-slate-400">Try adjusting your search or filters.</p>
       <button
         type="button"
         onClick={onReset}
-        className="mt-5 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-500"
+        className="mt-5 rounded-xl bg-cyan-500 px-4 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
       >
         Reset filters
       </button>
@@ -64,6 +64,7 @@ const ProductListPage = () => {
 
   const initialParams = useMemo(() => parseSearchParams(searchParams), [searchParams]);
   const [filters, setFilters] = useState<ProductFiltersState>({
+    search: initialParams.search,
     minPrice: initialParams.minPrice,
     maxPrice: initialParams.maxPrice,
     category: initialParams.category,
@@ -72,6 +73,7 @@ const ProductListPage = () => {
 
   useEffect(() => {
     setFilters({
+      search: initialParams.search,
       minPrice: initialParams.minPrice,
       maxPrice: initialParams.maxPrice,
       category: initialParams.category,
@@ -82,26 +84,30 @@ const ProductListPage = () => {
   useEffect(() => {
     const nextParams = new URLSearchParams();
 
-    if (initialParams.search.trim()) nextParams.set('search', initialParams.search.trim());
+    if (filters.search.trim()) nextParams.set('search', filters.search.trim());
     if (filters.minPrice.trim()) nextParams.set('minPrice', filters.minPrice.trim());
     if (filters.maxPrice.trim()) nextParams.set('maxPrice', filters.maxPrice.trim());
     if (filters.category) nextParams.set('category', filters.category);
     if (filters.inStock) nextParams.set('inStock', 'true');
 
-    if (nextParams.toString() !== searchParams.toString()) {
-      setSearchParams(nextParams, { replace: true });
-    }
-  }, [initialParams.search, filters, searchParams, setSearchParams]);
+    const timeout = globalThis.setTimeout(() => {
+      if (nextParams.toString() !== searchParams.toString()) {
+        setSearchParams(nextParams, { replace: true });
+      }
+    }, 300);
+
+    return () => globalThis.clearTimeout(timeout);
+  }, [filters, searchParams, setSearchParams]);
 
   const queryFilters = useMemo(
     () => ({
-      search: initialParams.search.trim() || undefined,
+      search: filters.search.trim() || undefined,
       minPrice: toNumber(filters.minPrice),
       maxPrice: toNumber(filters.maxPrice),
       category: filters.category || undefined,
       inStock: filters.inStock ? true : undefined,
     }),
-    [initialParams.search, filters]
+    [filters]
   );
 
   const categoriesQuery = useQuery({
@@ -141,23 +147,26 @@ const ProductListPage = () => {
   });
 
   const handleResetFilters = useCallback(() => {
-    setFilters({ minPrice: '', maxPrice: '', category: '', inStock: false });
+    setFilters({ search: '', minPrice: '', maxPrice: '', category: '', inStock: false });
   }, []);
 
   const hasNoProducts = !productsQuery.isLoading && products.length === 0;
 
   return (
-    <section className="min-h-screen bg-linear-to-b from-slate-50 via-white to-slate-100/40">
+    <section className="min-h-screen bg-[radial-gradient(circle_at_top,_rgba(34,211,238,0.14),_transparent_28%),linear-gradient(180deg,_#020617_0%,_#0f172a_52%,_#111827_100%)]">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <header className="mb-7 rounded-2xl border border-slate-200/80 bg-white/90 p-5 shadow-sm backdrop-blur">
+        <header className="mb-7 rounded-3xl border border-slate-800 bg-slate-950/70 p-5 shadow-2xl shadow-slate-950/30 backdrop-blur">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h1 className="text-3xl font-bold tracking-tight text-slate-900">Products</h1>
-              <p className="mt-1 text-sm text-slate-600">
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-400/90">
+                Explore Catalog
+              </p>
+              <h1 className="mt-2 text-3xl font-bold tracking-tight text-white">Products</h1>
+              <p className="mt-1 text-sm text-slate-400">
                 Discover and filter products in real time.
               </p>
             </div>
-            <p className="text-sm font-medium text-slate-500">
+            <p className="text-sm font-medium text-slate-400">
               {productsQuery.isLoading ? 'Loading products...' : `${products.length} items`}
             </p>
           </div>

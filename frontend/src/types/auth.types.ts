@@ -128,7 +128,7 @@ export interface ProductMutationPayload {
   price: number;
   stock: number;
   categoryId: string;
-  imageUrl?: string;
+  imageUrls?: string[];
 }
 
 export interface AdminProductFormValues extends ProductMutationPayload {}

@@ -7,6 +7,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { PageLoader } from '@/components/ui/PageLoader';
 import { productService } from '@/services/product.service';
 import type { AdminProductFormValues } from '@/types/auth.types';
+import { DEFAULT_IMAGE_PLACEHOLDER, resolveImageUrl } from '@/utils/resolveImageUrl';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_FILE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
@@ -56,6 +57,7 @@ export default function AdminProductForm() {
     register,
     handleSubmit,
     setValue,
+    getValues,
     reset,
     formState: { errors, isSubmitting },
   } = useForm<AdminProductFormValues>({
@@ -65,7 +67,7 @@ export default function AdminProductForm() {
       price: 0,
       stock: 0,
       categoryId: '',
-      imageUrl: '',
+      imageUrls: [],
     },
   });
 
@@ -80,7 +82,7 @@ export default function AdminProductForm() {
       price: product.price,
       stock: product.stock,
       categoryId: product.category?.id ?? defaultCategoryId,
-      imageUrl: product.images[0]?.url ?? '',
+      imageUrls: product.images.map((img) => img.url),
     });
     setUploadedImageUrl(product.images[0]?.url ?? '');
   }, [defaultCategoryId, product, reset]);
@@ -98,8 +100,13 @@ export default function AdminProductForm() {
       setUploadProgress(0);
     },
     onSuccess: ({ url }) => {
+      const currentImageUrls = getValues('imageUrls') ?? [];
+
       setUploadedImageUrl(url);
-      setValue('imageUrl', url, { shouldDirty: true, shouldValidate: true });
+      setValue('imageUrls', [...currentImageUrls, url], {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
       toast.success('Image uploaded successfully.');
     },
     onError: (error) => {
@@ -156,10 +163,7 @@ export default function AdminProductForm() {
   };
 
   const onSubmit = async (values: AdminProductFormValues) => {
-    await saveMutation.mutateAsync({
-      ...values,
-      imageUrl: uploadedImageUrl || values.imageUrl,
-    });
+    await saveMutation.mutateAsync(values);
   };
 
   if (isEditMode && isProductLoading) {
@@ -269,7 +273,7 @@ export default function AdminProductForm() {
               <h2 className="text-lg font-semibold text-white">Product image</h2>
               <p className="text-sm text-gray-400">Drop a JPEG, PNG, or WebP file up to 5MB.</p>
             </div>
-            <input type="hidden" {...register('imageUrl')} />
+            <input type="hidden" {...register('imageUrls')} />
           </div>
 
           <label
@@ -330,12 +334,15 @@ export default function AdminProductForm() {
           {uploadedImageUrl && (
             <div className="overflow-hidden rounded-3xl border border-gray-700 bg-gray-900 shadow-sm">
               <img
-                src={uploadedImageUrl}
+                src={resolveImageUrl(uploadedImageUrl)}
                 alt="Uploaded product preview"
                 loading="lazy"
                 width={1024}
                 height={512}
                 className="h-64 w-full object-cover"
+                onError={(event) => {
+                  event.currentTarget.src = DEFAULT_IMAGE_PLACEHOLDER;
+                }}
               />
             </div>
           )}
