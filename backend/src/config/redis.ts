@@ -37,16 +37,21 @@ export const connectRedis = async (): Promise<void> => {
   redisClient.on('error', (err) => logger.error('Redis error:', err));
   redisClient.on('reconnecting', () => logger.warn('Redis reconnecting...'));
 
+  let lastError: unknown;
   for (let attempt = 1; attempt <= 30; attempt++) {
     try {
       await redisClient.ping();
       return;
-    } catch (err) {
-      logger.warn(`Redis ping failed on attempt ${attempt}, retrying...`);
+    } catch (error) {
+      lastError = error;
+      logger.warn(`Redis ping failed on attempt ${attempt}, retrying...`, error);
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   }
 
+  if (lastError) {
+    logger.error('Redis connection failed after multiple retries', lastError);
+  }
   throw new Error('Unable to connect to Redis after multiple retries');
 };
 

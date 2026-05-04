@@ -137,7 +137,6 @@ export async function createProductService(input: CreateProductInput) {
 }
 
 export async function updateProductService(id: string, input: UpdateProductInput) {
-  // console.log(id, input);
   const updated = await updateProduct(id, input);
 
   if (!updated) {

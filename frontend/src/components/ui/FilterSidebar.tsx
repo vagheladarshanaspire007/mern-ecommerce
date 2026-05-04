@@ -2,6 +2,7 @@ import { memo, useMemo } from 'react';
 import type { Category } from '@/types/auth.types';
 
 export interface ProductFiltersState {
+  search: string;
   minPrice: string;
   maxPrice: string;
   category: string;
@@ -40,6 +41,20 @@ function FilterSidebarComponent({
       </div>
 
       <div className="space-y-5">
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-300" htmlFor="search">
+            Search products
+          </label>
+          <input
+            id="search"
+            type="search"
+            value={filters.search}
+            onChange={(event) => onChange({ ...filters, search: event.target.value })}
+            placeholder="Search products"
+            className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 focus:border-cyan-400 focus:outline-none focus:ring-1 focus:ring-cyan-400"
+          />
+        </div>
+
         <div>
           <p className="mb-2 text-sm font-medium text-slate-300">Price Range</p>
           <div className="grid grid-cols-2 gap-2">

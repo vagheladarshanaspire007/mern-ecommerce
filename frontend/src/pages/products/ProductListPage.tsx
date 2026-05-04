@@ -64,6 +64,7 @@ const ProductListPage = () => {
 
   const initialParams = useMemo(() => parseSearchParams(searchParams), [searchParams]);
   const [filters, setFilters] = useState<ProductFiltersState>({
+    search: initialParams.search,
     minPrice: initialParams.minPrice,
     maxPrice: initialParams.maxPrice,
     category: initialParams.category,
@@ -72,6 +73,7 @@ const ProductListPage = () => {
 
   useEffect(() => {
     setFilters({
+      search: initialParams.search,
       minPrice: initialParams.minPrice,
       maxPrice: initialParams.maxPrice,
       category: initialParams.category,
@@ -82,26 +84,30 @@ const ProductListPage = () => {
   useEffect(() => {
     const nextParams = new URLSearchParams();
 
-    if (initialParams.search.trim()) nextParams.set('search', initialParams.search.trim());
+    if (filters.search.trim()) nextParams.set('search', filters.search.trim());
     if (filters.minPrice.trim()) nextParams.set('minPrice', filters.minPrice.trim());
     if (filters.maxPrice.trim()) nextParams.set('maxPrice', filters.maxPrice.trim());
     if (filters.category) nextParams.set('category', filters.category);
     if (filters.inStock) nextParams.set('inStock', 'true');
 
-    if (nextParams.toString() !== searchParams.toString()) {
-      setSearchParams(nextParams, { replace: true });
-    }
-  }, [initialParams.search, filters, searchParams, setSearchParams]);
+    const timeout = globalThis.setTimeout(() => {
+      if (nextParams.toString() !== searchParams.toString()) {
+        setSearchParams(nextParams, { replace: true });
+      }
+    }, 300);
+
+    return () => globalThis.clearTimeout(timeout);
+  }, [filters, searchParams, setSearchParams]);
 
   const queryFilters = useMemo(
     () => ({
-      search: initialParams.search.trim() || undefined,
+      search: filters.search.trim() || undefined,
       minPrice: toNumber(filters.minPrice),
       maxPrice: toNumber(filters.maxPrice),
       category: filters.category || undefined,
       inStock: filters.inStock ? true : undefined,
     }),
-    [initialParams.search, filters]
+    [filters]
   );
 
   const categoriesQuery = useQuery({
@@ -141,7 +147,7 @@ const ProductListPage = () => {
   });
 
   const handleResetFilters = useCallback(() => {
-    setFilters({ minPrice: '', maxPrice: '', category: '', inStock: false });
+    setFilters({ search: '', minPrice: '', maxPrice: '', category: '', inStock: false });
   }, []);
 
   const hasNoProducts = !productsQuery.isLoading && products.length === 0;

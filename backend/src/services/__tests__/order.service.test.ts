@@ -189,7 +189,7 @@ describe('order.service', () => {
       cb({ query } as unknown as PoolClient)
     );
 
-    const result = await orderService.listOrdersService('u1', 1, 10);
+    const result = await orderService.listOrdersService('u1', 'admin', 1, 10);
 
     expect(result.total).toBe(1);
     expect(result.data).toHaveLength(1);

@@ -179,7 +179,7 @@ const AdminDashboardPage = () => {
   };
 
   const handleDeleteProduct = async (product: ProductListItem) => {
-    const confirmed = window.confirm(`Delete "${product.name}"? This action cannot be undone.`);
+    const confirmed = globalThis.confirm(`Delete "${product.name}"? This action cannot be undone.`);
     if (!confirmed) return;
 
     await deleteProductMutation.mutateAsync(product.id);

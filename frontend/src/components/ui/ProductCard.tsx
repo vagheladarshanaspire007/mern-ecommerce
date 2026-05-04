@@ -49,66 +49,60 @@ function ProductCardComponent({ product }: Readonly<ProductCardProps>) {
   };
 
   return (
-    <article
-      className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-3xl border border-slate-800 bg-slate-950/80 shadow-xl shadow-slate-950/25 ring-1 ring-transparent transition duration-200 hover:-translate-y-1 hover:shadow-2xl hover:shadow-cyan-950/20 hover:ring-cyan-400/20"
-      onClick={() => navigate(`/products/${product.id}`)}
-      onKeyDown={(event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          navigate(`/products/${product.id}`);
-        }
-      }}
-      role="button"
-      tabIndex={0}
-      aria-label={`View details for ${product.name}`}
-    >
-      <div className="relative overflow-hidden">
-        <img
-          src={imageSrc}
-          alt={product.name}
-          loading="lazy"
-          width={600}
-          height={400}
-          className="h-48 w-full object-cover transition duration-300 group-hover:scale-[1.02]"
-          onError={(event) => {
-            event.currentTarget.src = DEFAULT_IMAGE_PLACEHOLDER;
-          }}
-        />
-        <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-slate-950/40 via-transparent to-transparent" />
-      </div>
-
-      <div className="flex flex-1 flex-col gap-3 p-4">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="line-clamp-2 text-[0.95rem] font-semibold leading-5 text-slate-100">
-            {product.name}
-          </h3>
-          <span
-            className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-              isInStock ? 'bg-emerald-500/15 text-emerald-300' : 'bg-rose-500/15 text-rose-300'
-            }`}
-          >
-            {isInStock ? 'In stock' : 'Out of stock'}
-          </span>
+    <div className="group flex h-full flex-col overflow-hidden rounded-3xl border border-slate-800 bg-slate-950/80 shadow-xl shadow-slate-950/25 ring-1 ring-transparent transition duration-200 hover:-translate-y-1 hover:shadow-2xl hover:shadow-cyan-950/20 hover:ring-cyan-400/20">
+      <button
+        type="button"
+        onClick={() => navigate(`/products/${product.id}`)}
+        aria-label={`View details for ${product.name}`}
+        className="flex flex-1 flex-col text-left outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+      >
+        <div className="relative overflow-hidden">
+          <img
+            src={imageSrc}
+            alt={product.name}
+            loading="lazy"
+            width={600}
+            height={400}
+            className="h-48 w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+            onError={(event) => {
+              event.currentTarget.src = DEFAULT_IMAGE_PLACEHOLDER;
+            }}
+          />
+          <div className="pointer-events-none absolute inset-0 bg-linear-to-t from-slate-950/40 via-transparent to-transparent" />
         </div>
 
-        <p className="text-xl font-bold tracking-tight text-white">
-          {currencyFormatter.format(Number(product.price))}
-        </p>
+        <div className="flex flex-1 flex-col gap-3 p-4">
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="line-clamp-2 text-[0.95rem] font-semibold leading-5 text-slate-100">
+              {product.name}
+            </h3>
+            <span
+              className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+                isInStock ? 'bg-emerald-500/15 text-emerald-300' : 'bg-rose-500/15 text-rose-300'
+              }`}
+            >
+              {isInStock ? 'In stock' : 'Out of stock'}
+            </span>
+          </div>
 
+          <p className="text-xl font-bold tracking-tight text-white">
+            {currencyFormatter.format(Number(product.price))}
+          </p>
+        </div>
+      </button>
+
+      <div className="px-4 pb-4">
         <button
           type="button"
-          onClick={(event) => {
-            event.stopPropagation();
-            handleAddToCart();
-          }}
+          onClick={handleAddToCart}
           disabled={!isInStock}
-          className="mt-auto cursor-pointer rounded-xl bg-cyan-500 px-4 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
+          className="mt-auto w-full cursor-pointer rounded-xl bg-cyan-500 px-4 py-2.5 text-sm font-semibold text-slate-950 transition hover:bg-cyan-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 disabled:cursor-not-allowed disabled:bg-slate-700 disabled:text-slate-400"
           aria-label={`Add ${product.name} to cart`}
         >
           Add to Cart
         </button>
       </div>
-    </article>
+    </div>
   );
 }
 
