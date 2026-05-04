@@ -290,7 +290,7 @@ export async function updateProduct(
   }
 
   if (input.imageUrls !== undefined) {
-    fields.push(`image_urls = $${paramIndex}`);
+    fields.push(`image_urls = COALESCE(image_urls, '{}') || $${paramIndex}::text[]`);
     params.push(input.imageUrls);
     paramIndex += 1;
   }

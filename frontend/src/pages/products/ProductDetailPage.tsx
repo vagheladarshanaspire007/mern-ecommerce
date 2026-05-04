@@ -10,6 +10,7 @@ import { StarRating } from '@/components/ui/StarRating';
 import { productService } from '@/services/product.service';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { addToCart } from '@/store/slices/cartSlice';
+import { resolveImageUrl } from '@/utils/resolveImageUrl';
 
 function StockBadge({ stock }: Readonly<{ stock: number }>) {
   let badgeClass;
@@ -95,7 +96,7 @@ export default function ProductDetailPage() {
         name: product.name,
         price: product.price,
         stock: product.stock,
-        imageUrl: product.images[0]?.url,
+        imageUrl: resolveImageUrl(product.images[0]?.url),
       })
     );
     toast.success(`${product.name} added to cart.`);
