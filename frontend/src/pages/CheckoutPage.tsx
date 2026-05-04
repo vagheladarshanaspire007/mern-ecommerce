@@ -193,7 +193,7 @@ export default function CheckoutPage() {
                   const isReached = stepNumber <= currentStep;
 
                   return (
-                    <div key={label} className="flex min-w-[88px] items-center gap-2 sm:min-w-0">
+                    <div key={label} className="flex min-w-22 items-center gap-2 sm:min-w-0">
                       <span className={isReached ? 'text-white' : 'text-gray-400'}>{label}</span>
                       <span className={isReached ? 'text-gray-300' : 'text-gray-500'}>
                         0{stepNumber}

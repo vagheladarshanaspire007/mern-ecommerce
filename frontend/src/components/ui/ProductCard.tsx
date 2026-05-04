@@ -1,5 +1,7 @@
 import { memo } from 'react';
-import { useAppDispatch } from '@/store';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import { useAppDispatch, useAppSelector } from '@/store';
 import { addToCart } from '@/store/slices/cartSlice';
 import type { Product } from '@/types/auth.types';
 
@@ -14,12 +16,24 @@ const currencyFormatter = new Intl.NumberFormat('en-US', {
 
 function ProductCardComponent({ product }: Readonly<ProductCardProps>) {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const cartItem = useAppSelector((state) =>
+    state.cart.items.find((item) => item.productId === product.id)
+  );
 
   const isInStock = product.stock > 0;
   const imageSrc = product.imageUrls[0] || 'https://placehold.co/600x400?text=No+Image';
 
   const handleAddToCart = () => {
-    if (!isInStock) return;
+    if (!isInStock) {
+      toast.error('This product is out of stock.');
+      return;
+    }
+
+    if (cartItem && cartItem.quantity >= cartItem.stock) {
+      toast.error(`Only ${cartItem.stock} item(s) available in stock.`);
+      return;
+    }
 
     dispatch(
       addToCart({
@@ -30,10 +44,23 @@ function ProductCardComponent({ product }: Readonly<ProductCardProps>) {
         stock: product.stock,
       })
     );
+    toast.success(`${product.name} added to cart.`);
   };
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm ring-1 ring-transparent transition duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:ring-slate-300/60">
+    <article
+      className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm ring-1 ring-transparent transition duration-200 hover:-translate-y-0.5 hover:shadow-lg hover:ring-slate-300/60"
+      onClick={() => navigate(`/products/${product.id}`)}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          navigate(`/products/${product.id}`);
+        }
+      }}
+      role="button"
+      tabIndex={0}
+      aria-label={`View details for ${product.name}`}
+    >
       <div className="relative overflow-hidden">
         <img
           src={imageSrc}
@@ -66,7 +93,10 @@ function ProductCardComponent({ product }: Readonly<ProductCardProps>) {
 
         <button
           type="button"
-          onClick={handleAddToCart}
+          onClick={(event) => {
+            event.stopPropagation();
+            handleAddToCart();
+          }}
           disabled={!isInStock}
           className="mt-auto rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-slate-800 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-500 disabled:cursor-not-allowed disabled:bg-slate-300"
           aria-label={`Add ${product.name} to cart`}

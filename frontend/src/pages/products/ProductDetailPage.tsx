@@ -2,12 +2,13 @@ import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronRight, ShoppingCart } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { ImageGallery } from '@/components/ui/ImageGallery';
 import { PageLoader } from '@/components/ui/PageLoader';
 import { ReviewList } from '@/components/ui/ReviewList';
 import { StarRating } from '@/components/ui/StarRating';
 import { productService } from '@/services/product.service';
-import { useAppDispatch } from '@/store';
+import { useAppDispatch, useAppSelector } from '@/store';
 import { addToCart } from '@/store/slices/cartSlice';
 
 function StockBadge({ stock }: Readonly<{ stock: number }>) {
@@ -34,6 +35,9 @@ function StockBadge({ stock }: Readonly<{ stock: number }>) {
 export default function ProductDetailPage() {
   const { id = '' } = useParams();
   const dispatch = useAppDispatch();
+  const cartItem = useAppSelector((state) =>
+    state.cart.items.find((item) => item.productId === id)
+  );
 
   const {
     data: product,
@@ -73,6 +77,29 @@ export default function ProductDetailPage() {
       </div>
     );
   }
+
+  const handleAddToCart = () => {
+    if (product.stock <= 0) {
+      toast.error('This product is out of stock.');
+      return;
+    }
+
+    if (cartItem && cartItem.quantity >= cartItem.stock) {
+      toast.error(`Only ${cartItem.stock} item(s) available in stock.`);
+      return;
+    }
+
+    dispatch(
+      addToCart({
+        productId: product.id,
+        name: product.name,
+        price: product.price,
+        stock: product.stock,
+        imageUrl: product.images[0]?.url,
+      })
+    );
+    toast.success(`${product.name} added to cart.`);
+  };
 
   return (
     <div className="min-h-screen space-y-10 bg-gray-900 px-4 py-6">
@@ -120,17 +147,7 @@ export default function ProductDetailPage() {
 
           <button
             type="button"
-            onClick={() =>
-              dispatch(
-                addToCart({
-                  productId: product.id,
-                  name: product.name,
-                  price: product.price,
-                  stock: product.stock,
-                  imageUrl: product.images[0]?.url,
-                })
-              )
-            }
+            onClick={handleAddToCart}
             disabled={product.stock <= 0}
             className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-indigo-500 px-6 py-3 text-base font-medium text-white transition hover:bg-indigo-400 disabled:cursor-not-allowed disabled:bg-gray-600"
           >

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, NavLink, useSearchParams } from 'react-router-dom';
+import { useDebounce } from '@/hooks';
 import { useAppSelector } from '@/store';
 import { selectCartItemCount } from '@/store/slices/cartSlice';
 import { UserMenu } from '@/components/layout/UserMenu';
@@ -12,10 +13,13 @@ interface NavigationLink {
   end?: boolean;
 }
 
+const SEARCH_DEBOUNCE_MS = 300;
+
 export function Navbar() {
   const [searchParams, setSearchParams] = useSearchParams();
   const searchFromUrl = searchParams.get('search') ?? '';
   const [searchValue, setSearchValue] = useState(searchFromUrl);
+  const debouncedSearch = useDebounce(searchValue.trim(), SEARCH_DEBOUNCE_MS);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const cartItemCount = useAppSelector(selectCartItemCount);
@@ -40,18 +44,19 @@ export function Navbar() {
     setSearchValue(searchFromUrl);
   }, [searchFromUrl]);
 
-  const handleSearchChange = (nextValue: string) => {
-    setSearchValue(nextValue);
+  useEffect(() => {
+    if (debouncedSearch === searchFromUrl.trim()) return;
+
     setSearchParams((previousParams) => {
       const nextParams = new URLSearchParams(previousParams);
-      if (nextValue) {
-        nextParams.set('search', nextValue);
+      if (debouncedSearch) {
+        nextParams.set('search', debouncedSearch);
       } else {
         nextParams.delete('search');
       }
       return nextParams;
     });
-  };
+  }, [debouncedSearch, searchFromUrl, setSearchParams]);
 
   const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
     `rounded-md px-3 py-2 text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-100 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 ${
@@ -71,7 +76,7 @@ export function Navbar() {
     );
 
   return (
-    <header className="border-b border-slate-800 bg-slate-950/95 backdrop-blur supports-backdrop-filter:bg-slate-950/80">
+    <header className="relative z-50 border-b border-slate-800 bg-slate-950/95 backdrop-blur supports-backdrop-filter:bg-slate-950/80">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-3 md:gap-4 md:px-6">
         <div className="flex items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2 md:gap-3">
@@ -119,7 +124,7 @@ export function Navbar() {
                 id="desktop-site-search"
                 type="search"
                 value={searchValue}
-                onChange={(event) => handleSearchChange(event.target.value)}
+                onChange={(event) => setSearchValue(event.target.value)}
                 placeholder="Search products..."
                 className="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-2.5 pr-10 text-sm text-slate-100 placeholder-slate-400 transition focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200/20"
               />
@@ -178,7 +183,7 @@ export function Navbar() {
               id="mobile-site-search"
               type="search"
               value={searchValue}
-              onChange={(event) => handleSearchChange(event.target.value)}
+              onChange={(event) => setSearchValue(event.target.value)}
               placeholder="Search products..."
               className="w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-2.5 pr-10 text-sm text-slate-100 placeholder-slate-400 transition focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200/20"
             />

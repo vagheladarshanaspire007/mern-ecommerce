@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { keepPreviousData, useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
-import { useDebounce, useIntersectionObserver } from '@/hooks';
+import { useIntersectionObserver } from '@/hooks';
 import FilterSidebar, { type ProductFiltersState } from '@/components/ui/FilterSidebar';
 import ProductCard, { ProductCardSkeleton } from '@/components/ui/ProductCard';
 import { fetchCategories, fetchProducts, type ProductListItem } from '@/services/product.service';
 
 const PAGE_LIMIT = 20;
-const SEARCH_DEBOUNCE_MS = 300;
 
 const INITIAL_SKELETONS = Array.from({ length: 8 }, (_, i) => `skeleton-initial-${i}`);
 const NEXT_SKELETONS = Array.from({ length: 4 }, (_, i) => `skeleton-next-${i}`);
@@ -64,8 +63,6 @@ const ProductListPage = () => {
   }, []);
 
   const initialParams = useMemo(() => parseSearchParams(searchParams), [searchParams]);
-
-  const [searchInput, setSearchInput] = useState(initialParams.search);
   const [filters, setFilters] = useState<ProductFiltersState>({
     minPrice: initialParams.minPrice,
     maxPrice: initialParams.maxPrice,
@@ -74,7 +71,6 @@ const ProductListPage = () => {
   });
 
   useEffect(() => {
-    setSearchInput(initialParams.search);
     setFilters({
       minPrice: initialParams.minPrice,
       maxPrice: initialParams.maxPrice,
@@ -83,12 +79,10 @@ const ProductListPage = () => {
     });
   }, [initialParams]);
 
-  const debouncedSearch = useDebounce(searchInput.trim(), SEARCH_DEBOUNCE_MS);
-
   useEffect(() => {
     const nextParams = new URLSearchParams();
 
-    if (debouncedSearch) nextParams.set('search', debouncedSearch);
+    if (initialParams.search.trim()) nextParams.set('search', initialParams.search.trim());
     if (filters.minPrice.trim()) nextParams.set('minPrice', filters.minPrice.trim());
     if (filters.maxPrice.trim()) nextParams.set('maxPrice', filters.maxPrice.trim());
     if (filters.category) nextParams.set('category', filters.category);
@@ -97,17 +91,17 @@ const ProductListPage = () => {
     if (nextParams.toString() !== searchParams.toString()) {
       setSearchParams(nextParams, { replace: true });
     }
-  }, [debouncedSearch, filters, searchParams, setSearchParams]);
+  }, [initialParams.search, filters, searchParams, setSearchParams]);
 
   const queryFilters = useMemo(
     () => ({
-      search: debouncedSearch || undefined,
+      search: initialParams.search.trim() || undefined,
       minPrice: toNumber(filters.minPrice),
       maxPrice: toNumber(filters.maxPrice),
       category: filters.category || undefined,
       inStock: filters.inStock ? true : undefined,
     }),
-    [debouncedSearch, filters]
+    [initialParams.search, filters]
   );
 
   const categoriesQuery = useQuery({
@@ -147,7 +141,6 @@ const ProductListPage = () => {
   });
 
   const handleResetFilters = useCallback(() => {
-    setSearchInput('');
     setFilters({ minPrice: '', maxPrice: '', category: '', inStock: false });
   }, []);
 
@@ -167,19 +160,6 @@ const ProductListPage = () => {
             <p className="text-sm font-medium text-slate-500">
               {productsQuery.isLoading ? 'Loading products...' : `${products.length} items`}
             </p>
-          </div>
-          <div className="mt-4">
-            <label htmlFor="productSearch" className="sr-only">
-              Search products
-            </label>
-            <input
-              id="productSearch"
-              type="search"
-              value={searchInput}
-              onChange={(event) => setSearchInput(event.target.value)}
-              placeholder="Search products..."
-              className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500"
-            />
           </div>
         </header>
 

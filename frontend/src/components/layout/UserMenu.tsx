@@ -122,7 +122,7 @@ export function UserMenu({ user, isAuthenticated, onNavigate }: Readonly<UserMen
           aria-label="User menu"
           tabIndex={-1}
           onKeyDown={handleMenuEscape}
-          className="absolute right-0 z-30 mt-2 w-56 rounded-lg border border-slate-800 bg-slate-950 p-2 shadow-2xl"
+          className="absolute right-0 z-60 mt-2 w-56 rounded-lg border border-slate-800 bg-slate-950 p-2 shadow-2xl"
         >
           <div className="mb-2 border-b border-slate-800 px-3 pb-2">
             <p className="truncate text-sm font-medium text-white">
