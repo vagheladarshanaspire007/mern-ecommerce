@@ -72,7 +72,7 @@ const OrderHistoryPage = () => {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['order-history'],
     queryFn: async () => {
-      const response = await api.get<OrdersResponse>('/orders/history');
+      const response = await api.get<OrdersResponse>('/orders');
       return response.data.data.items;
     },
   });

@@ -34,9 +34,15 @@ export interface CheckoutOrder {
 
 export interface CreateOrderResponse {
   success: true;
+  message?: string;
   data: {
     order: CheckoutOrder;
   };
+}
+
+export interface CreateOrderResult {
+  order: CheckoutOrder;
+  message?: string;
 }
 
 export interface InsufficientStockIssue {

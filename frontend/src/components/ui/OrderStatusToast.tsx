@@ -13,14 +13,14 @@ const STATUS_STYLES: Record<OrderStatus, string> = {
   cancelled: 'bg-red-100 text-red-700',
 };
 
-export function OrderStatusToast({ orderId, status }: Readonly<OrderStatusToastProps>) {
+export function OrderStatusToast({ status }: Readonly<OrderStatusToastProps>) {
   return (
     <div className="flex items-center justify-between gap-4 rounded-3xl border border-gray-700 bg-gray-800 px-5 py-4 shadow-md">
       <div className="flex min-w-0 items-start gap-3">
         <div className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-indigo-500" />
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-white">Order #{orderId} updated</p>
-          <p className="mt-1 text-xs text-gray-400">Your order status changed in real time.</p>
+          <p className="text-sm font-semibold text-white">Order updated</p>
+          <p className="mt-1 text-xs text-gray-400">Your order status changed.</p>
         </div>
       </div>
       <span

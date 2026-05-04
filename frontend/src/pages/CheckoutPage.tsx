@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Navigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 import { OrderConfirmation } from '@/components/checkout/OrderConfirmation';
 import { OrderSummary } from '@/components/checkout/OrderSummary';
@@ -150,7 +151,9 @@ export default function CheckoutPage() {
 
     try {
       const createdOrder = await createOrder(payload);
-      setOrder(createdOrder);
+      toast.success(createdOrder.message || 'Order created successfully.');
+      setOrder(createdOrder.order);
+      dispatch(clearCart());
       setCurrentStep(3);
     } catch (error) {
       const apiError: ApiErrorWithMetadata =

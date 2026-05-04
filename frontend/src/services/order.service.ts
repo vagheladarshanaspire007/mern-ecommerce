@@ -1,11 +1,14 @@
 import api from '@/services/api';
 import type {
-  CheckoutOrder,
   CreateOrderRequest,
+  CreateOrderResult,
   CreateOrderResponse,
 } from '@/types/checkout.types';
 
-export async function createOrder(payload: CreateOrderRequest): Promise<CheckoutOrder> {
+export async function createOrder(payload: CreateOrderRequest): Promise<CreateOrderResult> {
   const response = await api.post<CreateOrderResponse>('/orders', payload);
-  return response.data.data.order;
+  return {
+    order: response.data.data.order,
+    message: response.data.message,
+  };
 }

@@ -130,7 +130,9 @@ export const login = async (input: LoginInput): Promise<AuthResult> => {
   };
 };
 
-export const refresh = async (refreshToken: string): Promise<{ accessToken: string }> => {
+export const refresh = async (
+  refreshToken: string
+): Promise<{ user: PublicUser; accessToken: string }> => {
   const payload = verifyRefreshToken(refreshToken);
 
   if (!payload) {
@@ -143,13 +145,14 @@ export const refresh = async (refreshToken: string): Promise<{ accessToken: stri
     throw new AppError(401, 'INVALID_TOKEN', 'Invalid or expired token');
   }
 
+  const publicUser = toPublicUser(user);
   const accessToken = generateAccessToken({
     userId: payload.userId,
     email: payload.email,
     role: payload.role,
   });
 
-  return { accessToken };
+  return { user: publicUser, accessToken };
 };
 
 export const logout = async (refreshToken: string): Promise<void> => {

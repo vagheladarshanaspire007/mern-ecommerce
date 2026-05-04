@@ -23,6 +23,14 @@ const mockUser = {
   updatedAt: new Date(),
 };
 
+type AuthResponse = {
+  success: true;
+  data: {
+    user: typeof mockUser;
+    accessToken: string;
+  };
+};
+
 describe('auth.routes', () => {
   it('register route shape', async () => {
     const res = createMockRes();
@@ -40,7 +48,10 @@ describe('auth.routes', () => {
     await registerController(req, res as unknown as Parameters<typeof registerController>[1]);
 
     expect(res.status).toHaveBeenCalledWith(201);
-    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
+    const response = res.json.mock.calls[0]?.[0] as AuthResponse;
+    expect(response.success).toBe(true);
+    expect(response.data.user).toEqual(mockUser);
+    expect(response.data.accessToken).toBe('access');
   });
 
   it('login route shape', async () => {
@@ -59,6 +70,9 @@ describe('auth.routes', () => {
     await loginController(req, res as unknown as Parameters<typeof loginController>[1]);
 
     expect(res.status).toHaveBeenCalledWith(200);
-    expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ success: true }));
+    const response = res.json.mock.calls[0]?.[0] as AuthResponse;
+    expect(response.success).toBe(true);
+    expect(response.data.user).toEqual(mockUser);
+    expect(response.data.accessToken).toBe('access');
   });
 });

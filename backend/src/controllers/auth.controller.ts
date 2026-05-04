@@ -61,8 +61,10 @@ export const registerController = async (
   res.status(201).json({
     success: true,
     message: t(AUTH_MESSAGES.USER_CREATED),
-    user: result.user,
-    accessToken: result.accessToken,
+    data: {
+      user: result.user,
+      accessToken: result.accessToken,
+    },
   });
 };
 
@@ -79,8 +81,10 @@ export const loginController = async (req: AuthRequest<LoginDto>, res: Response)
   res.status(200).json({
     success: true,
     message: t(AUTH_MESSAGES.LOGIN_SUCCESS),
-    user: result.user,
-    accessToken: result.accessToken,
+    data: {
+      user: result.user,
+      accessToken: result.accessToken,
+    },
   });
 };
 
@@ -102,7 +106,10 @@ export const refreshController = async (
 
   res.status(200).json({
     success: true,
-    accessToken: result.accessToken,
+    data: {
+      user: result.user,
+      accessToken: result.accessToken,
+    },
   });
 };
 

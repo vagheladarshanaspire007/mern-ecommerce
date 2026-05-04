@@ -155,11 +155,29 @@ describe('auth.service', () => {
   });
 
   it('refresh success', async () => {
-    mockFindUserByResetToken.mockResolvedValue({ id: 'user-1' } as never);
+    const userRow = {
+      id: 'user-1',
+      first_name: 'Jane',
+      last_name: 'Doe',
+      email: 'user@test.com',
+      password_hash: 'hash',
+      address: null,
+      role: 'user',
+      reset_token: 'refresh-token',
+      reset_token_expires: new Date(),
+      created_at: new Date(),
+      deleted_at: null,
+      updated_at: new Date(),
+      image: null,
+    };
+    mockFindUserByResetToken.mockResolvedValue(userRow as never);
 
     const result = await authService.refresh('refresh-token');
 
-    expect(result).toEqual({ accessToken: 'access-token' });
+    expect(result).toEqual({
+      user: userRow,
+      accessToken: 'access-token',
+    });
     expect(mockGenerateAccessToken).toHaveBeenCalledWith({
       userId: 'user-1',
       email: 'user@test.com',

@@ -3,6 +3,8 @@ import { Link, NavLink, useSearchParams } from 'react-router-dom';
 import { useAppSelector } from '@/store';
 import { selectCartItemCount } from '@/store/slices/cartSlice';
 import { UserMenu } from '@/components/layout/UserMenu';
+import { ConnectionStatus } from '@/components/ui/ConnectionStatus';
+import { NotificationBadge } from '@/components/ui/NotificationBadge';
 
 interface NavigationLink {
   to: string;
@@ -18,12 +20,18 @@ export function Navbar() {
 
   const cartItemCount = useAppSelector(selectCartItemCount);
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
+  const { unreadCount, isSocketConnected } = useAppSelector((state) => state.ui);
 
   const navLinks = useMemo<NavigationLink[]>(
     () => [
       { to: '/', label: 'Home', end: true },
       { to: '/products', label: 'Products' },
-      ...(isAuthenticated ? [{ to: '/dashboard', label: 'Dashboard' }] : []),
+      ...(isAuthenticated
+        ? [
+            { to: '/dashboard', label: 'Dashboard' },
+            { to: '/orders', label: 'Orders' },
+          ]
+        : []),
     ],
     [isAuthenticated]
   );
@@ -51,6 +59,16 @@ export function Navbar() {
         ? 'bg-slate-100 text-slate-950'
         : 'text-slate-300 hover:bg-slate-800 hover:text-white'
     }`;
+
+  const renderNavLabel = (link: NavigationLink) =>
+    link.to === '/orders' ? (
+      <span className="inline-flex items-center gap-2">
+        {link.label}
+        <NotificationBadge count={unreadCount} />
+      </span>
+    ) : (
+      link.label
+    );
 
   return (
     <header className="border-b border-slate-800 bg-slate-950/95 backdrop-blur supports-backdrop-filter:bg-slate-950/80">
@@ -86,7 +104,7 @@ export function Navbar() {
             <nav className="hidden items-center gap-1 md:flex" aria-label="Primary navigation">
               {navLinks.map((link) => (
                 <NavLink key={link.to} to={link.to} end={link.end} className={navLinkClasses}>
-                  {link.label}
+                  {renderNavLabel(link)}
                 </NavLink>
               ))}
             </nav>
@@ -118,6 +136,11 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center gap-2">
+            <ConnectionStatus
+              isConnected={isSocketConnected}
+              className="hidden items-center rounded-full border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-300 md:inline-flex"
+            />
+
             <Link
               to="/cart"
               aria-label="View cart"
@@ -188,7 +211,7 @@ export function Navbar() {
                 className={navLinkClasses}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                {link.label}
+                {renderNavLabel(link)}
               </NavLink>
             ))}
 
@@ -199,6 +222,13 @@ export function Navbar() {
             >
               Cart {cartItemCount > 0 ? `(${cartItemCount})` : ''}
             </Link>
+
+            <div className="px-1 pt-2">
+              <ConnectionStatus
+                isConnected={isSocketConnected}
+                className="inline-flex items-center rounded-full border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-300"
+              />
+            </div>
 
             <div className="px-1 pt-2">
               <UserMenu

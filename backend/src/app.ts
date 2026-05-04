@@ -137,7 +137,7 @@ app.use(`${API_PREFIX}/auth`, authRouter); // Registration, login, refresh, logo
 app.use(`${API_PREFIX}/users`, userRouter); // User CRUD (protected)
 app.use(`${API_PREFIX}/products`, productRouter); // Product CRUD (Day 41-43 feature)
 app.use(`${API_PREFIX}/upload`, uploadRouter); // File uploads via Multer
-app.use(`${API_PREFIX}/orders`, orderRouter); // Order CRUD (protected)
+app.use(`${API_PREFIX}/orders`, orderRouter); // Order management (Day 44-45 feature)
 
 // ─── 10. 404 Handler ────────────────────────────────────────
 // Catches requests to routes that don't exist

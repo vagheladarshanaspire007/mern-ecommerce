@@ -8,37 +8,37 @@
 import api from './api';
 import type { User, LoginCredentials, RegisterData, AuthResponse } from '@/types/auth.types';
 
+type ApiEnvelope<T> = {
+  data?: T;
+} & Partial<T>;
+
+const unwrapData = <T extends object>(response: ApiEnvelope<T>): T => {
+  return (response.data ?? response) as T;
+};
+
 export const authService = {
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
-    const { data } = await api.post<AuthResponse & { success: boolean; message?: string }>(
-      '/auth/login',
-      credentials
-    );
-    return { user: data.user, accessToken: data.accessToken };
+    const { data } = await api.post<ApiEnvelope<AuthResponse>>('/auth/login', credentials);
+    return unwrapData(data);
   },
 
   register: async (userData: RegisterData): Promise<AuthResponse> => {
-    const { data } = await api.post<AuthResponse & { success: boolean; message?: string }>(
-      '/auth/register',
-      userData
-    );
-    return { user: data.user, accessToken: data.accessToken };
+    const { data } = await api.post<ApiEnvelope<AuthResponse>>('/auth/register', userData);
+    return unwrapData(data);
   },
 
   logout: async (): Promise<void> => {
     await api.post('/auth/logout');
   },
 
-  refresh: async (): Promise<{ accessToken: string }> => {
-    const { data } = await api.post<{ success: boolean; message?: string; accessToken: string }>(
-      '/auth/refresh'
-    );
-    return { accessToken: data.accessToken };
+  refresh: async (): Promise<AuthResponse> => {
+    const { data } = await api.post<ApiEnvelope<AuthResponse>>('/auth/refresh');
+    return unwrapData(data);
   },
 
   getMe: async (): Promise<User> => {
-    const { data } = await api.get<{ success: boolean; message?: string; user: User }>('/auth/me');
-    return data.user;
+    const { data } = await api.get<ApiEnvelope<User>>('/auth/me');
+    return unwrapData(data);
   },
 
   forgotPassword: async (email: string): Promise<void> => {
