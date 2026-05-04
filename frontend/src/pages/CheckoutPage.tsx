@@ -119,10 +119,6 @@ export default function CheckoutPage() {
     }
   }, [currentStep, dispatch, order]);
 
-  if (cartItems.length === 0 && currentStep !== 3) {
-    return <Navigate to="/cart" replace />;
-  }
-
   const handleShippingSubmit = (values: ShippingAddress) => {
     setShippingAddress(values);
     setCurrentStep(2);

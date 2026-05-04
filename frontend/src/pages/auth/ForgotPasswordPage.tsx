@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { z } from 'zod';
+import { authService } from '@/services/auth.service';
 
 const forgotPasswordSchema = z.object({
   email: z.string().email('Please enter a valid email address.'),
@@ -29,10 +30,14 @@ export default function ForgotPasswordPage() {
     },
   });
 
-  const onSubmit = async (_values: ForgotPasswordValues) => {
-    await new Promise((resolve) => setTimeout(resolve, 450));
-    toast.success('If the email exists, a reset link has been sent.');
-    reset();
+  const onSubmit = async (values: ForgotPasswordValues) => {
+    try {
+      await authService.forgotPassword(values.email);
+      toast.success('If the email exists, a reset link has been sent.');
+      reset();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Could not send reset link.');
+    }
   };
 
   return (
