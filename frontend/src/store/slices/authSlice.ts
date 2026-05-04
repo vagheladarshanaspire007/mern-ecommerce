@@ -53,8 +53,7 @@ export const initializeAuth = createAsyncThunk(
   'auth/initialize',
   async (_, { rejectWithValue }) => {
     try {
-      const { accessToken } = await authService.refresh();
-      const user = await authService.getMe();
+      const { user, accessToken } = await authService.refresh();
       return { user, accessToken };
     } catch {
       return rejectWithValue(null); // Not an error — just not logged in
