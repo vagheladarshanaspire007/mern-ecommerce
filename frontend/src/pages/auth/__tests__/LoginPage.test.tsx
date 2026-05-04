@@ -3,36 +3,25 @@ import userEvent from '@testing-library/user-event';
 import { fireEvent } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { createHotToastMock, createRouterDomMock, resetAuthPageMocks } from './authPageMocks';
+
 import LoginPage from '@/pages/auth/LoginPage';
 import { server } from '@/mocks/server';
 import { render, screen } from '@/test/utils';
 
-const { toastSuccess, toastError, mockNavigate } = vi.hoisted(() => ({
+const mocks = vi.hoisted(() => ({
   toastSuccess: vi.fn(),
   toastError: vi.fn(),
   mockNavigate: vi.fn(),
 }));
+const { mockNavigate, toastError, toastSuccess } = mocks;
 
-vi.mock('react-hot-toast', () => ({
-  default: {
-    success: toastSuccess,
-    error: toastError,
-  },
-}));
-
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-  };
-});
+vi.mock('react-hot-toast', () => createHotToastMock(mocks));
+vi.mock('react-router-dom', async () => createRouterDomMock(mocks));
 
 describe('LoginPage', () => {
   beforeEach(() => {
-    toastSuccess.mockReset();
-    toastError.mockReset();
-    mockNavigate.mockReset();
+    resetAuthPageMocks(mocks);
   });
 
   it('renders login form fields', () => {

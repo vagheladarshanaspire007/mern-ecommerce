@@ -2,36 +2,25 @@ import { http, HttpResponse } from 'msw';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { createHotToastMock, createRouterDomMock, resetAuthPageMocks } from './authPageMocks';
+
 import RegisterPage from '@/pages/auth/RegisterPage';
 import { server } from '@/mocks/server';
 import { render, screen } from '@/test/utils';
 
-const { toastSuccess, toastError, mockNavigate } = vi.hoisted(() => ({
+const mocks = vi.hoisted(() => ({
   toastSuccess: vi.fn(),
   toastError: vi.fn(),
   mockNavigate: vi.fn(),
 }));
+const { toastSuccess, mockNavigate } = mocks;
 
-vi.mock('react-hot-toast', () => ({
-  default: {
-    success: toastSuccess,
-    error: toastError,
-  },
-}));
-
-vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom');
-  return {
-    ...actual,
-    useNavigate: () => mockNavigate,
-  };
-});
+vi.mock('react-hot-toast', () => createHotToastMock(mocks));
+vi.mock('react-router-dom', async () => createRouterDomMock(mocks));
 
 describe('RegisterPage', () => {
   beforeEach(() => {
-    toastSuccess.mockReset();
-    toastError.mockReset();
-    mockNavigate.mockReset();
+    resetAuthPageMocks(mocks);
   });
 
   it('shows validation error when passwords do not match', async () => {
