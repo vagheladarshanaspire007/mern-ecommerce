@@ -69,7 +69,10 @@ export default function ResetPasswordPage() {
             This password reset link is missing a token or is malformed.
           </p>
           <p className="mt-5 text-sm text-gray-300">
-            <Link to="/forgot-password" className="font-medium text-indigo-300 hover:text-indigo-200">
+            <Link
+              to="/forgot-password"
+              className="font-medium text-indigo-300 hover:text-indigo-200"
+            >
               Request a new reset link
             </Link>
           </p>
