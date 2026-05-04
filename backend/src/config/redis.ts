@@ -25,22 +25,29 @@ export const connectRedis = async (): Promise<void> => {
     host: process.env.REDIS_HOST || 'localhost',
     port: parseInt(process.env.REDIS_PORT || '6379'),
     password: process.env.REDIS_PASSWORD || undefined,
-    maxRetriesPerRequest: 3,
+    maxRetriesPerRequest: null,
     retryStrategy: (times: number) => {
-      // Exponential backoff: wait 2^times * 100ms between retries
-      // WHY: Prevents hammering Redis during a brief outage
-      const delay = Math.min(times * 100, 2000);
+      const delay = Math.min(100 + times * 200, 2000);
       logger.warn(`Redis retry attempt ${times}, waiting ${delay}ms`);
       return delay;
     },
     lazyConnect: false,
   });
 
-  // Test connection
-  await redisClient.ping();
-
   redisClient.on('error', (err) => logger.error('Redis error:', err));
   redisClient.on('reconnecting', () => logger.warn('Redis reconnecting...'));
+
+  for (let attempt = 1; attempt <= 30; attempt++) {
+    try {
+      await redisClient.ping();
+      return;
+    } catch (err) {
+      logger.warn(`Redis ping failed on attempt ${attempt}, retrying...`);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+  }
+
+  throw new Error('Unable to connect to Redis after multiple retries');
 };
 
 export const getRedis = (): Redis => {
