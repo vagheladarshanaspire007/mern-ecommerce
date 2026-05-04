@@ -27,6 +27,12 @@ export default defineConfig({
     tailwindcss(),
   ],
 
+  test: {
+    environment: 'jsdom',
+    setupFiles: ['./src/test/setup.ts'],
+    globals: true,
+  },
+
   resolve: {
     alias: {
       // WHY path aliases: Import from '@/components/Button' instead of
