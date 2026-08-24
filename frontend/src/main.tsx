@@ -25,6 +25,7 @@ import { Toaster } from 'react-hot-toast';
 import { store } from '@/store';
 import App from './App';
 import './index.css';
+import { initializeAuth } from './store/slices/authSlice';
 
 // ─── React Query Client Config ───────────────────────────────
 // WHY these defaults:
@@ -43,6 +44,50 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+/**
+ * ============================================================
+ * MSW Browser Setup
+ * ============================================================
+ * MSW is used only during development.
+ *
+ * It intercepts frontend API requests such as:
+ *   /api/v1/auth/login
+ *   /api/v1/auth/register
+ *   /api/v1/auth/refresh
+ *   /api/v1/auth/me
+ *   /api/v1/products
+ *
+ * No real backend is required while developing the frontend.
+ */
+async function enableMocking() {
+  if (import.meta.env.DEV) {
+    const { worker } = await import('./test/mocks/browser');
+
+    await worker.start({
+      onUnhandledRequest: 'bypass',
+    });
+ }
+}
+
+/**
+ * ============================================================
+ * Application Bootstrap
+ * ============================================================
+ *
+ * 1. Start MSW in development
+ * 2. Initialize authentication
+ * 3. Render React application
+ *
+ * initializeAuth() calls /auth/refresh.
+ * MSW intercepts that request and returns the mock session.
+ */
+async function bootstrap() {
+  // Start MSW before the application makes API requests.
+  await enableMocking();
+
+  // Silently restore authentication session on page load.
+  store.dispatch(initializeAuth());
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -75,3 +120,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     </Provider>
   </React.StrictMode>
 );
+}
+void bootstrap();
