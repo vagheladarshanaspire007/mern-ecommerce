@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
 interface RegisterResponse {
@@ -13,7 +13,7 @@ interface RegisterResponse {
       role: string;
       emailVerified: boolean;
     };
-    accessToken: string;
+    accessToken?: string;
   };
   error?: {
     code: string;
@@ -21,10 +21,18 @@ interface RegisterResponse {
   };
 }
 
+interface RegisterFormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
 const RegisterPage = () => {
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<RegisterFormData>({
     firstName: '',
     lastName: '',
     email: '',
@@ -39,8 +47,8 @@ const RegisterPage = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    setFormData((prev) => ({
-      ...prev,
+    setFormData((previous) => ({
+      ...previous,
       [name]: value,
     }));
 
@@ -64,6 +72,7 @@ const RegisterPage = () => {
       return false;
     }
 
+    // Correct email validation
     if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
       setError('Please enter a valid email address');
       return false;
@@ -92,8 +101,8 @@ const RegisterPage = () => {
     return true;
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
     setError('');
     setSuccess('');
@@ -116,19 +125,36 @@ const RegisterPage = () => {
         },
       );
 
-      if (response.data.success) {
-        setSuccess('Registration successful! Redirecting...');
-
-        // MSW register handler creates an authenticated session.
-        setTimeout(() => {
-          navigate('/dashboard', { replace: true });
-        }, 500);
-      } else {
+      if (!response.data.success) {
         setError(
           response.data.error?.message || 'Registration failed',
         );
+        return;
       }
-    } catch (err) {
+
+      /*
+       * IMPORTANT:
+       *
+       * Registration does NOT directly open Dashboard.
+       *
+       * Required flow:
+       *
+       * Register
+       *   ↓
+       * Login
+       *   ↓
+       * Dashboard
+       *
+       * Login will create the authenticated session.
+       */
+      setSuccess(
+        'Registration successful! Please sign in to continue.',
+      );
+
+      setTimeout(() => {
+        navigate('/login', { replace: true });
+      }, 800);
+    } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         setError(
           err.response?.data?.error?.message ||
@@ -198,6 +224,7 @@ const RegisterPage = () => {
                   autoComplete="given-name"
                   disabled={loading}
                   placeholder="Bhoomi"
+                  aria-required="true"
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200 disabled:cursor-not-allowed disabled:bg-gray-100"
                 />
               </div>
@@ -220,6 +247,7 @@ const RegisterPage = () => {
                   autoComplete="family-name"
                   disabled={loading}
                   placeholder="Test"
+                  aria-required="true"
                   className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200 disabled:cursor-not-allowed disabled:bg-gray-100"
                 />
               </div>
@@ -243,6 +271,7 @@ const RegisterPage = () => {
                 autoComplete="email"
                 disabled={loading}
                 placeholder="bhoomi@example.com"
+                aria-required="true"
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200 disabled:cursor-not-allowed disabled:bg-gray-100"
               />
             </div>
@@ -265,6 +294,7 @@ const RegisterPage = () => {
                 autoComplete="new-password"
                 disabled={loading}
                 placeholder="Minimum 8 characters"
+                aria-required="true"
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200 disabled:cursor-not-allowed disabled:bg-gray-100"
               />
             </div>
@@ -287,6 +317,7 @@ const RegisterPage = () => {
                 autoComplete="new-password"
                 disabled={loading}
                 placeholder="Re-enter your password"
+                aria-required="true"
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200 disabled:cursor-not-allowed disabled:bg-gray-100"
               />
             </div>
@@ -304,14 +335,12 @@ const RegisterPage = () => {
           {/* Login */}
           <p className="mt-6 text-center text-sm text-gray-600">
             Already have an account?{' '}
-            <button
-              type="button"
-              onClick={() => navigate('/login')}
-              disabled={loading}
-              className="font-medium text-blue-600 hover:text-blue-700 hover:underline disabled:cursor-not-allowed"
+            <Link
+              to="/login"
+              className="font-medium text-blue-600 hover:text-blue-700 hover:underline"
             >
               Sign In
-            </button>
+            </Link>
           </p>
         </div>
       </div>
