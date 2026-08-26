@@ -114,21 +114,16 @@ const RegisterPage = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post<RegisterResponse>(
-        '/api/v1/auth/register',
-        {
-          firstName: formData.firstName.trim(),
-          lastName: formData.lastName.trim(),
-          email: formData.email.trim(),
-          password: formData.password,
-          confirmPassword: formData.confirmPassword,
-        },
-      );
+      const response = await axios.post<RegisterResponse>('/api/v1/auth/register', {
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        email: formData.email.trim(),
+        password: formData.password,
+        confirmPassword: formData.confirmPassword,
+      });
 
       if (!response.data.success) {
-        setError(
-          response.data.error?.message || 'Registration failed',
-        );
+        setError(response.data.error?.message || 'Registration failed');
         return;
       }
 
@@ -147,19 +142,14 @@ const RegisterPage = () => {
        *
        * Login will create the authenticated session.
        */
-      setSuccess(
-        'Registration successful! Please sign in to continue.',
-      );
+      setSuccess('Registration successful! Please sign in to continue.');
 
       setTimeout(() => {
         navigate('/login', { replace: true });
       }, 800);
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
-        setError(
-          err.response?.data?.error?.message ||
-            'Registration failed. Please try again.',
-        );
+        setError(err.response?.data?.error?.message || 'Registration failed. Please try again.');
       } else {
         setError('Something went wrong. Please try again.');
       }
@@ -174,13 +164,9 @@ const RegisterPage = () => {
         <div className="w-full rounded-xl bg-white p-8 shadow-lg">
           {/* Header */}
           <div className="mb-6 text-center">
-            <h1 className="text-2xl font-bold text-gray-900">
-              Create Account
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-900">Create Account</h1>
 
-            <p className="mt-2 text-sm text-gray-600">
-              Register a new account to get started.
-            </p>
+            <p className="mt-2 text-sm text-gray-600">Register a new account to get started.</p>
           </div>
 
           {/* Error */}
@@ -208,10 +194,7 @@ const RegisterPage = () => {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {/* First Name */}
               <div>
-                <label
-                  htmlFor="firstName"
-                  className="mb-1 block text-sm font-medium text-gray-700"
-                >
+                <label htmlFor="firstName" className="mb-1 block text-sm font-medium text-gray-700">
                   First Name
                 </label>
 
@@ -231,10 +214,7 @@ const RegisterPage = () => {
 
               {/* Last Name */}
               <div>
-                <label
-                  htmlFor="lastName"
-                  className="mb-1 block text-sm font-medium text-gray-700"
-                >
+                <label htmlFor="lastName" className="mb-1 block text-sm font-medium text-gray-700">
                   Last Name
                 </label>
 
@@ -255,10 +235,7 @@ const RegisterPage = () => {
 
             {/* Email */}
             <div className="mt-4">
-              <label
-                htmlFor="email"
-                className="mb-1 block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700">
                 Email
               </label>
 
@@ -278,10 +255,7 @@ const RegisterPage = () => {
 
             {/* Password */}
             <div className="mt-4">
-              <label
-                htmlFor="password"
-                className="mb-1 block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor="password" className="mb-1 block text-sm font-medium text-gray-700">
                 Password
               </label>
 

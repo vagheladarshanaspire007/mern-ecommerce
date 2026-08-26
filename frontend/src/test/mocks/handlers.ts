@@ -64,6 +64,7 @@ const getCurrentUser = (): MockStoredUser | null => {
 };
 
 const sanitizeUser = (user: MockStoredUser): MockUser => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { password: _password, ...safeUser } = user;
 
   return safeUser;
@@ -114,15 +115,16 @@ export const handlers = [
       rememberMe?: boolean;
     };
 
+    // eslint-disable-next-line no-console
     console.log('[MSW] LOGIN REQUEST:', body);
 
     const user = mockUsers.find(
       (item) =>
-        item.email.toLowerCase() === body.email.toLowerCase() &&
-        item.password === body.password,
+        item.email.toLowerCase() === body.email.toLowerCase() && item.password === body.password
     );
 
     if (!user) {
+      // eslint-disable-next-line no-console
       console.log('[MSW] Login failed');
 
       return HttpResponse.json(
@@ -133,15 +135,18 @@ export const handlers = [
             message: 'Invalid email or password',
           },
         },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
     setMockSession(true);
     setCurrentUser(user.id);
 
+    // eslint-disable-next-line no-console
     console.log('[MSW] Login successful');
+    // eslint-disable-next-line no-console
     console.log('[MSW] User:', sanitizeUser(user));
+    // eslint-disable-next-line no-console
     console.log('[MSW] Session:', getMockSession());
 
     return HttpResponse.json(
@@ -152,7 +157,7 @@ export const handlers = [
           accessToken: mockAccessToken,
         },
       },
-      { status: 200 },
+      { status: 200 }
     );
   }),
 
@@ -166,6 +171,7 @@ export const handlers = [
       confirmPassword: string;
     };
 
+    // eslint-disable-next-line no-console
     console.log('[MSW] REGISTER REQUEST:', {
       firstName: body.firstName,
       lastName: body.lastName,
@@ -174,9 +180,7 @@ export const handlers = [
 
     const normalizedEmail = body.email.trim().toLowerCase();
 
-    const existingUser = mockUsers.find(
-      (user) => user.email.toLowerCase() === normalizedEmail,
-    );
+    const existingUser = mockUsers.find((user) => user.email.toLowerCase() === normalizedEmail);
 
     if (existingUser) {
       return HttpResponse.json(
@@ -187,7 +191,7 @@ export const handlers = [
             message: 'Email is already registered',
           },
         },
-        { status: 409 },
+        { status: 409 }
       );
     }
 
@@ -200,7 +204,7 @@ export const handlers = [
             message: 'Passwords do not match',
           },
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
 
@@ -223,7 +227,9 @@ export const handlers = [
     setMockSession(true);
     setCurrentUser(newUser.id);
 
+    // eslint-disable-next-line no-console
     console.log('[MSW] Registration successful');
+    // eslint-disable-next-line no-console
     console.log('[MSW] Registered user:', sanitizeUser(newUser));
 
     return HttpResponse.json(
@@ -234,7 +240,7 @@ export const handlers = [
           accessToken: mockAccessToken,
         },
       },
-      { status: 201 },
+      { status: 201 }
     );
   }),
 
@@ -243,7 +249,9 @@ export const handlers = [
     const authenticated = getMockSession();
     const currentUser = getCurrentUser();
 
+    // eslint-disable-next-line no-console
     console.log('[MSW] REFRESH REQUEST');
+    // eslint-disable-next-line no-console
     console.log('[MSW] Session:', authenticated);
 
     if (!authenticated || !currentUser) {
@@ -257,7 +265,7 @@ export const handlers = [
             message: 'No active session',
           },
         },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -269,7 +277,7 @@ export const handlers = [
           accessToken: mockAccessToken,
         },
       },
-      { status: 200 },
+      { status: 200 }
     );
   }),
 
@@ -287,7 +295,7 @@ export const handlers = [
             message: 'Not authenticated',
           },
         },
-        { status: 401 },
+        { status: 401 }
       );
     }
 
@@ -296,12 +304,13 @@ export const handlers = [
         success: true,
         data: sanitizeUser(currentUser),
       },
-      { status: 200 },
+      { status: 200 }
     );
   }),
 
   // Logout
   http.post(`${API_URL}/auth/logout`, () => {
+    // eslint-disable-next-line no-console
     console.log('[MSW] LOGOUT');
 
     setMockSession(false);
@@ -311,7 +320,7 @@ export const handlers = [
         success: true,
         data: null,
       },
-      { status: 200 },
+      { status: 200 }
     );
   }),
 
@@ -322,7 +331,7 @@ export const handlers = [
         success: true,
         data: null,
       },
-      { status: 200 },
+      { status: 200 }
     );
   }),
 
@@ -336,9 +345,7 @@ export const handlers = [
     let products = mockProducts;
 
     if (search) {
-      products = mockProducts.filter((product) =>
-        product.name.toLowerCase().includes(search),
-      );
+      products = mockProducts.filter((product) => product.name.toLowerCase().includes(search));
     }
 
     const limitedProducts = products.slice(0, limit);

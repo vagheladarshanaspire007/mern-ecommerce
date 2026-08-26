@@ -23,9 +23,7 @@ import { useAppSelector } from '@/store';
  * wanted to visit instead of always going to /dashboard.
  */
 export function ProtectedRoute() {
-  const { isAuthenticated, isInitialized } = useAppSelector(
-    (state) => state.auth,
-  );
+  const { isAuthenticated, isInitialized } = useAppSelector((state) => state.auth);
 
   const location = useLocation();
 
@@ -37,12 +35,7 @@ export function ProtectedRoute() {
   if (!isAuthenticated) {
     const redirect = `${location.pathname}${location.search}`;
 
-    return (
-      <Navigate
-        to={`/login?redirect=${encodeURIComponent(redirect)}`}
-        replace
-      />
-    );
+    return <Navigate to={`/login?redirect=${encodeURIComponent(redirect)}`} replace />;
   }
 
   return <Outlet />;

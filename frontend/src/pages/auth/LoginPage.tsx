@@ -3,11 +3,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { loginUser } from '@/store/slices/authSlice';
-import {
-  useNavigate,
-  Link,
-  useSearchParams,
-} from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 
 const loginSchema = z.object({
@@ -35,9 +31,7 @@ export default function LoginPage() {
    */
   const redirect = searchParams.get('redirect');
 
-  const from = redirect
-    ? decodeURIComponent(redirect)
-    : '/dashboard';
+  const from = redirect ? decodeURIComponent(redirect) : '/dashboard';
 
   const {
     register,
@@ -53,21 +47,15 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (data: LoginForm) => {
-    console.log('LOGIN SUBMIT:', data);
-
     const result = await dispatch(
       loginUser({
         email: data.email,
         password: data.password,
         rememberMe: data.rememberMe,
-      }),
+      })
     );
 
-    console.log('LOGIN RESULT:', result);
-
     if (loginUser.fulfilled.match(result)) {
-      console.log('LOGIN SUCCESS');
-
       toast.success('Welcome back!');
 
       navigate(from, { replace: true });
@@ -75,12 +63,7 @@ export default function LoginPage() {
       return;
     }
 
-    const errorMessage =
-      typeof result.payload === 'string'
-        ? result.payload
-        : 'Login failed';
-
-    console.log('LOGIN FAILED:', errorMessage);
+    const errorMessage = typeof result.payload === 'string' ? result.payload : 'Login failed';
 
     toast.error(errorMessage);
   };
@@ -94,21 +77,14 @@ export default function LoginPage() {
           noValidate
         >
           <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900">
-              Sign In
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-900">Sign In</h1>
 
-            <p className="mt-1 text-sm text-gray-500">
-              Sign in to your account to continue.
-            </p>
+            <p className="mt-1 text-sm text-gray-500">Sign in to your account to continue.</p>
           </div>
 
           {/* Email */}
           <div className="mb-4">
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
               Email
             </label>
 
@@ -119,17 +95,12 @@ export default function LoginPage() {
               placeholder="Enter your email"
               {...register('email')}
               aria-invalid={errors.email ? 'true' : 'false'}
-              aria-describedby={
-                errors.email ? 'email-error' : undefined
-              }
+              aria-describedby={errors.email ? 'email-error' : undefined}
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
 
             {errors.email && (
-              <p
-                id="email-error"
-                className="text-red-500 text-sm mt-1"
-              >
+              <p id="email-error" className="text-red-500 text-sm mt-1">
                 {errors.email.message}
               </p>
             )}
@@ -137,10 +108,7 @@ export default function LoginPage() {
 
           {/* Password */}
           <div className="mb-4">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700 mb-1"
-            >
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
               Password
             </label>
 
@@ -151,17 +119,12 @@ export default function LoginPage() {
               placeholder="Enter your password"
               {...register('password')}
               aria-invalid={errors.password ? 'true' : 'false'}
-              aria-describedby={
-                errors.password ? 'password-error' : undefined
-              }
+              aria-describedby={errors.password ? 'password-error' : undefined}
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
 
             {errors.password && (
-              <p
-                id="password-error"
-                className="text-red-500 text-sm mt-1"
-              >
+              <p id="password-error" className="text-red-500 text-sm mt-1">
                 {errors.password.message}
               </p>
             )}
@@ -170,19 +133,12 @@ export default function LoginPage() {
           {/* Remember Me */}
           <div className="flex items-center justify-between mb-6">
             <label className="flex items-center gap-2 text-sm text-gray-600">
-              <input
-                type="checkbox"
-                {...register('rememberMe')}
-                className="h-4 w-4"
-              />
+              <input type="checkbox" {...register('rememberMe')} className="h-4 w-4" />
 
               <span>Remember me</span>
             </label>
 
-            <Link
-              to="/forgot-password"
-              className="text-sm text-blue-600 hover:text-blue-700"
-            >
+            <Link to="/forgot-password" className="text-sm text-blue-600 hover:text-blue-700">
               Forgot password?
             </Link>
           </div>
@@ -199,10 +155,7 @@ export default function LoginPage() {
           {/* Register */}
           <p className="text-center text-sm text-gray-600 mt-6">
             Do not have an account?{' '}
-            <Link
-              to="/register"
-              className="text-blue-600 font-medium hover:text-blue-700"
-            >
+            <Link to="/register" className="text-blue-600 font-medium hover:text-blue-700">
               Create an account
             </Link>
           </p>

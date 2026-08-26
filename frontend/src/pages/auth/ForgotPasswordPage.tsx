@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -27,18 +28,16 @@ export default function ForgotPasswordPage() {
       });
 
       setSuccessMessage(
-        'If an account exists with this email, a password reset link has been sent.',
+        'If an account exists with this email, a password reset link has been sent.'
       );
     } catch (error) {
       if (axios.isAxiosError(error)) {
         setErrorMessage(
           error.response?.data?.error?.message ||
-            'Unable to process your request. Please try again.',
+            'Unable to process your request. Please try again.'
         );
       } else {
-        setErrorMessage(
-          'Something went wrong. Please try again.',
-        );
+        setErrorMessage('Something went wrong. Please try again.');
       }
     }
   };
@@ -48,13 +47,10 @@ export default function ForgotPasswordPage() {
       <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg">
         {/* Header */}
         <div className="mb-6 text-center">
-          <h1 className="text-2xl font-bold text-gray-900">
-            Forgot Password?
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900">Forgot Password?</h1>
 
           <p className="mt-2 text-sm text-gray-600">
-            Enter your email address and we'll send you a
-            password reset link.
+            Enter your email address and we'll send you a password reset link.
           </p>
         </div>
 
@@ -78,17 +74,10 @@ export default function ForgotPasswordPage() {
           </div>
         )}
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="space-y-5"
-          noValidate
-        >
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
           {/* Email */}
           <div>
-            <label
-              htmlFor="email"
-              className="mb-1 block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700">
               Email Address
             </label>
 
@@ -107,11 +96,7 @@ export default function ForgotPasswordPage() {
               className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
             />
 
-            {errors.email && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.email.message}
-              </p>
-            )}
+            {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
           </div>
 
           {/* Submit */}
