@@ -18,7 +18,6 @@ type ProductRow = {
   id: string;
 };
 
-
 async function seed() {
   await connectDB();
 
@@ -36,7 +35,7 @@ async function seed() {
         RETURNING id, name;
       `);
 
-      const categoryMap = new Map<string,string>(
+      const categoryMap = new Map<string, string>(
         categories.rows.map((category) => [category.name, category.id])
       );
 
@@ -60,9 +59,7 @@ async function seed() {
         [passwordHash]
       );
 
-      const userMap = new Map<string,string>(
-        users.rows.map((user) => [user.email, user.id])
-      );
+      const userMap = new Map<string, string>(users.rows.map((user) => [user.email, user.id]));
 
       // 3. Products
       const products = [
@@ -100,23 +97,14 @@ async function seed() {
           VALUES ($1, $2, $3, $4, $5)
           RETURNING id;
           `,
-          [
-            name,
-            description,
-            price,
-            stock,
-            categoryMap.get(categoryName as string),
-          ]
+          [name, description, price, stock, categoryMap.get(categoryName as string)]
         );
 
         productIds.push(result.rows[0].id);
       }
 
       // 4. Orders
-      const userIds = [
-        userMap.get('john@example.com'),
-        userMap.get('jane@example.com'),
-      ];
+      const userIds = [userMap.get('john@example.com'), userMap.get('jane@example.com')];
 
       for (let i = 0; i < 5; i++) {
         const userId = userIds[i % userIds.length];
@@ -141,12 +129,7 @@ async function seed() {
           VALUES ($1, $2, $3, $4)
           ON CONFLICT (user_id, product_id) DO NOTHING;
           `,
-          [
-            userId,
-            productId,
-            (i % 5) + 1,
-            `Sample review ${i + 1}`,
-          ]
+          [userId, productId, (i % 5) + 1, `Sample review ${i + 1}`]
         );
       }
     });
