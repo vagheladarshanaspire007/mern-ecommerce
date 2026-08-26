@@ -84,8 +84,8 @@ const migrations: { id: string; sql: string }[] = [
   `,
   },
   {
-  id: '005_add_category_to_products',
-  sql: `
+    id: '005_add_category_to_products',
+    sql: `
     ALTER TABLE products
     ADD COLUMN IF NOT EXISTS category_id UUID;
 
@@ -98,10 +98,10 @@ const migrations: { id: string; sql: string }[] = [
     CREATE INDEX IF NOT EXISTS idx_products_category_id
     ON products(category_id);
   `,
-},
-{
-  id: '006_create_orders_table',
-  sql: `
+  },
+  {
+    id: '006_create_orders_table',
+    sql: `
     CREATE TABLE IF NOT EXISTS orders (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       user_id UUID NOT NULL,
@@ -123,10 +123,10 @@ const migrations: { id: string; sql: string }[] = [
     CREATE INDEX IF NOT EXISTS idx_orders_status
       ON orders(status);
   `,
-},
-{
-  id: '007_create_order_items_table',
-  sql: `
+  },
+  {
+    id: '007_create_order_items_table',
+    sql: `
     CREATE TABLE IF NOT EXISTS order_items (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       order_id UUID NOT NULL,
@@ -151,10 +151,10 @@ const migrations: { id: string; sql: string }[] = [
     CREATE INDEX IF NOT EXISTS idx_order_items_product_id
       ON order_items(product_id);
   `,
-},
-{
-  id: '008_create_reviews_table',
-  sql: `
+  },
+  {
+    id: '008_create_reviews_table',
+    sql: `
     CREATE TABLE IF NOT EXISTS reviews (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       user_id UUID NOT NULL,
@@ -181,10 +181,10 @@ const migrations: { id: string; sql: string }[] = [
     CREATE INDEX IF NOT EXISTS idx_reviews_product_id
       ON reviews(product_id);
   `,
-},
-{
-  id: '009_create_cart_items_table',
-  sql: `
+  },
+  {
+    id: '009_create_cart_items_table',
+    sql: `
     CREATE TABLE IF NOT EXISTS cart_items (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       user_id UUID NOT NULL,
@@ -213,7 +213,7 @@ const migrations: { id: string; sql: string }[] = [
     CREATE INDEX IF NOT EXISTS idx_cart_items_product_id
       ON cart_items(product_id);
   `,
-},
+  },
 
   // TODO (Day 41): Add more tables: categories, orders, order_items, reviews, cart
 ];
