@@ -13,33 +13,35 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
 /**
  * Props for the reusable Button component.
  */
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export type ButtonProps = Readonly<
+  ButtonHTMLAttributes<HTMLButtonElement>
+> & {
   /**
    * Visual style of the button.
    *
    * @default "primary"
    */
-  variant?: ButtonVariant;
+  readonly variant?: ButtonVariant;
 
   /**
    * Controls the size of the button.
    *
    * @default "md"
    */
-  size?: ButtonSize;
+  readonly size?: ButtonSize;
 
   /**
    * Displays a loading spinner and prevents user interaction.
    *
    * @default false
    */
-  isLoading?: boolean;
+  readonly isLoading?: boolean;
 
   /**
    * Optional button content.
    */
-  children?: ReactNode;
-}
+  readonly children?: ReactNode;
+};
 
 /**
  * Reusable button component for application-wide actions.

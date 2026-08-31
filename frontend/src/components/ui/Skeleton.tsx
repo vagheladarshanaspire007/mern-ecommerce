@@ -11,7 +11,7 @@ export interface SkeletonProps {
    *
    * @default "100%"
    */
-  width?: string | number;
+  readonly width?: string | number;
 
   /**
    * Height of the skeleton.
@@ -20,19 +20,19 @@ export interface SkeletonProps {
    *
    * @default "1rem"
    */
-  height?: string | number;
+  readonly height?: string | number;
 
   /**
    * Controls the border radius of the skeleton.
    *
    * @default "md"
    */
-  rounded?: 'none' | 'sm' | 'md' | 'lg' | 'full';
+  readonly rounded?: 'none' | 'sm' | 'md' | 'lg' | 'full';
 
   /**
    * Additional CSS classes for customizing the skeleton.
    */
-  className?: string;
+  readonly className?: string;
 }
 
 /**
@@ -44,7 +44,10 @@ export function Skeleton({
   rounded = 'md',
   className = '',
 }: SkeletonProps) {
-  const roundedClasses: Record<NonNullable<SkeletonProps['rounded']>, string> = {
+  const roundedClasses: Record<
+    NonNullable<SkeletonProps['rounded']>,
+    string
+  > = {
     none: 'rounded-none',
     sm: 'rounded-sm',
     md: 'rounded-md',
@@ -60,7 +63,11 @@ export function Skeleton({
   return (
     <div
       aria-hidden="true"
-      className={['animate-pulse bg-gray-200', roundedClasses[rounded], className]
+      className={[
+        'animate-pulse bg-gray-200',
+        roundedClasses[rounded],
+        className,
+      ]
         .filter(Boolean)
         .join(' ')}
       style={style}
