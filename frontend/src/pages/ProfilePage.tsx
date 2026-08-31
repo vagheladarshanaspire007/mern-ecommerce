@@ -17,9 +17,7 @@ const ProfilePage = () => {
     },
   });
 
-  const onSubmit = (data: ProfileFormData) => {
-    void data;
-  };
+  const onSubmit = () => {};
 
   if (!user) {
     return (
