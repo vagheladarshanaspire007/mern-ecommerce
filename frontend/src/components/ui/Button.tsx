@@ -13,9 +13,7 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
 /**
  * Props for the reusable Button component.
  */
-export type ButtonProps = Readonly<
-  ButtonHTMLAttributes<HTMLButtonElement>
-> & {
+export type ButtonProps = Readonly<ButtonHTMLAttributes<HTMLButtonElement>> & {
   /**
    * Visual style of the button.
    *
