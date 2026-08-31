@@ -90,8 +90,11 @@ export default function OrderHistoryPage() {
           View your past orders and their current status.
         </p>
       </div>
-
-      <DataTable columns={columns} data={mockOrders} />
+<DataTable
+  columns={columns}
+  data={mockOrders}
+  getRowKey={(order) => order.id}
+/>
     </div>
   );
 }

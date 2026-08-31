@@ -7,10 +7,11 @@ export interface DataTableColumn<T> {
 }
 
 interface DataTableProps<T> {
-  columns: DataTableColumn<T>[];
-  data: T[];
-  loading?: boolean;
-  emptyMessage?: string;
+  readonly columns: DataTableColumn<T>[];
+  readonly data: T[];
+  readonly loading?: boolean;
+  readonly emptyMessage?: string;
+  readonly getRowKey: (row: T) => string;
 }
 
 export function DataTable<T extends object>({
@@ -18,6 +19,7 @@ export function DataTable<T extends object>({
   data,
   loading = false,
   emptyMessage = 'No records found.',
+  getRowKey,
 }: DataTableProps<T>) {
   if (loading) {
     return (
@@ -38,7 +40,10 @@ export function DataTable<T extends object>({
 
           <tbody>
             {Array.from({ length: 5 }).map((_, rowIndex) => (
-              <tr key={rowIndex} className="border-b">
+              <tr
+                key={`loading-row-${rowIndex}`}
+                className="border-b"
+              >
                 {columns.map((column) => (
                   <td key={String(column.key)} className="px-4 py-4">
                     <div className="h-4 w-3/4 animate-pulse rounded bg-gray-200" />
@@ -77,8 +82,8 @@ export function DataTable<T extends object>({
         </thead>
 
         <tbody>
-          {data.map((row, rowIndex) => (
-            <tr key={rowIndex} className="border-b">
+          {data.map((row) => (
+            <tr key={getRowKey(row)} className="border-b">
               {columns.map((column) => (
                 <td
                   key={String(column.key)}
