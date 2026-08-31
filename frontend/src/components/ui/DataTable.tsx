@@ -28,10 +28,7 @@ export function DataTable<T extends object>({
           <thead>
             <tr className="border-b">
               {columns.map((column) => (
-                <th
-                  key={String(column.key)}
-                  className="px-4 py-3 text-left text-sm font-medium"
-                >
+                <th key={String(column.key)} className="px-4 py-3 text-left text-sm font-medium">
                   {column.label}
                 </th>
               ))}
@@ -40,10 +37,7 @@ export function DataTable<T extends object>({
 
           <tbody>
             {Array.from({ length: 5 }).map((_, rowIndex) => (
-              <tr
-                key={`loading-row-${rowIndex}`}
-                className="border-b"
-              >
+              <tr key={`loading-row-${rowIndex}`} className="border-b">
                 {columns.map((column) => (
                   <td key={String(column.key)} className="px-4 py-4">
                     <div className="h-4 w-3/4 animate-pulse rounded bg-gray-200" />
@@ -71,10 +65,7 @@ export function DataTable<T extends object>({
         <thead>
           <tr className="border-b">
             {columns.map((column) => (
-              <th
-                key={String(column.key)}
-                className="px-4 py-3 text-left text-sm font-medium"
-              >
+              <th key={String(column.key)} className="px-4 py-3 text-left text-sm font-medium">
                 {column.label}
               </th>
             ))}
@@ -85,13 +76,8 @@ export function DataTable<T extends object>({
           {data.map((row) => (
             <tr key={getRowKey(row)} className="border-b">
               {columns.map((column) => (
-                <td
-                  key={String(column.key)}
-                  className="px-4 py-4 text-sm"
-                >
-                  {column.render
-                    ? column.render(row)
-                    : String(row[column.key as keyof T] ?? '')}
+                <td key={String(column.key)} className="px-4 py-4 text-sm">
+                  {column.render ? column.render(row) : String(row[column.key as keyof T] ?? '')}
                 </td>
               ))}
             </tr>
