@@ -7,35 +7,41 @@ export interface CardProps {
   /**
    * Main content displayed inside the card.
    */
-  children: ReactNode;
+  readonly children: ReactNode;
 
   /**
    * Optional content displayed in the card header.
    */
-  header?: ReactNode;
+  readonly header?: ReactNode;
 
   /**
    * Optional content displayed in the card footer.
    */
-  footer?: ReactNode;
+  readonly footer?: ReactNode;
 
   /**
    * Adds a shadow effect when the user hovers over the card.
    *
    * @default false
    */
-  hoverable?: boolean;
+  readonly hoverable?: boolean;
 
   /**
    * Additional CSS classes for customizing the card.
    */
-  className?: string;
+  readonly className?: string;
 }
 
 /**
  * Reusable card container for grouping related content.
  */
-export function Card({ children, header, footer, hoverable = false, className = '' }: CardProps) {
+export function Card({
+  children,
+  header,
+  footer,
+  hoverable = false,
+  className = '',
+}: CardProps) {
   return (
     <div
       className={[
@@ -47,11 +53,19 @@ export function Card({ children, header, footer, hoverable = false, className = 
         .filter(Boolean)
         .join(' ')}
     >
-      {header && <div className="border-b border-gray-200 px-4 py-3">{header}</div>}
+      {header && (
+        <div className="border-b border-gray-200 px-4 py-3">
+          {header}
+        </div>
+      )}
 
       <div className="p-4">{children}</div>
 
-      {footer && <div className="border-t border-gray-200 px-4 py-3">{footer}</div>}
+      {footer && (
+        <div className="border-t border-gray-200 px-4 py-3">
+          {footer}
+        </div>
+      )}
     </div>
   );
 }
