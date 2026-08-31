@@ -60,8 +60,7 @@ const columns = [
   {
     key: 'createdAt',
     label: 'Date',
-    render: (order: Order) =>
-      new Date(order.createdAt).toLocaleDateString(),
+    render: (order: Order) => new Date(order.createdAt).toLocaleDateString(),
   },
   {
     key: 'status',
@@ -90,11 +89,7 @@ export default function OrderHistoryPage() {
           View your past orders and their current status.
         </p>
       </div>
-<DataTable
-  columns={columns}
-  data={mockOrders}
-  getRowKey={(order) => order.id}
-/>
+      <DataTable columns={columns} data={mockOrders} getRowKey={(order) => order.id} />
     </div>
   );
 }
