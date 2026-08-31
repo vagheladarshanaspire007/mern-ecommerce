@@ -10,12 +10,8 @@ const AdminDashboardPage = () => {
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">
-          Admin Dashboard
-        </h1>
-        <p className="mt-2 text-gray-500">
-          Manage products, orders, and users.
-        </p>
+        <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+        <p className="mt-2 text-gray-500">Manage products, orders, and users.</p>
       </div>
 
       <div className="border-b">
@@ -38,16 +34,11 @@ const AdminDashboardPage = () => {
       </div>
 
       <div className="rounded-lg border bg-white p-6">
-        <h2 className="text-lg font-semibold text-gray-900">
-          {activeTab}
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-900">{activeTab}</h2>
 
         <div className="mt-6 space-y-4">
           {Array.from({ length: 5 }).map((_, index) => (
-            <div
-              key={index}
-              className="h-12 w-full animate-pulse rounded bg-gray-200"
-            />
+            <div key={index} className="h-12 w-full animate-pulse rounded bg-gray-200" />
           ))}
         </div>
       </div>
