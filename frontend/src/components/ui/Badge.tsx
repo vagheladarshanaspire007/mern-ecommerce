@@ -30,11 +30,7 @@ export interface BadgeProps {
 /**
  * Reusable badge component for statuses, counts, and labels.
  */
-export function Badge({
-  variant = 'default',
-  children,
-  className = '',
-}: BadgeProps) {
+export function Badge({ variant = 'default', children, className = '' }: BadgeProps) {
   const variantClasses: Record<BadgeVariant, string> = {
     default: 'bg-gray-100 text-gray-700',
     success: 'bg-green-100 text-green-700',

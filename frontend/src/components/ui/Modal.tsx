@@ -1,4 +1,4 @@
-import { useEffect,useRef,type MouseEvent,type ReactNode } from 'react';
+import { useEffect, useRef, type MouseEvent, type ReactNode } from 'react';
 export interface ModalProps {
   readonly isOpen: boolean;
   readonly onClose: () => void;
@@ -35,8 +35,7 @@ export function Modal({
       return;
     }
 
-    previouslyFocusedElement.current =
-      document.activeElement as HTMLElement | null;
+    previouslyFocusedElement.current = document.activeElement as HTMLElement | null;
 
     if (!modal.open) {
       modal.showModal();
@@ -52,9 +51,7 @@ export function Modal({
     ].join(',');
 
     const getFocusableElements = () =>
-      Array.from(
-        modal.querySelectorAll<HTMLElement>(focusableSelector),
-      );
+      Array.from(modal.querySelectorAll<HTMLElement>(focusableSelector));
 
     const focusableElements = getFocusableElements();
 
@@ -86,16 +83,10 @@ export function Modal({
       const firstElement = elements[0];
       const lastElement = elements[elements.length - 1];
 
-      if (
-        event.shiftKey &&
-        document.activeElement === firstElement
-      ) {
+      if (event.shiftKey && document.activeElement === firstElement) {
         event.preventDefault();
         lastElement.focus();
-      } else if (
-        !event.shiftKey &&
-        document.activeElement === lastElement
-      ) {
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
         event.preventDefault();
         firstElement.focus();
       }
@@ -108,13 +99,8 @@ export function Modal({
     };
   }, [isOpen, onClose]);
 
-  const handleBackdropClick = (
-    event: MouseEvent<HTMLDialogElement>,
-  ) => {
-    if (
-      event.target === event.currentTarget &&
-      !preventBackdropClose
-    ) {
+  const handleBackdropClick = (event: MouseEvent<HTMLDialogElement>) => {
+    if (event.target === event.currentTarget && !preventBackdropClose) {
       onClose();
     }
   };
@@ -132,10 +118,7 @@ export function Modal({
     >
       <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
         {title ? (
-          <h2
-            id="modal-title"
-            className="text-lg font-semibold text-gray-900"
-          >
+          <h2 id="modal-title" className="text-lg font-semibold text-gray-900">
             {title}
           </h2>
         ) : (

@@ -35,13 +35,7 @@ export interface CardProps {
 /**
  * Reusable card container for grouping related content.
  */
-export function Card({
-  children,
-  header,
-  footer,
-  hoverable = false,
-  className = '',
-}: CardProps) {
+export function Card({ children, header, footer, hoverable = false, className = '' }: CardProps) {
   return (
     <div
       className={[
@@ -53,19 +47,11 @@ export function Card({
         .filter(Boolean)
         .join(' ')}
     >
-      {header && (
-        <div className="border-b border-gray-200 px-4 py-3">
-          {header}
-        </div>
-      )}
+      {header && <div className="border-b border-gray-200 px-4 py-3">{header}</div>}
 
       <div className="p-4">{children}</div>
 
-      {footer && (
-        <div className="border-t border-gray-200 px-4 py-3">
-          {footer}
-        </div>
-      )}
+      {footer && <div className="border-t border-gray-200 px-4 py-3">{footer}</div>}
     </div>
   );
 }

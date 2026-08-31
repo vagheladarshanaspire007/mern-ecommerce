@@ -3,8 +3,7 @@ import { useId, type InputHTMLAttributes, type ReactNode } from 'react';
 /**
  * Props for the reusable Input component.
  */
-export interface InputProps
-  extends Readonly<InputHTMLAttributes<HTMLInputElement>> {
+export interface InputProps extends Readonly<InputHTMLAttributes<HTMLInputElement>> {
   /**
    * Text displayed above the input.
    */
@@ -63,19 +62,13 @@ export function Input({
 
   if (error) {
     feedbackMessage = (
-      <p
-        id={`${inputId}-error`}
-        className="mt-1.5 text-sm text-red-600"
-      >
+      <p id={`${inputId}-error`} className="mt-1.5 text-sm text-red-600">
         {error}
       </p>
     );
   } else if (helperText) {
     feedbackMessage = (
-      <p
-        id={`${inputId}-helper`}
-        className="mt-1.5 text-sm text-gray-500"
-      >
+      <p id={`${inputId}-helper`} className="mt-1.5 text-sm text-gray-500">
         {helperText}
       </p>
     );
@@ -84,10 +77,7 @@ export function Input({
   return (
     <div className="w-full">
       {label && (
-        <label
-          htmlFor={inputId}
-          className="mb-1.5 block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor={inputId} className="mb-1.5 block text-sm font-medium text-gray-700">
           {label}
         </label>
       )}

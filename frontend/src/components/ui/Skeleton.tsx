@@ -44,10 +44,7 @@ export function Skeleton({
   rounded = 'md',
   className = '',
 }: SkeletonProps) {
-  const roundedClasses: Record<
-    NonNullable<SkeletonProps['rounded']>,
-    string
-  > = {
+  const roundedClasses: Record<NonNullable<SkeletonProps['rounded']>, string> = {
     none: 'rounded-none',
     sm: 'rounded-sm',
     md: 'rounded-md',
@@ -63,11 +60,7 @@ export function Skeleton({
   return (
     <div
       aria-hidden="true"
-      className={[
-        'animate-pulse bg-gray-200',
-        roundedClasses[rounded],
-        className,
-      ]
+      className={['animate-pulse bg-gray-200', roundedClasses[rounded], className]
         .filter(Boolean)
         .join(' ')}
       style={style}
