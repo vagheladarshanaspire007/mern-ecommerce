@@ -12,12 +12,8 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export const sendPasswordResetEmail = async (
-  email: string,
-  resetToken: string
-): Promise<void> => {
-  const frontendUrl =
-    process.env.FRONTEND_URL || 'http://localhost:3000';
+export const sendPasswordResetEmail = async (email: string, resetToken: string): Promise<void> => {
+  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 
   await transporter.sendMail({
     from: process.env.EMAIL_FROM || process.env.SMTP_USER,
