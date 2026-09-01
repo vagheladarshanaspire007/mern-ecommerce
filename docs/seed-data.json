@@ -1,0 +1,30 @@
+{
+  "users": [
+    {
+      "role": "admin",
+      "email": "admin@example.com",
+      "password": "Password123!"
+    },
+    {
+      "role": "user",
+      "email": "john@example.com",
+      "password": "Password123!"
+    },
+    {
+      "role": "user",
+      "email": "jane@example.com",
+      "password": "Password123!"
+    }
+  ],
+  "categories": [
+    "Electronics",
+    "Clothing",
+    "Books"
+  ],
+  "summary": {
+    "categories": 3,
+    "products": 20,
+    "orders": 5,
+    "reviews": 10
+  }
+}
