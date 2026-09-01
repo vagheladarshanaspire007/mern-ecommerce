@@ -81,10 +81,7 @@ export const getMe = async (req: Request, res: Response): Promise<void> => {
   });
 };
 
-export const forgotPassword = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const forgotPassword = async (req: Request, res: Response): Promise<void> => {
   const data = req.body as ForgotPasswordDto;
 
   await AuthService.forgotPassword(data);
@@ -97,10 +94,7 @@ export const forgotPassword = async (
   });
 };
 
-export const resetPassword = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const resetPassword = async (req: Request, res: Response): Promise<void> => {
   const data = req.body as ResetPasswordDto;
 
   await AuthService.resetPassword(data);
