@@ -1,8 +1,5 @@
 import { Router } from 'express';
-import {
-  authRateLimiter,
-  passwordResetRateLimiter,
-} from '../middleware/security/rateLimiter';
+import { authRateLimiter, passwordResetRateLimiter } from '../middleware/security/rateLimiter';
 import { authenticate } from '../middleware/auth/authenticate';
 import { validateRequest } from '../middleware/validation/validateRequest';
 import {
@@ -23,23 +20,13 @@ import {
 
 const router = Router();
 
-router.post(
-  '/register',
-  authRateLimiter,
-  validateRequest(registerSchema),
-  (req, res, next) => {
-    void register(req, res).catch(next);
-  }
-);
+router.post('/register', authRateLimiter, validateRequest(registerSchema), (req, res, next) => {
+  void register(req, res).catch(next);
+});
 
-router.post(
-  '/login',
-  authRateLimiter,
-  validateRequest(loginSchema),
-  (req, res, next) => {
-    void login(req, res).catch(next);
-  }
-);
+router.post('/login', authRateLimiter, validateRequest(loginSchema), (req, res, next) => {
+  void login(req, res).catch(next);
+});
 
 router.post('/refresh', (req, res, next) => {
   void refresh(req, res).catch(next);
@@ -54,13 +41,9 @@ router.post(
   }
 );
 
-router.post(
-  '/reset-password',
-  validateRequest(resetPasswordSchema),
-  (req, res, next) => {
-    void resetPassword(req, res).catch(next);
-  }
-);
+router.post('/reset-password', validateRequest(resetPasswordSchema), (req, res, next) => {
+  void resetPassword(req, res).catch(next);
+});
 
 router.post('/logout', authenticate, (req, res, next) => {
   void logout(req, res).catch(next);
