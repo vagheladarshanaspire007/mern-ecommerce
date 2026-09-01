@@ -70,6 +70,151 @@ const migrations: { id: string; sql: string }[] = [
       CREATE INDEX IF NOT EXISTS idx_products_stock ON products(stock);
     `,
   },
+
+  {
+    id: '004_create_categories_table',
+    sql: `
+    CREATE TABLE IF NOT EXISTS categories (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      name VARCHAR(100) NOT NULL UNIQUE,
+      description TEXT,
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW()
+    );
+  `,
+  },
+  {
+    id: '005_add_category_to_products',
+    sql: `
+    ALTER TABLE products
+    ADD COLUMN IF NOT EXISTS category_id UUID;
+
+    ALTER TABLE products
+    ADD CONSTRAINT fk_products_category
+    FOREIGN KEY (category_id)
+    REFERENCES categories(id)
+    ON DELETE RESTRICT;
+
+    CREATE INDEX IF NOT EXISTS idx_products_category_id
+    ON products(category_id);
+  `,
+  },
+  {
+    id: '006_create_orders_table',
+    sql: `
+    CREATE TABLE IF NOT EXISTS orders (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      user_id UUID NOT NULL,
+      status VARCHAR(20) NOT NULL DEFAULT 'pending'
+        CHECK (status IN ('pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled')),
+      total_amount NUMERIC(10, 2) NOT NULL,
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW(),
+
+      CONSTRAINT fk_orders_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE RESTRICT
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_orders_user_id
+      ON orders(user_id);
+
+    CREATE INDEX IF NOT EXISTS idx_orders_status
+      ON orders(status);
+  `,
+  },
+  {
+    id: '007_create_order_items_table',
+    sql: `
+    CREATE TABLE IF NOT EXISTS order_items (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      order_id UUID NOT NULL,
+      product_id UUID NOT NULL,
+      quantity INTEGER NOT NULL CHECK (quantity > 0),
+      unit_price NUMERIC(10, 2) NOT NULL,
+
+      CONSTRAINT fk_order_items_order
+        FOREIGN KEY (order_id)
+        REFERENCES orders(id)
+        ON DELETE CASCADE,
+
+      CONSTRAINT fk_order_items_product
+        FOREIGN KEY (product_id)
+        REFERENCES products(id)
+        ON DELETE RESTRICT
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_order_items_order_id
+      ON order_items(order_id);
+
+    CREATE INDEX IF NOT EXISTS idx_order_items_product_id
+      ON order_items(product_id);
+  `,
+  },
+  {
+    id: '008_create_reviews_table',
+    sql: `
+    CREATE TABLE IF NOT EXISTS reviews (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      user_id UUID NOT NULL,
+      product_id UUID NOT NULL,
+      rating INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
+      comment TEXT,
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW(),
+
+      CONSTRAINT fk_reviews_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+      CONSTRAINT fk_reviews_product
+        FOREIGN KEY (product_id)
+        REFERENCES products(id)
+        ON DELETE CASCADE,
+
+      CONSTRAINT uq_reviews_user_product
+        UNIQUE (user_id, product_id)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_reviews_product_id
+      ON reviews(product_id);
+  `,
+  },
+  {
+    id: '009_create_cart_items_table',
+    sql: `
+    CREATE TABLE IF NOT EXISTS cart_items (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      user_id UUID NOT NULL,
+      product_id UUID NOT NULL,
+      quantity INTEGER NOT NULL CHECK (quantity > 0),
+      created_at TIMESTAMP DEFAULT NOW(),
+      updated_at TIMESTAMP DEFAULT NOW(),
+
+      CONSTRAINT fk_cart_items_user
+        FOREIGN KEY (user_id)
+        REFERENCES users(id)
+        ON DELETE CASCADE,
+
+      CONSTRAINT fk_cart_items_product
+        FOREIGN KEY (product_id)
+        REFERENCES products(id)
+        ON DELETE CASCADE,
+
+      CONSTRAINT uq_cart_items_user_product
+        UNIQUE (user_id, product_id)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_cart_items_user_id
+      ON cart_items(user_id);
+
+    CREATE INDEX IF NOT EXISTS idx_cart_items_product_id
+      ON cart_items(product_id);
+  `,
+  },
+
   // TODO (Day 41): Add more tables: categories, orders, order_items, reviews, cart
 ];
 
