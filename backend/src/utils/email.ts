@@ -1,9 +1,11 @@
-import nodemailer from 'nodemailer';
+import * as nodemailer from 'nodemailer';
+
+const smtpPort = parseInt(process.env.SMTP_PORT || '587', 10);
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
-  port: parseInt(process.env.SMTP_PORT || '587', 10),
-  secure: process.env.SMTP_PORT === '465',
+  port: smtpPort,
+  secure: smtpPort === 465,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
@@ -14,7 +16,8 @@ export const sendPasswordResetEmail = async (
   email: string,
   resetToken: string
 ): Promise<void> => {
-  const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+  const frontendUrl =
+    process.env.FRONTEND_URL || 'http://localhost:3000';
 
   await transporter.sendMail({
     from: process.env.EMAIL_FROM || process.env.SMTP_USER,
