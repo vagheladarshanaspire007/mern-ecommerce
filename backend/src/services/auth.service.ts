@@ -3,11 +3,7 @@ import bcrypt from 'bcryptjs';
 import { cacheDel, cacheGet, cacheSet } from '../config/redis';
 import { UserModel, type User } from '../models/user.model';
 import { AppError } from '../utils/AppError';
-import {
-  generateAccessToken,
-  generateRefreshToken,
-  verifyRefreshToken,
-} from '../utils/jwt';
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt';
 import { sendPasswordResetEmail } from '../utils/email';
 import type {
   ForgotPasswordDto,
@@ -50,11 +46,7 @@ export const AuthService = {
     const existing = await UserModel.findByEmail(data.email);
 
     if (existing) {
-      throw new AppError(
-        409,
-        'EMAIL_TAKEN',
-        'An account with this email already exists'
-      );
+      throw new AppError(409, 'EMAIL_TAKEN', 'An account with this email already exists');
     }
 
     const user = await UserModel.create(data);
@@ -70,24 +62,13 @@ export const AuthService = {
     const user = await UserModel.findByEmail(data.email);
 
     if (!user) {
-      throw new AppError(
-        401,
-        'INVALID_CREDENTIALS',
-        INVALID_CREDENTIALS_MESSAGE
-      );
+      throw new AppError(401, 'INVALID_CREDENTIALS', INVALID_CREDENTIALS_MESSAGE);
     }
 
-    const isValid = await UserModel.verifyPassword(
-      data.password,
-      user.passwordHash
-    );
+    const isValid = await UserModel.verifyPassword(data.password, user.passwordHash);
 
     if (!isValid) {
-      throw new AppError(
-        401,
-        'INVALID_CREDENTIALS',
-        INVALID_CREDENTIALS_MESSAGE
-      );
+      throw new AppError(401, 'INVALID_CREDENTIALS', INVALID_CREDENTIALS_MESSAGE);
     }
 
     const tokens = await createTokens(user);
@@ -152,37 +133,23 @@ export const AuthService = {
 
     const resetToken = crypto.randomUUID();
 
-    await cacheSet(
-      `password-reset:${resetToken}`,
-      user.id,
-      RESET_TOKEN_TTL
-    );
+    await cacheSet(`password-reset:${resetToken}`, user.id, RESET_TOKEN_TTL);
 
     await sendPasswordResetEmail(user.email, resetToken);
   },
 
   resetPassword: async (data: ResetPasswordDto) => {
-    const userId = await cacheGet<string>(
-      `password-reset:${data.token}`
-    );
+    const userId = await cacheGet<string>(`password-reset:${data.token}`);
 
     if (!userId) {
-      throw new AppError(
-        400,
-        'INVALID_RESET_TOKEN',
-        'Invalid or expired reset token'
-      );
+      throw new AppError(400, 'INVALID_RESET_TOKEN', 'Invalid or expired reset token');
     }
 
     const user = await UserModel.findById(userId);
 
     if (!user) {
       await cacheDel(`password-reset:${data.token}`);
-      throw new AppError(
-        400,
-        'INVALID_RESET_TOKEN',
-        'Invalid or expired reset token'
-      );
+      throw new AppError(400, 'INVALID_RESET_TOKEN', 'Invalid or expired reset token');
     }
 
     const passwordHash = await bcrypt.hash(data.password, 12);
