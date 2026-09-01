@@ -89,7 +89,7 @@ export const UserModel = {
   verifyPassword: async (plainText: string, hash: string): Promise<boolean> => {
     return bcrypt.compare(plainText, hash);
   },
-    updatePassword: async (id: string, passwordHash: string): Promise<void> => {
+  updatePassword: async (id: string, passwordHash: string): Promise<void> => {
     await query(
       `
         UPDATE users
