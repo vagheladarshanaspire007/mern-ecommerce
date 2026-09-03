@@ -37,7 +37,7 @@ export const validateRequest =
   (req: Request, _res: Response, next: NextFunction): void => {
     const validatedReq = req as ValidatedRequest;
     // parse() throws ZodError on failure — express-async-errors forwards it to errorHandler
-    const parsed = schema.parse(validatedReq[target]);
+    const parsed: unknown = schema.parse(validatedReq[target]);
     // Replace with parsed data — Zod strips unknown fields (security)
     validatedReq[target] = parsed;
     next();
