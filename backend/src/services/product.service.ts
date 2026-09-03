@@ -1,11 +1,11 @@
-import {
-  cacheGet,
-  cacheInvalidatePattern,
-  cacheSet,
-} from '../config/redis';
+import { cacheGet, cacheInvalidatePattern, cacheSet } from '../config/redis';
 import { ProductModel, type ProductInput, type ProductUpdateInput } from '../models/product.model';
 import { AppError } from '../utils/AppError';
-import type { CreateProductDto, ListProductsDto, UpdateProductDto } from '../validators/product.validator';
+import type {
+  CreateProductDto,
+  ListProductsDto,
+  UpdateProductDto,
+} from '../validators/product.validator';
 
 const CACHE_TTL = 300;
 
@@ -71,9 +71,7 @@ export const ProductService = {
       params.push(cursor.id);
       const idParam = params.length;
 
-      conditions.push(
-        `(p.created_at, p.id) < ($${createdAtParam}, $${idParam})`
-      );
+      conditions.push(`(p.created_at, p.id) < ($${createdAtParam}, $${idParam})`);
     }
 
     const result = await ProductModel.findMany(

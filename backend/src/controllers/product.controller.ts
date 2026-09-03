@@ -43,10 +43,7 @@ export const createProduct = async (req: Request, res: Response): Promise<void> 
 };
 
 export const updateProduct = async (req: Request, res: Response): Promise<void> => {
-  const product = await ProductService.update(
-    req.params.id,
-    req.body as UpdateProductDto
-  );
+  const product = await ProductService.update(req.params.id, req.body as UpdateProductDto);
 
   res.json({
     success: true,
