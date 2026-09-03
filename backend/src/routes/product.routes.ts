@@ -22,23 +22,13 @@ router.get('/categories', (req, res, next) => {
   void getCategories(req, res).catch(next);
 });
 
-router.get(
-  '/',
-  optionalAuth,
-  validateRequest(listProductsSchema, 'query'),
-  (req, res, next) => {
-    void listProducts(req, res).catch(next);
-  }
-);
+router.get('/', optionalAuth, validateRequest(listProductsSchema, 'query'), (req, res, next) => {
+  void listProducts(req, res).catch(next);
+});
 
-router.get(
-  '/:id',
-  optionalAuth,
-  validateRequest(productIdSchema, 'params'),
-  (req, res, next) => {
-    void getProduct(req, res).catch(next);
-  }
-);
+router.get('/:id', optionalAuth, validateRequest(productIdSchema, 'params'), (req, res, next) => {
+  void getProduct(req, res).catch(next);
+});
 
 router.post(
   '/',
