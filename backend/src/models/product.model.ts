@@ -35,11 +35,7 @@ export interface ProductUpdateInput {
 }
 
 export const ProductModel = {
-  findMany: async (
-    where: string,
-    params: unknown[],
-    limit: number
-  ): Promise<Product[]> => {
+  findMany: async (where: string, params: unknown[], limit: number): Promise<Product[]> => {
     const { rows } = await query<Product>(
       `
         SELECT
