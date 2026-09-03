@@ -19,7 +19,7 @@ const decodeCursor = (cursor: string): { createdAt: string; id: string } => {
       id: string;
     };
 
-    if (!decoded.createdAt || !decoded.id) throw new Error();
+    if (!decoded.createdAt || !decoded.id) throw new Error('Invalid cursor payload');
     return decoded;
   } catch {
     throw new AppError(400, 'INVALID_CURSOR', 'Invalid pagination cursor');
