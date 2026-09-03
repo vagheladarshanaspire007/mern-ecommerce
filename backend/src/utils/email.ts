@@ -1,6 +1,6 @@
 import * as nodemailer from 'nodemailer';
 
-const smtpPort = parseInt(process.env.SMTP_PORT || '587', 10);
+const smtpPort = Number.parseInt(process.env.SMTP_PORT || '587', 10);
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
