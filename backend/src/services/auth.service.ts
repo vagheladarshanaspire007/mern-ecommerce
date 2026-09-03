@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 import bcrypt from 'bcryptjs';
 import { cacheDel, cacheGet, cacheSet } from '../config/redis';
 import { UserModel, type User } from '../models/user.model';
