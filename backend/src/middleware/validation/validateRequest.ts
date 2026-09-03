@@ -18,7 +18,7 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
-import { ZodSchema } from 'zod';
+import { ZodTypeAny } from 'zod';
 
 type ValidationTarget = 'body' | 'params' | 'query';
 type ValidatedRequest = Omit<Request, ValidationTarget> & Record<ValidationTarget, unknown>;
@@ -33,7 +33,7 @@ type ValidatedRequest = Omit<Request, ValidationTarget> & Record<ValidationTarge
  *   router.get('/users/:id', validateRequest(idParamSchema, 'params'), getUser)
  */
 export const validateRequest =
-  <TOutput>(schema: ZodSchema<TOutput>, target: ValidationTarget = 'body') =>
+  (schema: ZodTypeAny, target: ValidationTarget = 'body') =>
   (req: Request, _res: Response, next: NextFunction): void => {
     const validatedReq = req as ValidatedRequest;
     // parse() throws ZodError on failure — express-async-errors forwards it to errorHandler
