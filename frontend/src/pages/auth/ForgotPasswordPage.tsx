@@ -1,12 +1,20 @@
-/* eslint-disable react/no-unescaped-entities */
 import { useState } from 'react';
+
 import { Link } from 'react-router-dom';
+
 import { useForm } from 'react-hook-form';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+
+import { z } from 'zod';
+
 import axios from 'axios';
 
-type ForgotPasswordForm = {
-  email: string;
-};
+const forgotPasswordSchema = z.object({
+  email: z.string().trim().email('Please enter a valid email address'),
+});
+
+type ForgotPasswordForm = z.infer<typeof forgotPasswordSchema>;
 
 export default function ForgotPasswordPage() {
   const [successMessage, setSuccessMessage] = useState('');
@@ -16,7 +24,12 @@ export default function ForgotPasswordPage() {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<ForgotPasswordForm>();
+  } = useForm<ForgotPasswordForm>({
+    resolver: zodResolver(forgotPasswordSchema),
+    defaultValues: {
+      email: '',
+    },
+  });
 
   const onSubmit = async (data: ForgotPasswordForm) => {
     setSuccessMessage('');
@@ -24,7 +37,7 @@ export default function ForgotPasswordPage() {
 
     try {
       await axios.post('/api/v1/auth/forgot-password', {
-        email: data.email,
+        email: data.email.trim(),
       });
 
       setSuccessMessage(
@@ -45,26 +58,23 @@ export default function ForgotPasswordPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-lg">
-        {/* Header */}
         <div className="mb-6 text-center">
           <h1 className="text-2xl font-bold text-gray-900">Forgot Password?</h1>
 
           <p className="mt-2 text-sm text-gray-600">
-            Enter your email address and we'll send you a password reset link.
+            Enter your email address and we&apos;ll send you a password reset link.
           </p>
         </div>
 
-        {/* Success */}
         {successMessage && (
-          <div
-            role="status"
-            className="mb-4 rounded-md border border-green-200 bg-green-50 p-3 text-sm text-green-700"
+          <output
+            aria-live="polite"
+            className="mb-4 block rounded-md border border-green-200 bg-green-50 p-3 text-sm text-green-700"
           >
             {successMessage}
-          </div>
+          </output>
         )}
 
-        {/* Error */}
         {errorMessage && (
           <div
             role="alert"
@@ -75,7 +85,6 @@ export default function ForgotPasswordPage() {
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
-          {/* Email */}
           <div>
             <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700">
               Email Address
@@ -86,20 +95,19 @@ export default function ForgotPasswordPage() {
               type="email"
               autoComplete="email"
               placeholder="bhoomi@example.com"
-              {...register('email', {
-                required: 'Email is required',
-                pattern: {
-                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                  message: 'Please enter a valid email address',
-                },
-              })}
+              {...register('email')}
+              aria-invalid={errors.email ? 'true' : 'false'}
+              aria-describedby={errors.email ? 'email-error' : undefined}
               className="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
             />
 
-            {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
+            {errors.email && (
+              <p id="email-error" className="mt-1 text-sm text-red-600">
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={isSubmitting}
@@ -109,7 +117,6 @@ export default function ForgotPasswordPage() {
           </button>
         </form>
 
-        {/* Back to Login */}
         <div className="mt-6 text-center text-sm">
           <Link
             to="/login"

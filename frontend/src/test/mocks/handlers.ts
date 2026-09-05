@@ -36,17 +36,13 @@ const mockAccessToken = 'mock-access-token-ec201';
 const SESSION_KEY = 'mock-auth-session';
 const CURRENT_USER_KEY = 'mock-current-user';
 
-const getMockSession = (): boolean => {
-  return localStorage.getItem(SESSION_KEY) === 'true';
+const createMockSession = (): void => {
+  localStorage.setItem(SESSION_KEY, 'true');
 };
 
-const setMockSession = (authenticated: boolean): void => {
-  if (authenticated) {
-    localStorage.setItem(SESSION_KEY, 'true');
-  } else {
-    localStorage.removeItem(SESSION_KEY);
-    localStorage.removeItem(CURRENT_USER_KEY);
-  }
+const clearMockSession = (): void => {
+  localStorage.removeItem(SESSION_KEY);
+  localStorage.removeItem(CURRENT_USER_KEY);
 };
 
 const setCurrentUser = (userId: string): void => {
@@ -54,16 +50,19 @@ const setCurrentUser = (userId: string): void => {
 };
 
 const getCurrentUser = (): MockStoredUser | null => {
+  const sessionExists = localStorage.getItem(SESSION_KEY) === 'true';
   const userId = localStorage.getItem(CURRENT_USER_KEY);
 
-  if (!userId) {
+  if (!sessionExists || !userId) {
     return null;
   }
 
+  // .find() is intentional because the complete user object is required.
   return mockUsers.find((user) => user.id === userId) ?? null;
 };
 
 const sanitizeUser = (user: MockStoredUser): MockUser => {
+  // Password is intentionally excluded from the response.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { password: _password, ...safeUser } = user;
 
@@ -107,7 +106,9 @@ const mockProducts = [
 ];
 
 export const handlers = [
+  // ============================================================
   // Login
+  // ============================================================
   http.post(`${API_URL}/auth/login`, async ({ request }) => {
     const body = (await request.json()) as {
       email: string;
@@ -115,18 +116,13 @@ export const handlers = [
       rememberMe?: boolean;
     };
 
-    // eslint-disable-next-line no-console
-    console.log('[MSW] LOGIN REQUEST:', body);
+    const normalizedEmail = body.email.trim().toLowerCase();
 
     const user = mockUsers.find(
-      (item) =>
-        item.email.toLowerCase() === body.email.toLowerCase() && item.password === body.password
+      (item) => item.email.toLowerCase() === normalizedEmail && item.password === body.password
     );
 
     if (!user) {
-      // eslint-disable-next-line no-console
-      console.log('[MSW] Login failed');
-
       return HttpResponse.json(
         {
           success: false,
@@ -139,15 +135,9 @@ export const handlers = [
       );
     }
 
-    setMockSession(true);
+    // Login creates the authenticated session.
+    createMockSession();
     setCurrentUser(user.id);
-
-    // eslint-disable-next-line no-console
-    console.log('[MSW] Login successful');
-    // eslint-disable-next-line no-console
-    console.log('[MSW] User:', sanitizeUser(user));
-    // eslint-disable-next-line no-console
-    console.log('[MSW] Session:', getMockSession());
 
     return HttpResponse.json(
       {
@@ -161,7 +151,9 @@ export const handlers = [
     );
   }),
 
+  // ============================================================
   // Register
+  // ============================================================
   http.post(`${API_URL}/auth/register`, async ({ request }) => {
     const body = (await request.json()) as {
       firstName: string;
@@ -171,18 +163,13 @@ export const handlers = [
       confirmPassword: string;
     };
 
-    // eslint-disable-next-line no-console
-    console.log('[MSW] REGISTER REQUEST:', {
-      firstName: body.firstName,
-      lastName: body.lastName,
-      email: body.email,
-    });
-
     const normalizedEmail = body.email.trim().toLowerCase();
 
-    const existingUser = mockUsers.find((user) => user.email.toLowerCase() === normalizedEmail);
+    const emailAlreadyRegistered = mockUsers.some(
+      (user) => user.email.toLowerCase() === normalizedEmail
+    );
 
-    if (existingUser) {
+    if (emailAlreadyRegistered) {
       return HttpResponse.json(
         {
           success: false,
@@ -212,8 +199,8 @@ export const handlers = [
 
     const newUser: MockStoredUser = {
       id: `mock-user-${Date.now()}`,
-      firstName: body.firstName,
-      lastName: body.lastName,
+      firstName: body.firstName.trim(),
+      lastName: body.lastName.trim(),
       email: normalizedEmail,
       password: body.password,
       role: 'user',
@@ -224,38 +211,36 @@ export const handlers = [
 
     mockUsers.push(newUser);
 
-    setMockSession(true);
-    setCurrentUser(newUser.id);
-
-    // eslint-disable-next-line no-console
-    console.log('[MSW] Registration successful');
-    // eslint-disable-next-line no-console
-    console.log('[MSW] Registered user:', sanitizeUser(newUser));
-
+    /*
+     * Registration does NOT authenticate the user.
+     *
+     * The user must go to the login page and authenticate
+     * using the newly registered email and password.
+     *
+     * Therefore:
+     * - No createMockSession()
+     * - No setCurrentUser()
+     * - No accessToken in the response
+     */
     return HttpResponse.json(
       {
         success: true,
         data: {
           user: sanitizeUser(newUser),
-          accessToken: mockAccessToken,
         },
       },
       { status: 201 }
     );
   }),
 
+  // ============================================================
   // Refresh
+  // ============================================================
   http.post(`${API_URL}/auth/refresh`, () => {
-    const authenticated = getMockSession();
     const currentUser = getCurrentUser();
 
-    // eslint-disable-next-line no-console
-    console.log('[MSW] REFRESH REQUEST');
-    // eslint-disable-next-line no-console
-    console.log('[MSW] Session:', authenticated);
-
-    if (!authenticated || !currentUser) {
-      setMockSession(false);
+    if (!currentUser) {
+      clearMockSession();
 
       return HttpResponse.json(
         {
@@ -281,12 +266,13 @@ export const handlers = [
     );
   }),
 
+  // ============================================================
   // Current User
+  // ============================================================
   http.get(`${API_URL}/auth/me`, () => {
-    const authenticated = getMockSession();
     const currentUser = getCurrentUser();
 
-    if (!authenticated || !currentUser) {
+    if (!currentUser) {
       return HttpResponse.json(
         {
           success: false,
@@ -308,12 +294,11 @@ export const handlers = [
     );
   }),
 
+  // ============================================================
   // Logout
+  // ============================================================
   http.post(`${API_URL}/auth/logout`, () => {
-    // eslint-disable-next-line no-console
-    console.log('[MSW] LOGOUT');
-
-    setMockSession(false);
+    clearMockSession();
 
     return HttpResponse.json(
       {
@@ -324,22 +309,31 @@ export const handlers = [
     );
   }),
 
+  // ============================================================
   // Forgot Password
+  // ============================================================
   http.post(`${API_URL}/auth/forgot-password`, () => {
+    /*
+     * Always return the same generic success response.
+     * This prevents revealing whether an email is registered.
+     */
     return HttpResponse.json(
       {
         success: true,
         data: null,
+        message: 'If an account exists with this email, a password reset link has been sent.',
       },
       { status: 200 }
     );
   }),
 
+  // ============================================================
   // Products
+  // ============================================================
   http.get(`${API_URL}/products`, ({ request }) => {
     const url = new URL(request.url);
 
-    const search = url.searchParams.get('search')?.toLowerCase();
+    const search = url.searchParams.get('search')?.trim().toLowerCase();
     const limit = Number(url.searchParams.get('limit')) || 12;
 
     let products = mockProducts;
