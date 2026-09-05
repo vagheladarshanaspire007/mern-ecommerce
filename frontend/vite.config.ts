@@ -22,7 +22,9 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [
-    react(), // Enables React Fast Refresh (HMR for components)
+    // Enables React Fast Refresh (HMR for components)
+    react(),
+    
   ],
 
   resolve: {
@@ -48,6 +50,7 @@ export default defineConfig({
         target: 'http://localhost:5000',
         changeOrigin: true,
       },
+
       // WebSocket connections → forwarded to Socket.io server
       '/socket.io': {
         target: 'http://localhost:5000',
@@ -58,17 +61,35 @@ export default defineConfig({
 
   build: {
     outDir: 'dist',
-    sourcemap: false,        // WHY false in prod: Don't expose source to users
+    sourcemap: false, // WHY false in prod: Don't expose source to users
     chunkSizeWarningLimit: 500,
     rollupOptions: {
       output: {
         // WHY manualChunks: Split vendor libraries into separate bundles.
         // Users cache vendor.js between deploys → only app.js redownloaded.
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          router: ['react-router-dom'],
-          redux: ['@reduxjs/toolkit', 'react-redux'],
-          query: ['@tanstack/react-query'],
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || id.includes('react-dom')) {
+              return 'vendor';
+            }
+
+            if (id.includes('react-router-dom')) {
+              return 'router';
+            }
+
+            if (
+              id.includes('@reduxjs/toolkit') ||
+              id.includes('react-redux')
+            ) {
+              return 'redux';
+            }
+
+            if (id.includes('@tanstack/react-query')) {
+              return 'query';
+            }
+
+            return 'vendor';
+          }
         },
       },
     },
