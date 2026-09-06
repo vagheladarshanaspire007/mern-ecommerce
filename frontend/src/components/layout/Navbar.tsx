@@ -21,7 +21,7 @@ export function Navbar() {
       params.delete('search');
     }
 
-    setSearchParams(params);
+    setSearchParams(params, { replace: true });
   };
 
   const closeMobileMenu = () => {
