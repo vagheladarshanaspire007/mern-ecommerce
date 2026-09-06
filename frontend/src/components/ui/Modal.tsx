@@ -1,4 +1,4 @@
-import { useEffect, useRef, type MouseEvent, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 
 /**
  * Props for the Modal component.
@@ -109,6 +109,10 @@ export function Modal({
       }
     };
 
+    /**
+     * Prevents the native dialog Escape behavior from closing
+     * the dialog independently of the custom Escape handler.
+     */
     const handleCancel = (event: Event) => {
       event.preventDefault();
       onClose();
@@ -124,11 +128,10 @@ export function Modal({
   }, [isOpen, onClose]);
 
   /**
-   * Closes the modal when the native dialog backdrop is clicked.
-   * The dialog itself receives the click when the backdrop area is targeted.
+   * Closes the modal when the dedicated backdrop button is clicked.
    */
-  const handleBackdropClick = (event: MouseEvent<HTMLDialogElement>) => {
-    if (event.target === event.currentTarget && !preventBackdropClose) {
+  const handleBackdropClick = () => {
+    if (!preventBackdropClose) {
       onClose();
     }
   };
@@ -141,10 +144,17 @@ export function Modal({
     <dialog
       ref={modalRef}
       aria-labelledby={title ? 'modal-title' : undefined}
-      onClick={handleBackdropClick}
-      className="w-full max-w-lg rounded-lg bg-white p-0 shadow-xl backdrop:bg-black/50"
+      className="fixed inset-0 m-0 h-screen max-h-none w-screen max-w-none bg-transparent p-0"
     >
-      <div>
+      <button
+        type="button"
+        tabIndex={-1}
+        aria-label="Close modal backdrop"
+        onClick={handleBackdropClick}
+        className="absolute inset-0 h-full w-full cursor-default bg-transparent"
+      />
+
+      <div className="relative z-10 mx-auto mt-[10vh] w-full max-w-lg rounded-lg bg-white p-0 shadow-xl">
         <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
           {title ? (
             <h2 id="modal-title" className="text-lg font-semibold text-gray-900">
