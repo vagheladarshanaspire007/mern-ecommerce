@@ -1,12 +1,29 @@
 import { useEffect, useRef, type MouseEvent, type ReactNode } from 'react';
+
+/**
+ * Props for the Modal component.
+ */
 export interface ModalProps {
+  /** Controls whether the modal is open. */
   readonly isOpen: boolean;
+
+  /** Called when the modal should be closed. */
   readonly onClose: () => void;
+
+  /** Content rendered inside the modal. */
   readonly children: ReactNode;
+
+  /** Optional title displayed in the modal header. */
   readonly title?: string;
+
+  /** Prevents the modal from closing when the backdrop is clicked. */
   readonly preventBackdropClose?: boolean;
 }
 
+/**
+ * Accessible modal dialog component with focus management,
+ * keyboard navigation, and optional backdrop closing.
+ */
 export function Modal({
   isOpen,
   onClose,
@@ -92,13 +109,24 @@ export function Modal({
       }
     };
 
+    const handleCancel = (event: Event) => {
+      event.preventDefault();
+      onClose();
+    };
+
     modal.addEventListener('keydown', handleKeyDown);
+    modal.addEventListener('cancel', handleCancel);
 
     return () => {
       modal.removeEventListener('keydown', handleKeyDown);
+      modal.removeEventListener('cancel', handleCancel);
     };
   }, [isOpen, onClose]);
 
+  /**
+   * Closes the modal when the native dialog backdrop is clicked.
+   * The dialog itself receives the click when the backdrop area is targeted.
+   */
   const handleBackdropClick = (event: MouseEvent<HTMLDialogElement>) => {
     if (event.target === event.currentTarget && !preventBackdropClose) {
       onClose();
@@ -113,31 +141,33 @@ export function Modal({
     <dialog
       ref={modalRef}
       aria-labelledby={title ? 'modal-title' : undefined}
-      onMouseDown={handleBackdropClick}
+      onClick={handleBackdropClick}
       className="w-full max-w-lg rounded-lg bg-white p-0 shadow-xl backdrop:bg-black/50"
     >
-      <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
-        {title ? (
-          <h2 id="modal-title" className="text-lg font-semibold text-gray-900">
-            {title}
-          </h2>
-        ) : (
-          <span />
-        )}
+      <div>
+        <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
+          {title ? (
+            <h2 id="modal-title" className="text-lg font-semibold text-gray-900">
+              {title}
+            </h2>
+          ) : (
+            <span />
+          )}
 
-        <button
-          type="button"
-          onClick={onClose}
-          aria-label="Close modal"
-          className="rounded-md p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <span aria-hidden="true" className="text-xl">
-            ×
-          </span>
-        </button>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close modal"
+            className="rounded-md p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <span aria-hidden="true" className="text-xl">
+              ×
+            </span>
+          </button>
+        </div>
+
+        <div className="p-4">{children}</div>
       </div>
-
-      <div className="p-4">{children}</div>
     </dialog>
   );
 }
