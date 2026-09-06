@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronDown, LogOut, UserCircle } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/store';
@@ -6,11 +6,38 @@ import { logoutUser } from '@/store/slices/authSlice';
 
 export function UserMenu() {
   const [isOpen, setIsOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const user = useAppSelector((state) => state.auth.user);
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleOutsideClick);
+    document.addEventListener('keydown', handleEscape);
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isOpen]);
 
   const handleLogout = async () => {
     try {
@@ -28,7 +55,7 @@ export function UserMenu() {
   const initials = `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase();
 
   return (
-    <div className="relative">
+    <div ref={menuRef} className="relative">
       {/* Avatar / User Button */}
       <button
         type="button"
