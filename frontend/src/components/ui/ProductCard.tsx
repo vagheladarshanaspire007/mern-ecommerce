@@ -10,7 +10,7 @@ import { Card } from './Card';
 import { Badge } from './Badge';
 
 interface ProductCardProps {
-  product: Product;
+  readonly product: Product;
 }
 
 const PRODUCT_LIST_SCROLL_KEY = 'product-list-scroll-position';

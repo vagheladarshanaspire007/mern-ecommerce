@@ -3,27 +3,37 @@ import type { Category, ProductFilters } from '@/services/product.service';
 import { Button } from './Button';
 
 interface FilterSidebarProps {
-  categories: Category[];
-  filters: ProductFilters;
-  onChange: (filters: ProductFilters) => void;
-  onClear: () => void;
+  readonly categories: Category[];
+  readonly filters: ProductFilters;
+  readonly onChange: (filters: ProductFilters) => void;
+  readonly onClear: () => void;
 }
 
 export function FilterSidebar({ categories, filters, onChange, onClear }: FilterSidebarProps) {
   const [minPrice, setMinPrice] = useState(
     filters.minPrice !== undefined ? String(filters.minPrice) : ''
   );
+
   const [maxPrice, setMaxPrice] = useState(
     filters.maxPrice !== undefined ? String(filters.maxPrice) : ''
   );
 
   useEffect(() => {
     setMinPrice(filters.minPrice !== undefined ? String(filters.minPrice) : '');
+
     setMaxPrice(filters.maxPrice !== undefined ? String(filters.maxPrice) : '');
   }, [filters.minPrice, filters.maxPrice]);
 
   const handlePriceChange = (type: 'minPrice' | 'maxPrice', value: string) => {
-    if (!/^\d*\.?\d*$/.test(value)) {
+    const isValid = [...value].every((char) => (char >= '0' && char <= '9') || char === '.');
+
+    if (!isValid) {
+      return;
+    }
+
+    const decimalCount = [...value].filter((char) => char === '.').length;
+
+    if (decimalCount > 1) {
       return;
     }
 

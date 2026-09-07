@@ -87,11 +87,15 @@ export function ProductListPage() {
   const products = useMemo(() => data?.pages.flatMap((page) => page.products) ?? [], [data]);
 
   useEffect(() => {
-    if (products.length === 0) return;
+    if (products.length === 0) {
+      return;
+    }
 
     const savedScrollPosition = sessionStorage.getItem('product-list-scroll-position');
 
-    if (!savedScrollPosition) return;
+    if (!savedScrollPosition) {
+      return;
+    }
 
     sessionStorage.removeItem('product-list-scroll-position');
 
@@ -153,6 +157,15 @@ export function ProductListPage() {
 
   const isInitialLoading = isLoading && !data;
   const hasProducts = products.length > 0;
+
+  /*
+   * Keep rendering states as independent conditions instead of
+   * using nested ternary operations.
+   */
+  const showInitialLoading = isInitialLoading;
+  const showError = !showInitialLoading && isError;
+  const showEmpty = !showInitialLoading && !isError && !hasProducts;
+  const showProducts = !showInitialLoading && !isError && hasProducts;
 
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
@@ -219,9 +232,9 @@ export function ProductListPage() {
         {/* Product Section */}
         <section className="min-w-0 flex-1">
           {/* Initial Loading */}
-          {isInitialLoading ? (
+          {showInitialLoading && (
             <div
-              className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+              className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4"
               aria-label="Loading products"
             >
               {Array.from({ length: 8 }).map((_, index) => (
@@ -240,8 +253,10 @@ export function ProductListPage() {
                 </div>
               ))}
             </div>
-          ) : isError ? (
-            /* Error State */
+          )}
+
+          {/* Error State */}
+          {showError && (
             <EmptyState
               icon={<PackageOpen className="h-10 w-10" />}
               title="Unable to load products"
@@ -252,8 +267,10 @@ export function ProductListPage() {
                 </Button>
               }
             />
-          ) : !hasProducts ? (
-            /* Empty State */
+          )}
+
+          {/* Empty State */}
+          {showEmpty && (
             <EmptyState
               icon={<PackageOpen className="h-10 w-10" />}
               title="No products found"
@@ -264,7 +281,10 @@ export function ProductListPage() {
                 </Button>
               }
             />
-          ) : (
+          )}
+
+          {/* Products */}
+          {showProducts && (
             <>
               {/* Product Count */}
               <div className="mb-4 flex items-center justify-between">
@@ -275,7 +295,7 @@ export function ProductListPage() {
               </div>
 
               {/* Product Grid */}
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4">
                 {products.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
@@ -284,7 +304,7 @@ export function ProductListPage() {
               {/* Loading Next Page */}
               {isFetchingNextPage && (
                 <div
-                  className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+                  className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-4"
                   aria-label="Loading more products"
                 >
                   {Array.from({ length: 4 }).map((_, index) => (
