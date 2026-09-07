@@ -1,5 +1,6 @@
 import { useAppSelector } from '@/store';
 import { useForm } from 'react-hook-form';
+import toast from 'react-hot-toast';
 
 interface ProfileFormData {
   firstName: string;
@@ -15,9 +16,9 @@ const ProfilePage = () => {
       lastName: user?.lastName ?? '',
     },
   });
-
-  const onSubmit = () => {};
-
+  const onSubmit = () => {
+    toast('Profile updates are not wired up yet.');
+  };
   if (!user) {
     return (
       <div className="p-6">
