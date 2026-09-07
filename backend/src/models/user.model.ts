@@ -58,7 +58,7 @@ export const UserModel = {
   },
 
   create: async (data: RegisterDto): Promise<User> => {
-    const rounds = parseInt(process.env.BCRYPT_ROUNDS || '12', 10);
+    const rounds = Number.parseInt(process.env.BCRYPT_ROUNDS || '12', 10);
     const passwordHash = await bcrypt.hash(data.password, rounds);
 
     const { rows } = await query<User>(
