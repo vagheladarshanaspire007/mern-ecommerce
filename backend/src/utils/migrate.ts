@@ -10,7 +10,6 @@
  *
  * Run with: npm run migrate
  *
- * TODO (Day 41): Add your e-commerce tables here.
  *   Follow the pattern: CREATE TABLE IF NOT EXISTS.
  * ============================================================
  */
@@ -107,7 +106,7 @@ const migrations: { id: string; sql: string }[] = [
       user_id UUID NOT NULL,
       status VARCHAR(20) NOT NULL DEFAULT 'pending'
         CHECK (status IN ('pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled')),
-      total_amount NUMERIC(10, 2) NOT NULL,
+      total_amount NUMERIC(10, 2) NOT NULL CHECK (total_amount >= 0),
       created_at TIMESTAMP DEFAULT NOW(),
       updated_at TIMESTAMP DEFAULT NOW(),
 
@@ -132,7 +131,7 @@ const migrations: { id: string; sql: string }[] = [
       order_id UUID NOT NULL,
       product_id UUID NOT NULL,
       quantity INTEGER NOT NULL CHECK (quantity > 0),
-      unit_price NUMERIC(10, 2) NOT NULL,
+      unit_price NUMERIC(10, 2) NOT NULL CHECK (unit_price >= 0),
 
       CONSTRAINT fk_order_items_order
         FOREIGN KEY (order_id)
@@ -214,8 +213,6 @@ const migrations: { id: string; sql: string }[] = [
       ON cart_items(product_id);
   `,
   },
-
-  // TODO (Day 41): Add more tables: categories, orders, order_items, reviews, cart
 ];
 
 async function runMigrations() {
