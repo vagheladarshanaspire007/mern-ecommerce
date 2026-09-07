@@ -15,8 +15,7 @@ import type {
 const REFRESH_TOKEN_TTL = 7 * 24 * 60 * 60;
 const RESET_TOKEN_TTL = 60 * 60;
 const INVALID_CREDENTIALS_MESSAGE = 'Invalid email or password';
-const DUMMY_PASSWORD_HASH =
-  '$2a$12$1ptmt1qSR35A/62NdUODxu70U48cGXl5PobCtLZOWA56o91.SD3ve';
+const DUMMY_PASSWORD_HASH = bcrypt.hashSync(crypto.randomUUID(), 12);
 
 const getSafeUser = (user: User) => ({
   id: user.id,
@@ -61,22 +60,22 @@ export const AuthService = {
   },
 
   login: async (data: LoginDto) => {
-  const user = await UserModel.findByEmail(data.email);
+    const user = await UserModel.findByEmail(data.email);
 
-  const passwordHash = user?.passwordHash ?? DUMMY_PASSWORD_HASH;
-  const isValid = await UserModel.verifyPassword(data.password, passwordHash);
+    const passwordHash = user?.passwordHash ?? DUMMY_PASSWORD_HASH;
+    const isValid = await UserModel.verifyPassword(data.password, passwordHash);
 
-  if (!user || !isValid) {
-    throw new AppError(401, 'INVALID_CREDENTIALS', INVALID_CREDENTIALS_MESSAGE);
-  }
+    if (!user || !isValid) {
+      throw new AppError(401, 'INVALID_CREDENTIALS', INVALID_CREDENTIALS_MESSAGE);
+    }
 
-  const tokens = await createTokens(user);
+    const tokens = await createTokens(user);
 
-  return {
-    user: getSafeUser(user),
-    ...tokens,
-  };
-},
+    return {
+      user: getSafeUser(user),
+      ...tokens,
+    };
+  },
 
   refresh: async (refreshToken: string | undefined) => {
     if (!refreshToken) {
