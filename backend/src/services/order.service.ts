@@ -23,14 +23,14 @@ interface InsufficientStock {
   available: number;
 }
 
-const VALID_STATUSES: OrderStatus[] = [
+const VALID_STATUSES = new Set<OrderStatus>([
   'pending',
   'confirmed',
   'processing',
   'shipped',
   'delivered',
   'cancelled',
-];
+]);
 
 export const OrderService = {
   create: async (userId: string, items: OrderItemInput[]): Promise<Order> =>
@@ -57,7 +57,7 @@ export const OrderService = {
       for (const item of items) {
         const product = products.get(item.productId);
 
-        if (!product || !product.isActive) {
+        if (!product?.isActive) {
           insufficientStock.push({
             productId: item.productId,
             productName: product?.name ?? 'Unknown product',
@@ -147,7 +147,7 @@ export const OrderService = {
   },
 
   updateStatus: async (orderId: string, status: OrderStatus): Promise<Order> => {
-    if (!VALID_STATUSES.includes(status)) {
+    if (!VALID_STATUSES.has(status)) {
       throw new AppError(400, 'INVALID_ORDER_STATUS', 'Invalid order status');
     }
 
