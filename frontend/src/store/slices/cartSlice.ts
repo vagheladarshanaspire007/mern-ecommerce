@@ -5,11 +5,12 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface CartItem {
+export interface CartItem {
   productId: string;
   name: string;
   price: number;
   quantity: number;
+  stock: number;
   imageUrl?: string;
 }
 
@@ -60,17 +61,23 @@ const cartSlice = createSlice({
       state.items = [];
     },
 
+    hydrateCart: (state, action: PayloadAction<CartItem[]>) => {
+      state.items = action.payload;
+    },
+
     toggleCart: (state) => {
       state.isOpen = !state.isOpen;
     },
   },
 });
 
-export const { addToCart, removeFromCart, updateQuantity, clearCart, toggleCart } =
+export const { addToCart, removeFromCart, updateQuantity, clearCart, hydrateCart, toggleCart } =
   cartSlice.actions;
 
 // ─── Selectors ───────────────────────────────────────────────
 // WHY selectors: Encapsulate derived state — components don't compute totals
+export const selectCartItems = (state: { cart: CartState }) => state.cart.items;
+
 export const selectCartItemCount = (state: { cart: CartState }) =>
   state.cart.items.reduce((sum, item) => sum + item.quantity, 0);
 
