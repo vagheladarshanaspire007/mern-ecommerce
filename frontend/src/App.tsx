@@ -9,7 +9,7 @@
  *   /dashboard           → User dashboard (protected)
  *   /products            → Product listing (public)
  *   /products/:id        → Product detail (public)
- *   /cart                → Shopping cart (protected)
+ *   /cart                → Shopping cart (public)
  *   /checkout            → Checkout flow (protected)
  *   /admin/*             → Admin panel (admin role only)
  *   *                    → 404 Not Found
@@ -29,6 +29,7 @@ import { GuestRoute } from '@/components/layout/GuestRoute';
 import { AdminRoute } from '@/components/layout/AdminRoute';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PageLoader } from '@/components/ui/PageLoader';
+import { CartPage } from './pages/CartPage';
 
 // ─── Lazy Loaded Pages ───────────────────────────────────────
 // WHY lazy(): Code splitting — each page is a separate JS chunk.
@@ -40,7 +41,7 @@ const ForgotPasswordPage = lazy(() => import('@/pages/auth/ForgotPasswordPage'))
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
 const ProductListPage = lazy(() => import('@/pages/products/ProductListPage'));
 const ProductDetailPage = lazy(() => import('@/pages/products/ProductDetailPage'));
-const CartPage = lazy(() => import('@/pages/CartPage'));
+
 const CheckoutPage = lazy(() => import('@/pages/CheckoutPage'));
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
 const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'));
@@ -50,7 +51,7 @@ export default function App() {
   return (
     <Suspense fallback={<PageLoader />}>
       <Routes>
-        {/* ── Guest Only (redirect to /dashboard if logged in) ─*/}
+        {/* ── Guest Only (redirect to /dashboard if logged in) ── */}
         <Route element={<GuestRoute />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
@@ -66,10 +67,12 @@ export default function App() {
           {/* ── Protected routes (login required) ────────────── */}
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/profile" element={<ProfilePage />} />
           </Route>
+
+          {/* ── Public Cart ──────────────────────────────────── */}
+          <Route path="/cart" element={<CartPage />} />
 
           {/* ── Admin routes (admin role required) ───────────── */}
           <Route element={<AdminRoute />}>
