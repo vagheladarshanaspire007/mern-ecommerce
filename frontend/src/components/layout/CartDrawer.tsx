@@ -16,7 +16,6 @@ import {
 import { CartItem } from '../ui/CartItem';
 import { useCartActions } from '@/hooks/useCartActions';
 
-
 const CART_STORAGE_KEY = 'cart-items';
 
 export function CartDrawer() {

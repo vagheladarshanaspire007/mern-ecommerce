@@ -6,11 +6,7 @@ import { updateQuantity } from '@/store/slices/cartSlice';
 export function useCartActions() {
   const dispatch = useAppDispatch();
 
-  const handleIncrease = (
-    productId: string,
-    quantity: number,
-    stock: number
-  ) => {
+  const handleIncrease = (productId: string, quantity: number, stock: number) => {
     if (quantity >= stock) {
       toast.error(`Only ${stock} item(s) available in stock.`);
       return;

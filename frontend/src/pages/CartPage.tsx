@@ -8,7 +8,6 @@ import { CartItem } from '@/components/ui/CartItem';
 import { ShoppingCart } from 'lucide-react';
 import { useCartActions } from '@/hooks/useCartActions';
 
-
 export function CartPage() {
   const dispatch = useAppDispatch();
 
