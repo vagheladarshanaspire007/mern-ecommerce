@@ -1,0 +1,73 @@
+{
+  "client": "Thunder Client",
+  "collectionName": "MERN E-Commerce API",
+  "requests": [
+    {
+      "name": "List Products",
+      "method": "GET",
+      "url": "{{baseUrl}}/api/v1/products",
+      "headers": []
+    },
+    {
+      "name": "Get Product",
+      "method": "GET",
+      "url": "{{baseUrl}}/api/v1/products/:id",
+      "headers": []
+    },
+    {
+      "name": "Get Categories",
+      "method": "GET",
+      "url": "{{baseUrl}}/api/v1/products/categories",
+      "headers": []
+    },
+    {
+      "name": "Create Product",
+      "method": "POST",
+      "url": "{{baseUrl}}/api/v1/products",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{adminToken}}"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"name\": \"Test Product\",\n  \"description\": \"Test product description\",\n  \"price\": 99.99,\n  \"stock\": 10,\n  \"imageUrls\": [],\n  \"categoryId\": null\n}"
+      }
+    },
+    {
+      "name": "Update Product",
+      "method": "PATCH",
+      "url": "{{baseUrl}}/api/v1/products/:id",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{adminToken}}"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"price\": 89.99,\n  \"stock\": 15\n}"
+      }
+    },
+    {
+      "name": "Delete Product",
+      "method": "DELETE",
+      "url": "{{baseUrl}}/api/v1/products/:id",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{adminToken}}"
+        }
+      ]
+    }
+  ]
+}
