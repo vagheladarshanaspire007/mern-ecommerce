@@ -25,6 +25,7 @@ import { Toaster } from 'react-hot-toast';
 import { store } from '@/store';
 import App from './App';
 import './index.css';
+import { initializeAuth } from './store/slices/authSlice';
 
 // ─── React Query Client Config ───────────────────────────────
 // WHY these defaults:
@@ -43,6 +44,9 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+// Silently restore authentication session on page load.
+store.dispatch(initializeAuth());
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
