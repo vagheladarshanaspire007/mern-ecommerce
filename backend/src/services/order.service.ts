@@ -51,33 +51,42 @@ export const OrderService = {
       );
 
       const products = new Map(productResult.rows.map((product) => [product.id, product]));
+      const aggregatedItems = new Map<string, number>();
+
+      for (const item of items) {
+        aggregatedItems.set(
+          item.productId,
+          (aggregatedItems.get(item.productId) ?? 0) + item.quantity
+        );
+      }
+
       const insufficientStock: InsufficientStock[] = [];
       let total = 0;
 
-      for (const item of items) {
-        const product = products.get(item.productId);
+      for (const [productId, quantity] of aggregatedItems) {
+        const product = products.get(productId);
 
         if (!product?.isActive) {
           insufficientStock.push({
-            productId: item.productId,
+            productId,
             productName: product?.name ?? 'Unknown product',
-            requested: item.quantity,
+            requested: quantity,
             available: product?.stock ?? 0,
           });
           continue;
         }
 
-        if (item.quantity > product.stock) {
+        if (quantity > product.stock) {
           insufficientStock.push({
             productId: product.id,
             productName: product.name,
-            requested: item.quantity,
+            requested: quantity,
             available: product.stock,
           });
           continue;
         }
 
-        total += Number(product.price) * item.quantity;
+        total += Number(product.price) * quantity;
       }
 
       if (insufficientStock.length > 0) {
@@ -91,15 +100,15 @@ export const OrderService = {
 
       const order = await OrderModel.create(client, userId, total);
 
-      for (const item of items) {
-        const product = products.get(item.productId);
+      for (const [productId, quantity] of aggregatedItems) {
+        const product = products.get(productId);
 
         if (!product) {
           throw new AppError(409, 'INSUFFICIENT_STOCK', 'Product is no longer available', [
             {
-              productId: item.productId,
+              productId,
               productName: 'Unknown product',
-              requested: item.quantity,
+              requested: quantity,
               available: 0,
             },
           ]);
@@ -109,13 +118,13 @@ export const OrderService = {
           `UPDATE products
            SET stock = stock - $1, updated_at = NOW()
            WHERE id = $2`,
-          [item.quantity, product.id]
+          [quantity, product.id]
         );
 
-        await OrderModel.createItem(client, order.id, product.id, item.quantity, product.price);
+        await OrderModel.createItem(client, order.id, product.id, quantity, product.price);
       }
 
-      return OrderModel.findByIdForUser(order.id, userId) as Promise<Order>;
+      return OrderModel.findByIdForUser(order.id, userId, client) as Promise<Order>;
     }),
 
   list: async (userId: string, page: number, limit: number) => {
