@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
+
 import { useLocalStorage } from '@/hooks';
 import { useAppDispatch, useAppSelector } from '@/store';
 import {
@@ -10,11 +10,12 @@ import {
   selectCartItems,
   selectCartTotal,
   toggleCart,
-  updateQuantity,
   type CartItem as CartItemType,
 } from '@/store/slices/cartSlice';
 
 import { CartItem } from '../ui/CartItem';
+import { useCartActions } from '@/hooks/useCartActions';
+
 
 const CART_STORAGE_KEY = 'cart-items';
 
@@ -45,28 +46,7 @@ export function CartDrawer() {
     }
   }, [items, setStoredItems]);
 
-  const handleIncrease = (productId: string, quantity: number, stock: number) => {
-    if (quantity >= stock) {
-      toast.error(`Only ${stock} item(s) available in stock.`);
-      return;
-    }
-
-    dispatch(
-      updateQuantity({
-        productId,
-        quantity: quantity + 1,
-      })
-    );
-  };
-
-  const handleDecrease = (productId: string, quantity: number) => {
-    dispatch(
-      updateQuantity({
-        productId,
-        quantity: quantity - 1,
-      })
-    );
-  };
+  const { handleIncrease, handleDecrease } = useCartActions();
 
   const handleRemove = (productId: string) => {
     dispatch(removeFromCart(productId));

@@ -22,10 +22,7 @@
  */
 
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { lazy, Suspense, useEffect } from 'react';
-
-import { useAppDispatch } from '@/store';
-import { initializeAuth } from '@/store/slices/authSlice';
+import { lazy, Suspense } from 'react';
 
 import { ProtectedRoute } from '@/components/layout/ProtectedRoute';
 import { GuestRoute } from '@/components/layout/GuestRoute';
@@ -51,12 +48,6 @@ const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage')
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
 export default function App() {
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    void dispatch(initializeAuth());
-  }, [dispatch]);
-
   return (
     <Suspense fallback={<PageLoader />}>
       <Routes>

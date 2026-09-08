@@ -1,16 +1,13 @@
 import { Link } from 'react-router-dom';
-import toast from 'react-hot-toast';
 import { useAppDispatch, useAppSelector } from '@/store';
-import {
-  removeFromCart,
-  selectCartItems,
-  selectCartTotal,
-  updateQuantity,
-} from '@/store/slices/cartSlice';
+
+import { removeFromCart, selectCartItems, selectCartTotal } from '@/store/slices/cartSlice';
 
 import { EmptyState } from '@/components/ui/EmptyState';
 import { CartItem } from '@/components/ui/CartItem';
 import { ShoppingCart } from 'lucide-react';
+import { useCartActions } from '@/hooks/useCartActions';
+
 
 export function CartPage() {
   const dispatch = useAppDispatch();
@@ -18,31 +15,10 @@ export function CartPage() {
   const items = useAppSelector(selectCartItems);
   const subtotal = useAppSelector(selectCartTotal);
 
+  const { handleIncrease, handleDecrease } = useCartActions();
+
   const tax = subtotal * 0.1;
   const total = subtotal + tax;
-
-  const handleIncrease = (productId: string, quantity: number, stock: number) => {
-    if (quantity >= stock) {
-      toast.error(`Only ${stock} item(s) available in stock.`);
-      return;
-    }
-
-    dispatch(
-      updateQuantity({
-        productId,
-        quantity: quantity + 1,
-      })
-    );
-  };
-
-  const handleDecrease = (productId: string, quantity: number) => {
-    dispatch(
-      updateQuantity({
-        productId,
-        quantity: quantity - 1,
-      })
-    );
-  };
 
   if (items.length === 0) {
     return (
@@ -61,6 +37,7 @@ export function CartPage() {
       />
     );
   }
+
   return (
     <div>
       <h1 className="mb-6 text-2xl font-bold text-gray-900">Shopping Cart</h1>
