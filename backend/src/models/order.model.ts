@@ -93,9 +93,14 @@ export const OrderModel = {
     return Number(result.rows[0]?.count ?? 0);
   },
 
-  findByIdForUser: async (orderId: string, userId: string): Promise<Order | null> => {
-    const result = await query<Order>(
-      `SELECT
+  findByIdForUser: async (
+    orderId: string,
+    userId: string,
+    client?: PoolClient
+  ): Promise<Order | null> => {
+    const result = client
+      ? await client.query<Order>(
+          `SELECT
          o.id,
          o.user_id AS "userId",
          o.status,
@@ -121,8 +126,37 @@ export const OrderModel = {
        LEFT JOIN products p ON p.id = oi.product_id
        WHERE o.id = $1 AND o.user_id = $2
        GROUP BY o.id`,
-      [orderId, userId]
-    );
+          [orderId, userId]
+        )
+      : await query<Order>(
+          `SELECT
+             o.id,
+             o.user_id AS "userId",
+             o.status,
+             o.total_amount AS "totalAmount",
+             o.created_at AS "createdAt",
+             o.updated_at AS "updatedAt",
+             COALESCE(
+               json_agg(
+                 json_build_object(
+                   'id', oi.id,
+                   'orderId', oi.order_id,
+                   'productId', oi.product_id,
+                   'productName', p.name,
+                   'quantity', oi.quantity,
+                   'unitPrice', oi.unit_price
+                 )
+                 ORDER BY oi.id
+               ) FILTER (WHERE oi.id IS NOT NULL),
+               '[]'
+             ) AS items
+           FROM orders o
+           LEFT JOIN order_items oi ON oi.order_id = o.id
+           LEFT JOIN products p ON p.id = oi.product_id
+           WHERE o.id = $1 AND o.user_id = $2
+           GROUP BY o.id`,
+          [orderId, userId]
+        );
 
     return result.rows[0] ?? null;
   },
