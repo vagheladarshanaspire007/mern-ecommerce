@@ -45,11 +45,18 @@ export function FilterSidebar({ categories, filters, onChange, onClear }: Filter
   };
 
   const applyPriceFilters = () => {
+    const minPriceValue = minPrice ? Number(minPrice) : undefined;
+    const maxPriceValue = maxPrice ? Number(maxPrice) : undefined;
+
+    if ((minPrice && Number.isNaN(minPriceValue)) || (maxPrice && Number.isNaN(maxPriceValue))) {
+      return;
+    }
+
     const nextFilters: ProductFilters = {
       ...filters,
       cursor: undefined,
-      minPrice: minPrice ? Number(minPrice) : undefined,
-      maxPrice: maxPrice ? Number(maxPrice) : undefined,
+      minPrice: minPriceValue,
+      maxPrice: maxPriceValue,
     };
 
     onChange(nextFilters);

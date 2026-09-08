@@ -131,14 +131,14 @@ export function ProductListPage() {
         nextParams.set('inStock', 'true');
       }
 
-      setSearchParams(nextParams);
+      setSearchParams(nextParams, { replace: true });
     },
     [setSearchParams]
   );
 
   const clearFilters = useCallback(() => {
     setSearch('');
-    setSearchParams({});
+    setSearchParams({}, { replace: true });
   }, [setSearchParams]);
 
   /*
