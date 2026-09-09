@@ -20,6 +20,8 @@
  */
 
 import express, { Application, Request } from 'express';
+import fs from 'fs';
+import path from 'path';
 import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
@@ -41,6 +43,11 @@ import { uploadRouter } from './routes/upload.routes';
 import { healthRouter } from './routes/health.routes';
 
 export const app: Application = express();
+
+const UPLOAD_DIR = process.env.UPLOAD_DIR || 'uploads';
+fs.mkdirSync(path.join(UPLOAD_DIR, 'images'), { recursive: true });
+
+app.use('/uploads', express.static(UPLOAD_DIR));
 
 // ─── 1. Security Headers ────────────────────────────────────
 // helmet() sets ~14 HTTP headers that protect against common web vulnerabilities.
