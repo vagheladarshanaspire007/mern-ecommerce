@@ -203,21 +203,6 @@ jobs:
         working-directory: frontend
         run: npm ci
 
-      - name: Seed test database
-        working-directory: backend
-        run: npm run seed
-        env:
-          NODE_ENV: test
-          DB_HOST: localhost
-          DB_PORT: 5432
-          DB_NAME: mern_test
-          DB_USER: postgres
-          DB_PASSWORD: postgres
-          REDIS_HOST: localhost
-          REDIS_PORT: 6379
-          JWT_ACCESS_SECRET: test_access_secret_32_chars_minimum
-          JWT_REFRESH_SECRET: test_refresh_secret_32_chars_minimum
-
       - name: Run tests with coverage
         working-directory: frontend
         run: npm run test
