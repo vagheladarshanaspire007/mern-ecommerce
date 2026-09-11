@@ -39,9 +39,7 @@ describe('ProductService', () => {
     const filters = { limit: 10 };
     const response = { products: [product], nextCursor: null };
 
-    (cacheGet as jest.Mock)
-      .mockResolvedValueOnce(null)
-      .mockResolvedValueOnce(response);
+    (cacheGet as jest.Mock).mockResolvedValueOnce(null).mockResolvedValueOnce(response);
     (ProductModel.findMany as jest.Mock).mockResolvedValue([product]);
 
     await ProductService.list(filters);
@@ -61,10 +59,7 @@ describe('ProductService', () => {
     });
 
     expect(result).toEqual(product);
-    expect(ProductModel.update).toHaveBeenCalledWith(
-      'product-1',
-      { name: 'Updated Laptop' }
-    );
+    expect(ProductModel.update).toHaveBeenCalledWith('product-1', { name: 'Updated Laptop' });
     expect(cacheInvalidatePattern).toHaveBeenCalledWith('products:*');
   });
 
@@ -95,10 +90,12 @@ describe('ProductService additional coverage', () => {
       maxPrice: 1500,
       categoryId: 'category-1',
       inStock: true,
-      cursor: Buffer.from(JSON.stringify({
-        createdAt: new Date().toISOString(),
-        id: 'cursor-id',
-      })).toString('base64url'),
+      cursor: Buffer.from(
+        JSON.stringify({
+          createdAt: new Date().toISOString(),
+          id: 'cursor-id',
+        })
+      ).toString('base64url'),
     });
 
     expect(ProductModel.findMany).toHaveBeenCalledWith(
@@ -113,10 +110,12 @@ describe('ProductService additional coverage', () => {
   it('rejects an invalid cursor', async () => {
     (cacheGet as jest.Mock).mockResolvedValue(null);
 
-    await expect(ProductService.list({
-      limit: 10,
-      cursor: 'invalid-cursor',
-    })).rejects.toMatchObject({ statusCode: 400 });
+    await expect(
+      ProductService.list({
+        limit: 10,
+        cursor: 'invalid-cursor',
+      })
+    ).rejects.toMatchObject({ statusCode: 400 });
   });
 
   it('gets a product by id', async () => {
@@ -126,8 +125,7 @@ describe('ProductService additional coverage', () => {
 
   it('throws 404 when product is missing', async () => {
     (ProductModel.findById as jest.Mock).mockResolvedValue(null);
-    await expect(ProductService.getById('missing'))
-      .rejects.toMatchObject({ statusCode: 404 });
+    await expect(ProductService.getById('missing')).rejects.toMatchObject({ statusCode: 404 });
   });
 
   it('creates a product and invalidates cache', async () => {
@@ -148,14 +146,14 @@ describe('ProductService additional coverage', () => {
 
   it('throws 404 when updating a missing product', async () => {
     (ProductModel.update as jest.Mock).mockResolvedValue(null);
-    await expect(ProductService.update('missing', { name: 'x' }))
-      .rejects.toMatchObject({ statusCode: 404 });
+    await expect(ProductService.update('missing', { name: 'x' })).rejects.toMatchObject({
+      statusCode: 404,
+    });
   });
 
   it('throws 404 when deleting a missing product', async () => {
     (ProductModel.softDelete as jest.Mock).mockResolvedValue(false);
-    await expect(ProductService.delete('missing'))
-      .rejects.toMatchObject({ statusCode: 404 });
+    await expect(ProductService.delete('missing')).rejects.toMatchObject({ statusCode: 404 });
   });
 
   it('returns categories', async () => {
