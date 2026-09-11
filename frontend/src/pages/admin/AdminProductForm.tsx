@@ -11,7 +11,7 @@ import { productService, type Category } from '@/services/product.service';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
-const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const ALLOWED_FILE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
 interface ProductFormData {
   name: string;
@@ -119,7 +119,7 @@ export default function AdminProductForm() {
   };
 
   const validateFile = (file: File): boolean => {
-    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+    if (!ALLOWED_FILE_TYPES.has(file.type)) {
       toast.error('Only JPEG, PNG, and WebP images are allowed.');
       return false;
     }
@@ -252,13 +252,21 @@ export default function AdminProductForm() {
         return;
       }
 
+      let imageUrls: string[] = [];
+
+      if (uploadedUrl) {
+        imageUrls = [uploadedUrl];
+      } else if (imageUrl) {
+        imageUrls = [imageUrl];
+      }
+
       const payload = {
         name: formData.name.trim(),
         description: formData.description.trim(),
         price: Number(formData.price),
         stock: Number(formData.stock),
         categoryId: formData.categoryId || null,
-        imageUrls: uploadedUrl ? [uploadedUrl] : imageUrl ? [imageUrl] : [],
+        imageUrls,
       };
 
       if (id) {
@@ -287,6 +295,20 @@ export default function AdminProductForm() {
     setImageUrl('');
     setUploadProgress(0);
   };
+
+  let submitButtonText = 'Create Product';
+
+  if (isEditMode) {
+    submitButtonText = 'Update Product';
+  }
+
+  if (loading) {
+    if (isEditMode) {
+      submitButtonText = 'Updating...';
+    } else {
+      submitButtonText = 'Creating...';
+    }
+  }
 
   if (loading && id && !formData.name) {
     return (
@@ -381,15 +403,6 @@ export default function AdminProductForm() {
             <p className="mb-2 text-sm font-medium">Product Image</p>
 
             <div
-              role="button"
-              tabIndex={0}
-              onClick={() => fileInputRef.current?.click()}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                  event.preventDefault();
-                  fileInputRef.current?.click();
-                }
-              }}
               onDrop={handleDrop}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
@@ -403,14 +416,7 @@ export default function AdminProductForm() {
 
               <p className="mt-1 text-xs text-gray-500">JPEG, PNG or WebP · Maximum 5MB</p>
 
-              <Button
-                type="button"
-                className="mt-4"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  fileInputRef.current?.click();
-                }}
-              >
+              <Button type="button" className="mt-4" onClick={() => fileInputRef.current?.click()}>
                 Choose Image
               </Button>
 
@@ -467,13 +473,7 @@ export default function AdminProductForm() {
             </Button>
 
             <Button type="submit" disabled={loading || uploading}>
-              {loading
-                ? isEditMode
-                  ? 'Updating...'
-                  : 'Creating...'
-                : isEditMode
-                  ? 'Update Product'
-                  : 'Create Product'}
+              {submitButtonText}
             </Button>
           </div>
         </form>

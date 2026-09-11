@@ -25,7 +25,7 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
       <div className="flex aspect-square items-center justify-center overflow-hidden rounded-lg border bg-white">
         <img
           src={selectedImage}
-          alt={`${productName} - image ${selectedIndex + 1}`}
+          alt={`${productName} ${selectedIndex + 1}`}
           loading="lazy"
           className="h-full w-full object-contain"
         />
@@ -47,7 +47,7 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
             >
               <img
                 src={image}
-                alt={`${productName} thumbnail ${index + 1}`}
+                alt={`${productName} ${index + 1}`}
                 loading="lazy"
                 className="h-full w-full object-cover"
               />
