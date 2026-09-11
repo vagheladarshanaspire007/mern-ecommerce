@@ -45,9 +45,7 @@ describe('OrderService', () => {
     });
 
     await expect(
-      OrderService.create('user-1', [
-        { productId: 'product-1', quantity: 5 },
-      ])
+      OrderService.create('user-1', [{ productId: 'product-1', quantity: 5 }])
     ).rejects.toMatchObject({
       statusCode: 409,
       code: 'INSUFFICIENT_STOCK',
@@ -74,23 +72,17 @@ describe('OrderService', () => {
         .mockResolvedValueOnce({ rows: [] }),
     };
 
-    (withTransaction as jest.Mock).mockImplementation(async (callback) =>
-      callback(client)
-    );
+    (withTransaction as jest.Mock).mockImplementation(async (callback) => callback(client));
 
     (OrderModel.create as jest.Mock).mockResolvedValue({
       id: 'order-1',
       userId: 'user-1',
     });
 
-    (OrderModel.createItem as jest.Mock).mockRejectedValue(
-      new Error('order_items insert failed')
-    );
+    (OrderModel.createItem as jest.Mock).mockRejectedValue(new Error('order_items insert failed'));
 
     await expect(
-      OrderService.create('user-1', [
-        { productId: 'product-1', quantity: 1 },
-      ])
+      OrderService.create('user-1', [{ productId: 'product-1', quantity: 1 }])
     ).rejects.toThrow('order_items insert failed');
 
     expect(OrderModel.create).toHaveBeenCalled();
@@ -104,13 +96,15 @@ describe('OrderService additional coverage', () => {
       query: jest
         .fn()
         .mockResolvedValueOnce({
-          rows: [{
-            id: 'product-1',
-            name: 'Laptop',
-            price: '1000.00',
-            stock: 10,
-            isActive: true,
-          }],
+          rows: [
+            {
+              id: 'product-1',
+              name: 'Laptop',
+              price: '1000.00',
+              stock: 10,
+              isActive: true,
+            },
+          ],
         })
         .mockResolvedValueOnce({ rows: [] }),
     };
@@ -123,9 +117,7 @@ describe('OrderService additional coverage', () => {
       userId: 'user-1',
     });
 
-    const result = await OrderService.create('user-1', [
-      { productId: 'product-1', quantity: 2 },
-    ]);
+    const result = await OrderService.create('user-1', [{ productId: 'product-1', quantity: 2 }]);
 
     expect(result.id).toBe('order-1');
     expect(client.query).toHaveBeenCalledTimes(2);
@@ -135,21 +127,23 @@ describe('OrderService additional coverage', () => {
   it('rejects inactive or missing products', async () => {
     const client = {
       query: jest.fn().mockResolvedValue({
-        rows: [{
-          id: 'product-1',
-          name: 'Laptop',
-          price: '1000.00',
-          stock: 10,
-          isActive: false,
-        }],
+        rows: [
+          {
+            id: 'product-1',
+            name: 'Laptop',
+            price: '1000.00',
+            stock: 10,
+            isActive: false,
+          },
+        ],
       }),
     };
 
     (withTransaction as jest.Mock).mockImplementation(async (callback) => callback(client));
 
-    await expect(OrderService.create('user-1', [
-      { productId: 'product-1', quantity: 1 },
-    ])).rejects.toMatchObject({ statusCode: 409 });
+    await expect(
+      OrderService.create('user-1', [{ productId: 'product-1', quantity: 1 }])
+    ).rejects.toMatchObject({ statusCode: 409 });
 
     expect(OrderModel.create).not.toHaveBeenCalled();
   });
@@ -178,13 +172,15 @@ describe('OrderService additional coverage', () => {
   it('throws 404 for missing order', async () => {
     (OrderModel.findByIdForUser as jest.Mock).mockResolvedValue(null);
 
-    await expect(OrderService.getById('missing', 'user-1'))
-      .rejects.toMatchObject({ statusCode: 404 });
+    await expect(OrderService.getById('missing', 'user-1')).rejects.toMatchObject({
+      statusCode: 404,
+    });
   });
 
   it('rejects invalid order status', async () => {
-    await expect(OrderService.updateStatus('order-1', 'invalid' as OrderStatus))
-      .rejects.toMatchObject({ statusCode: 400 });
+    await expect(
+      OrderService.updateStatus('order-1', 'invalid' as OrderStatus)
+    ).rejects.toMatchObject({ statusCode: 400 });
   });
 
   it('updates order status and emits socket event', async () => {
@@ -209,7 +205,8 @@ describe('OrderService additional coverage', () => {
   it('throws 404 when updating a missing order', async () => {
     (OrderModel.updateStatus as jest.Mock).mockResolvedValue(null);
 
-    await expect(OrderService.updateStatus('order-1', 'shipped'))
-      .rejects.toMatchObject({ statusCode: 404 });
+    await expect(OrderService.updateStatus('order-1', 'shipped')).rejects.toMatchObject({
+      statusCode: 404,
+    });
   });
 });

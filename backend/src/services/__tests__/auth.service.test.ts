@@ -108,10 +108,7 @@ describe('AuthService', () => {
       });
 
       expect(UserModel.findByEmail).toHaveBeenCalledWith('john@example.com');
-      expect(UserModel.verifyPassword).toHaveBeenCalledWith(
-        'Password123!',
-        'hashed-password'
-      );
+      expect(UserModel.verifyPassword).toHaveBeenCalledWith('Password123!', 'hashed-password');
       expect(result.user).toEqual(
         expect.objectContaining({
           id: 'user-1',
@@ -149,7 +146,6 @@ describe('AuthService', () => {
   });
 });
 
-
 describe('AuthService additional coverage', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -157,11 +153,13 @@ describe('AuthService additional coverage', () => {
 
   it('rejects login when user does not exist', async () => {
     (UserModel.findByEmail as jest.Mock).mockResolvedValue(null);
-    await expect(AuthService.login({
-      email: 'missing@example.com',
-      password: 'Password123!',
-      rememberMe: false,
-    })).rejects.toMatchObject({ statusCode: 401 });
+    await expect(
+      AuthService.login({
+        email: 'missing@example.com',
+        password: 'Password123!',
+        rememberMe: false,
+      })
+    ).rejects.toMatchObject({ statusCode: 401 });
   });
 
   it('refreshes with a valid refresh token', async () => {
@@ -177,16 +175,14 @@ describe('AuthService additional coverage', () => {
   });
 
   it('rejects refresh without a token', async () => {
-    await expect(AuthService.refresh(undefined))
-      .rejects.toMatchObject({ statusCode: 401 });
+    await expect(AuthService.refresh(undefined)).rejects.toMatchObject({ statusCode: 401 });
   });
 
   it('rejects an invalid refresh token', async () => {
     const { verifyRefreshToken } = require('../../utils/jwt');
     (verifyRefreshToken as jest.Mock).mockReturnValue(null);
 
-    await expect(AuthService.refresh('bad-token'))
-      .rejects.toMatchObject({ statusCode: 401 });
+    await expect(AuthService.refresh('bad-token')).rejects.toMatchObject({ statusCode: 401 });
   });
 
   it('rejects a mismatched stored refresh token', async () => {
@@ -194,8 +190,7 @@ describe('AuthService additional coverage', () => {
     (verifyRefreshToken as jest.Mock).mockReturnValue({ userId: 'user-1' });
     (cacheGet as jest.Mock).mockResolvedValue('different-token');
 
-    await expect(AuthService.refresh('refresh-token'))
-      .rejects.toMatchObject({ statusCode: 401 });
+    await expect(AuthService.refresh('refresh-token')).rejects.toMatchObject({ statusCode: 401 });
   });
 
   it('rejects refresh when user no longer exists', async () => {
@@ -204,8 +199,7 @@ describe('AuthService additional coverage', () => {
     (cacheGet as jest.Mock).mockResolvedValue('refresh-token');
     (UserModel.findById as jest.Mock).mockResolvedValue(null);
 
-    await expect(AuthService.refresh('refresh-token'))
-      .rejects.toMatchObject({ statusCode: 401 });
+    await expect(AuthService.refresh('refresh-token')).rejects.toMatchObject({ statusCode: 401 });
   });
 
   it('returns safe user from getMe', async () => {
@@ -220,11 +214,9 @@ describe('AuthService additional coverage', () => {
   it('rejects getMe when user does not exist', async () => {
     (UserModel.findById as jest.Mock).mockResolvedValue(null);
 
-    await expect(AuthService.getMe('missing'))
-      .rejects.toMatchObject({ statusCode: 404 });
+    await expect(AuthService.getMe('missing')).rejects.toMatchObject({ statusCode: 404 });
   });
 });
-
 
 describe('AuthService password reset', () => {
   beforeEach(() => {
@@ -242,10 +234,7 @@ describe('AuthService password reset', () => {
       'user-1',
       expect.any(Number)
     );
-    expect(sendPasswordResetEmail).toHaveBeenCalledWith(
-      'john@example.com',
-      expect.any(String)
-    );
+    expect(sendPasswordResetEmail).toHaveBeenCalledWith('john@example.com', expect.any(String));
   });
 
   it('does nothing when forgot-password user does not exist', async () => {
@@ -280,10 +269,7 @@ describe('AuthService password reset', () => {
       confirmPassword: 'NewPassword123!',
     });
 
-    expect(UserModel.updatePassword).toHaveBeenCalledWith(
-      'user-1',
-      'new-hashed-password'
-    );
+    expect(UserModel.updatePassword).toHaveBeenCalledWith('user-1', 'new-hashed-password');
     expect(cacheDel).toHaveBeenCalledWith('password-reset:valid-token');
   });
 
@@ -299,8 +285,6 @@ describe('AuthService password reset', () => {
       })
     ).rejects.toMatchObject({ statusCode: 400 });
 
-    expect(cacheDel).toHaveBeenCalledWith(
-      'password-reset:expired-user-token'
-    );
+    expect(cacheDel).toHaveBeenCalledWith('password-reset:expired-user-token');
   });
 });
