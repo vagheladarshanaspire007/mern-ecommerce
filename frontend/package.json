@@ -63,5 +63,8 @@
     "src/**/*.{css,json}": [
       "prettier --write"
     ]
+  },
+  "overrides": {
+    "js-yaml": "4.3.2"
   }
 }
