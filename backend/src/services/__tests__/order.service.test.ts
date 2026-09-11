@@ -1,3 +1,4 @@
+import type { OrderStatus } from '../../models/order.model';
 import { OrderService } from '../order.service';
 import { OrderModel } from '../../models/order.model';
 import { withTransaction } from '../../config/database';
@@ -182,7 +183,7 @@ describe('OrderService additional coverage', () => {
   });
 
   it('rejects invalid order status', async () => {
-    await expect(OrderService.updateStatus('order-1', 'invalid' as any))
+    await expect(OrderService.updateStatus('order-1', 'invalid' as OrderStatus))
       .rejects.toMatchObject({ statusCode: 400 });
   });
 
