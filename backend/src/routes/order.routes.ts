@@ -25,7 +25,6 @@ router.post('/', validateRequest(createOrderSchema), (req, res, next) => {
 router.get('/', validateRequest(listOrdersSchema, 'query'), (req, res, next) => {
   void listOrders(req, res).catch(next);
 });
-
 router.get('/:id', validateRequest(orderIdSchema, 'params'), (req, res, next) => {
   void getOrder(req, res).catch(next);
 });
