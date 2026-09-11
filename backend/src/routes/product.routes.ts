@@ -1,52 +1,64 @@
-/**
- * ============================================================
- * Product Routes — src/routes/product.routes.ts
- * ============================================================
- * Day 41-43 focus: Implement these endpoints for the e-commerce platform.
- *
- * Routes:
- *   GET    /api/v1/products           → List products (paginated, filtered)
- *   GET    /api/v1/products/:id       → Get single product
- *   POST   /api/v1/products           → Create product (admin only)
- *   PUT    /api/v1/products/:id       → Replace product (admin only)
- *   PATCH  /api/v1/products/:id       → Update product fields (admin only)
- *   DELETE /api/v1/products/:id       → Delete product (admin only)
- * ============================================================
- */
-
 import { Router } from 'express';
 import { authenticate, authorize, optionalAuth } from '../middleware/auth/authenticate';
-
-// TODO: import product validators and controllers
-// import { createProductSchema, updateProductSchema } from '../validators/product.validator';
-// import { listProducts, getProduct, createProduct, updateProduct, deleteProduct } from '../controllers/product.controller';
+import { validateRequest } from '../middleware/validation/validateRequest';
+import {
+  listProducts,
+  getProduct,
+  getCategories,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+} from '../controllers/product.controller';
+import {
+  listProductsSchema,
+  productIdSchema,
+  createProductSchema,
+  updateProductSchema,
+} from '../validators/product.validator';
 
 const router = Router();
 
-// Public (with optional auth to show wishlist status)
-router.get('/', optionalAuth, (_req, res) =>
-  res
-    .status(501)
-    .json({ message: 'TODO: Implement listProducts — use cursor pagination + Redis cache' })
+router.get('/categories', (req, res, next) => {
+  void getCategories(req, res).catch(next);
+});
+
+router.get('/', optionalAuth, validateRequest(listProductsSchema, 'query'), (req, res, next) => {
+  void listProducts(req, res).catch(next);
+});
+
+router.get('/:id', optionalAuth, validateRequest(productIdSchema, 'params'), (req, res, next) => {
+  void getProduct(req, res).catch(next);
+});
+
+router.post(
+  '/',
+  authenticate,
+  authorize('admin'),
+  validateRequest(createProductSchema),
+  (req, res, next) => {
+    void createProduct(req, res).catch(next);
+  }
 );
 
-router.get('/:id', optionalAuth, (_req, res) =>
-  res.status(501).json({ message: 'TODO: Implement getProduct — cache individual product' })
+router.patch(
+  '/:id',
+  authenticate,
+  authorize('admin'),
+  validateRequest(productIdSchema, 'params'),
+  validateRequest(updateProductSchema),
+  (req, res, next) => {
+    void updateProduct(req, res).catch(next);
+  }
 );
 
-// Admin only
-router.post('/', authenticate, authorize('admin'), (_req, res) =>
-  res.status(501).json({
-    message: 'TODO: Implement createProduct — invalidate product list cache after creation',
-  })
-);
-
-router.patch('/:id', authenticate, authorize('admin'), (_req, res) =>
-  res.status(501).json({ message: 'TODO: Implement updateProduct' })
-);
-
-router.delete('/:id', authenticate, authorize('admin'), (_req, res) =>
-  res.status(501).json({ message: 'TODO: Implement deleteProduct' })
+router.delete(
+  '/:id',
+  authenticate,
+  authorize('admin'),
+  validateRequest(productIdSchema, 'params'),
+  (req, res, next) => {
+    void deleteProduct(req, res).catch(next);
+  }
 );
 
 export { router as productRouter };
