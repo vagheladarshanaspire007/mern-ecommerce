@@ -213,6 +213,17 @@ const migrations: { id: string; sql: string }[] = [
       ON cart_items(product_id);
   `,
   },
+  {
+    id: '010_add_shipping_address_to_orders',
+    sql: `
+      ALTER TABLE orders
+        ADD COLUMN IF NOT EXISTS shipping_address JSONB NOT NULL DEFAULT '{}'::jsonb,
+        ADD COLUMN IF NOT EXISTS estimated_delivery TIMESTAMP;
+
+      ALTER TABLE orders
+        ALTER COLUMN shipping_address DROP DEFAULT;
+    `,
+  },
 ];
 
 async function runMigrations() {

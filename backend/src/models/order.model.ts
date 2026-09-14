@@ -14,6 +14,15 @@ export interface OrderItemInput {
   quantity: number;
 }
 
+export interface ShippingAddress {
+  fullName: string;
+  address: string;
+  city: string;
+  state: string;
+  pin: string;
+  phone: string;
+}
+
 export interface OrderItem {
   id: string;
   orderId: string;
@@ -30,22 +39,32 @@ export interface Order {
   totalAmount: string;
   createdAt: Date;
   updatedAt: Date;
+  shippingAddress: ShippingAddress;
+  estimatedDelivery: Date | null;
   items?: OrderItem[];
 }
 
 export const OrderModel = {
-  create: async (client: PoolClient, userId: string, totalAmount: number): Promise<Order> => {
+  create: async (
+    client: PoolClient,
+    userId: string,
+    totalAmount: number,
+    shippingAddress: ShippingAddress,
+    estimatedDelivery: Date
+  ): Promise<Order> => {
     const result = await client.query<Order>(
-      `INSERT INTO orders (user_id, total_amount)
-       VALUES ($1, $2)
+      `INSERT INTO orders (user_id, total_amount, shipping_address, estimated_delivery)
+       VALUES ($1, $2, $3, $4)
        RETURNING
          id,
          user_id AS "userId",
          status,
          total_amount AS "totalAmount",
+         shipping_address AS "shippingAddress",
+         estimated_delivery AS "estimatedDelivery",
          created_at AS "createdAt",
          updated_at AS "updatedAt"`,
-      [userId, totalAmount]
+      [userId, totalAmount, JSON.stringify(shippingAddress), estimatedDelivery]
     );
 
     return result.rows[0];

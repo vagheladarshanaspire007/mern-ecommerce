@@ -6,6 +6,7 @@ import {
   type Order,
   type OrderItemInput,
   type OrderStatus,
+  type ShippingAddress,
 } from '../models/order.model';
 
 interface ProductRow {
@@ -33,7 +34,11 @@ const VALID_STATUSES = new Set<OrderStatus>([
 ]);
 
 export const OrderService = {
-  create: async (userId: string, items: OrderItemInput[]): Promise<Order> =>
+  create: async (
+    userId: string,
+    items: OrderItemInput[],
+    shippingAddress: ShippingAddress
+  ): Promise<Order> =>
     withTransaction(async (client) => {
       const productIds = [...new Set(items.map((item) => item.productId))];
 
@@ -98,7 +103,16 @@ export const OrderService = {
         );
       }
 
-      const order = await OrderModel.create(client, userId, total);
+      const estimatedDelivery = new Date();
+      estimatedDelivery.setDate(estimatedDelivery.getDate() + 5);
+
+      const order = await OrderModel.create(
+        client,
+        userId,
+        total,
+        shippingAddress,
+        estimatedDelivery
+      );
 
       for (const [productId, quantity] of aggregatedItems) {
         const product = products.get(productId);
