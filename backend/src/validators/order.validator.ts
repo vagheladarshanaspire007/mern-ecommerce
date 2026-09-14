@@ -15,7 +15,7 @@ export const createOrderSchema = z.object({
     city: z.string().trim().min(2).max(100),
     state: z.string().trim().min(2).max(100),
     pin: z.string().regex(/^\d{6}$/),
-    phone: z.string().regex(/^[+]?[0-9]{10,15}$/),
+    phone: z.string().regex(/^[+]?\d{10,15}$/),
   }),
 });
 
