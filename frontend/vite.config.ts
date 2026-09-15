@@ -58,7 +58,7 @@ export default defineConfig({
 
   build: {
     outDir: 'dist',
-    sourcemap: false,        // WHY false in prod: Don't expose source to users
+    sourcemap: false, // WHY false in prod: Don't expose source to users
     chunkSizeWarningLimit: 500,
     rollupOptions: {
       output: {

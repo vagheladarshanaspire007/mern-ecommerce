@@ -200,7 +200,10 @@ const CheckoutPage = () => {
         {/* Step 1 */}
         {currentStep === 1 && (
           <Card>
-            <ShippingForm initialValues={shippingAddress} onSubmit={handleShippingSubmit} />
+            <ShippingForm
+              initialValues={shippingAddress ?? undefined}
+              onSubmit={handleShippingSubmit}
+            />
           </Card>
         )}
 
