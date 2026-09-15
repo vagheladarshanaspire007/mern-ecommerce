@@ -20,11 +20,11 @@ import { CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 
-interface OrderConfirmationProps {
-  orderId: string;
-  estimatedDelivery: string | null;
-  onContinueShopping: () => void;
-}
+type OrderConfirmationProps = {
+  readonly orderId: string;
+  readonly estimatedDelivery: string | null;
+  readonly onContinueShopping: () => void;
+};
 
 export function OrderConfirmation({
   orderId,

@@ -62,10 +62,10 @@ const shippingSchema = z.object({
 
 type ShippingFormValues = z.infer<typeof shippingSchema>;
 
-interface ShippingFormProps {
-  initialValues: ShippingAddress | null;
-  onSubmit: (address: ShippingAddress) => void;
-}
+type ShippingFormProps = {
+  readonly initialValues?: ShippingAddress;
+  readonly onSubmit: (data: ShippingAddress) => void;
+};
 
 export function ShippingForm({ initialValues, onSubmit }: ShippingFormProps) {
   const {

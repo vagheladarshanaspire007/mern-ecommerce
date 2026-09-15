@@ -40,15 +40,15 @@ export interface InsufficientStockItem {
   available: number;
 }
 
-interface OrderSummaryProps {
-  items: CartItem[];
-  shippingAddress: ShippingAddress;
-  isLoading: boolean;
-  errorMessage: string | null;
-  insufficientStockItems: InsufficientStockItem[];
-  onBack: () => void;
-  onPlaceOrder: () => void;
-}
+type OrderSummaryProps = {
+  readonly items: CartItem[];
+  readonly shippingAddress: ShippingAddress;
+  readonly onBack: () => void;
+  readonly onPlaceOrder: () => void;
+  readonly isLoading: boolean;
+  readonly errorMessage: string | null;
+  readonly insufficientStockItems: InsufficientStockItem[];
+};
 
 export function OrderSummary({
   items,
