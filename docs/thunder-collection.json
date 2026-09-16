@@ -1,0 +1,118 @@
+{
+  "client": "Thunder Client",
+  "collectionName": "MERN E-Commerce API",
+  "dateExported": "2026-09-07T00:00:00.000Z",
+  "version": "1.1",
+  "folders": [
+    {
+      "name": "Auth",
+      "containerId": "auth"
+    }
+  ],
+  "requests": [
+    {
+      "_id": "auth-register",
+      "colId": "day43-auth",
+      "containerId": "auth",
+      "name": "Register",
+      "url": "{{baseUrl}}/api/v1/auth/register",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"firstName\": \"Test\",\n  \"lastName\": \"User\",\n  \"email\": \"test@example.com\",\n  \"password\": \"Password123!\"\n}"
+      }
+    },
+    {
+      "_id": "auth-login",
+      "colId": "day43-auth",
+      "containerId": "auth",
+      "name": "Login",
+      "url": "{{baseUrl}}/api/v1/auth/login",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"Password123!\"\n}"
+      }
+    },
+    {
+      "_id": "auth-refresh",
+      "colId": "day43-auth",
+      "containerId": "auth",
+      "name": "Refresh Token",
+      "url": "{{baseUrl}}/api/v1/auth/refresh",
+      "method": "POST"
+    },
+    {
+      "_id": "auth-forgot",
+      "colId": "day43-auth",
+      "containerId": "auth",
+      "name": "Forgot Password",
+      "url": "{{baseUrl}}/api/v1/auth/forgot-password",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"email\": \"test@example.com\"\n}"
+      }
+    },
+    {
+      "_id": "auth-reset",
+      "colId": "day43-auth",
+      "containerId": "auth",
+      "name": "Reset Password",
+      "url": "{{baseUrl}}/api/v1/auth/reset-password",
+      "method": "POST",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"token\": \"RESET_TOKEN\",\n  \"password\": \"NewPassword123!\"\n}"
+      }
+    },
+    {
+      "_id": "auth-logout",
+      "colId": "day43-auth",
+      "containerId": "auth",
+      "name": "Logout",
+      "url": "{{baseUrl}}/api/v1/auth/logout",
+      "method": "POST"
+    },
+    {
+      "_id": "auth-me",
+      "colId": "day43-auth",
+      "containerId": "auth",
+      "name": "Get Current User",
+      "url": "{{baseUrl}}/api/v1/auth/me",
+      "method": "GET"
+    }
+  ],
+  "environments": [
+    {
+      "name": "Local",
+      "environment": {
+        "baseUrl": "http://localhost:5000"
+      }
+    }
+  ]
+}

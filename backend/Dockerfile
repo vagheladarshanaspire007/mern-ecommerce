@@ -15,7 +15,7 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json tsconfig.json ./
-RUN npm ci
+RUN npm ci --ignore-scripts
 COPY src ./src
 RUN npm run build
 
@@ -23,22 +23,33 @@ RUN npm run build
 FROM node:20-alpine AS prod-deps
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev --ignore-scripts \
+    && rm -rf \
+      node_modules/@img/sharp-linux-x64 \
+      node_modules/@img/sharp-libvips-linux-x64 \
+      node_modules/@img/sharp-wasm32
 
 # Stage 3: Final lean image
 FROM node:20-alpine AS production
 WORKDIR /app
 
-# Create non-root user
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+# Remove files not required at runtime
+RUN rm -rf \
+    /usr/local/include/node \
+    /usr/local/lib/node_modules/corepack \
+    /usr/local/README.md \
+    /usr/local/LICENSE \
+    /usr/local/CHANGELOG.md \
+    && addgroup -S appgroup \
+    && adduser -S appuser -G appgroup
 
-# Copy compiled JS and prod node_modules
-COPY --from=builder /app/dist ./dist
-COPY --from=prod-deps /app/node_modules ./node_modules
-COPY package*.json ./
+# Copy compiled JS and prod node_modules with correct ownership
+COPY --from=builder --chown=appuser:appgroup /app/dist ./dist
+COPY --from=prod-deps --chown=appuser:appgroup /app/node_modules ./node_modules
+COPY --chown=appuser:appgroup package*.json ./
 
-# Create uploads directory with correct ownership
-RUN mkdir -p uploads && chown -R appuser:appgroup /app
+# Create runtime directories with correct ownership
+RUN mkdir uploads logs && chown appuser:appgroup uploads logs
 
 USER appuser
 

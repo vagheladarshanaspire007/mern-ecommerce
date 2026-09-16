@@ -14,8 +14,6 @@
 #   docker-compose logs -f api  → Follow API logs
 # ============================================================
 
-version: '3.9'
-
 services:
   # ── PostgreSQL ─────────────────────────────────────────────
   postgres:
@@ -27,7 +25,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - '5432:5432'
+      - '5433:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
       # WHY volume: Persists DB data between container restarts
@@ -43,7 +41,7 @@ services:
     container_name: mern_redis
     restart: unless-stopped
     ports:
-      - '6379:6379'
+      - '6380:6379'
     volumes:
       - redis_data:/data
     command: redis-server --appendonly yes  # WHY: Persistence — survive restarts
@@ -57,7 +55,7 @@ services:
   api:
     build:
       context: ./backend
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     container_name: mern_api
     restart: unless-stopped
     ports:
@@ -75,9 +73,12 @@ services:
       JWT_ACCESS_SECRET: dev_access_secret_change_in_production
       JWT_REFRESH_SECRET: dev_refresh_secret_change_in_production
       FRONTEND_URL: http://localhost:3000
-    volumes:
-      - ./backend/src:/app/src      # WHY: Hot reload — changes reflect without rebuild
-      - /app/node_modules           # WHY: Exclude node_modules from host sync
+    healthcheck:
+      test: ['CMD', 'node', '-e', "fetch('http://localhost:5000/api/health/ready').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     depends_on:
       postgres:
         condition: service_healthy
@@ -88,19 +89,23 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     container_name: mern_frontend
     restart: unless-stopped
     ports:
-      - '3000:3000'
+      - '3000:80'
     environment:
       VITE_API_URL: http://localhost:5000/api/v1
       VITE_WS_URL: http://localhost:5000
-    volumes:
-      - ./frontend/src:/app/src
-      - /app/node_modules
+    healthcheck:
+      test: ['CMD', 'wget', '--spider', '-q', 'http://127.0.0.1/']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
     depends_on:
-      - api
+      api:
+        condition: service_healthy
 
   # ── pgAdmin (DB GUI) ───────────────────────────────────────
   pgadmin:
@@ -112,8 +117,15 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin
     ports:
       - '5050:80'
+    healthcheck:
+      test: ['CMD', 'wget', '--spider', '-q', 'http://localhost/']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 
 volumes:
   postgres_data:

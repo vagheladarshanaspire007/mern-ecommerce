@@ -18,7 +18,7 @@
 
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import path from 'path';
+import path from 'node:path';
 
 export default defineConfig({
   plugins: [
@@ -29,14 +29,14 @@ export default defineConfig({
     alias: {
       // WHY path aliases: Import from '@/components/Button' instead of
       // '../../../components/Button' — cleaner, refactor-proof
-      '@': path.resolve(__dirname, './src'),
-      '@components': path.resolve(__dirname, './src/components'),
-      '@pages': path.resolve(__dirname, './src/pages'),
-      '@store': path.resolve(__dirname, './src/store'),
-      '@hooks': path.resolve(__dirname, './src/hooks'),
-      '@services': path.resolve(__dirname, './src/services'),
-      '@utils': path.resolve(__dirname, './src/utils'),
-      '@types': path.resolve(__dirname, './src/types'),
+      '@': path.resolve(import.meta.dirname, './src'),
+      '@components': path.resolve(import.meta.dirname, './src/components'),
+      '@pages': path.resolve(import.meta.dirname, './src/pages'),
+      '@store': path.resolve(import.meta.dirname, './src/store'),
+      '@hooks': path.resolve(import.meta.dirname, './src/hooks'),
+      '@services': path.resolve(import.meta.dirname, './src/services'),
+      '@utils': path.resolve(import.meta.dirname, './src/utils'),
+      '@types': path.resolve(import.meta.dirname, './src/types'),
     },
   },
 
@@ -64,11 +64,19 @@ export default defineConfig({
       output: {
         // WHY manualChunks: Split vendor libraries into separate bundles.
         // Users cache vendor.js between deploys → only app.js redownloaded.
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          router: ['react-router-dom'],
-          redux: ['@reduxjs/toolkit', 'react-redux'],
-          query: ['@tanstack/react-query'],
+        manualChunks(id) {
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
+            return 'vendor';
+          }
+          if (id.includes('node_modules/react-router-dom')) {
+            return 'router';
+          }
+          if (id.includes('node_modules/@reduxjs') || id.includes('node_modules/react-redux')) {
+            return 'redux';
+          }
+          if (id.includes('node_modules/@tanstack/react-query')) {
+            return 'query';
+          }
         },
       },
     },
