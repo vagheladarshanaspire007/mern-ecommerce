@@ -111,10 +111,22 @@ async function seed() {
 
         await client.query(
           `
-          INSERT INTO orders (user_id, status, total_amount)
-          VALUES ($1, $2, $3);
+          INSERT INTO orders (user_id, status, total_amount, shipping_address)
+          VALUES ($1, $2, $3, $4);
           `,
-          [userId, 'delivered', 100 + i * 25]
+          [
+            userId,
+            'delivered',
+            100 + i * 25,
+            JSON.stringify({
+              fullName: i % 2 === 0 ? 'John Doe' : 'Jane Doe',
+              address: '123 Sample Street',
+              city: 'Mumbai',
+              state: 'Maharashtra',
+              pin: '400001',
+              phone: '+919876543210',
+            }),
+          ]
         );
       }
 
