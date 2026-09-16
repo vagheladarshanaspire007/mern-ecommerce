@@ -39,11 +39,9 @@ RUN rm -rf \
     /usr/local/lib/node_modules/corepack \
     /usr/local/README.md \
     /usr/local/LICENSE \
-    /usr/local/CHANGELOG.md
-
-
-# Create non-root user
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+    /usr/local/CHANGELOG.md \
+    && addgroup -S appgroup \
+    && adduser -S appuser -G appgroup
 
 # Copy compiled JS and prod node_modules with correct ownership
 COPY --from=builder --chown=appuser:appgroup /app/dist ./dist
