@@ -15,7 +15,7 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json tsconfig.json ./
-RUN npm ci
+RUN npm ci --ignore-scripts
 COPY src ./src
 RUN npm run build
 
@@ -23,7 +23,7 @@ RUN npm run build
 FROM node:20-alpine AS prod-deps
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci --omit=dev \
+RUN npm ci --omit=dev --ignore-scripts \
     && rm -rf \
       node_modules/@img/sharp-linux-x64 \
       node_modules/@img/sharp-libvips-linux-x64 \
