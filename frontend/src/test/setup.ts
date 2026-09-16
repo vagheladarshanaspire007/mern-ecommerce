@@ -17,11 +17,20 @@
 
 import '@testing-library/jest-dom';
 import { cleanup } from '@testing-library/react';
-import { afterEach, vi } from 'vitest';
+import { server } from './mocks/server';
+import { afterAll, afterEach, beforeAll, vi } from 'vitest';
 
-// Automatically unmount and clean up DOM after each test
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: 'error' });
+});
+
 afterEach(() => {
   cleanup();
+  server.resetHandlers();
+});
+
+afterAll(() => {
+  server.close();
 });
 
 // ─── Global Mocks ────────────────────────────────────────────
@@ -44,14 +53,14 @@ Object.defineProperty(window, 'matchMedia', {
 
 // Mock IntersectionObserver — not available in jsdom
 // WHY: Used by our useIntersectionObserver hook (infinite scroll)
-global.IntersectionObserver = vi.fn().mockImplementation(() => ({
-  observe: vi.fn(),
-  disconnect: vi.fn(),
-  unobserve: vi.fn(),
-}));
+globalThis.IntersectionObserver = class {
+  observe = vi.fn();
+  disconnect = vi.fn();
+  unobserve = vi.fn();
+} as unknown as typeof IntersectionObserver;
 
 // Mock ResizeObserver
-global.ResizeObserver = vi.fn().mockImplementation(() => ({
+globalThis.ResizeObserver = vi.fn().mockImplementation(() => ({
   observe: vi.fn(),
   disconnect: vi.fn(),
   unobserve: vi.fn(),
