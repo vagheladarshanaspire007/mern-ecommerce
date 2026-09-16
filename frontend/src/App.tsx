@@ -29,6 +29,7 @@ import { GuestRoute } from '@/components/layout/GuestRoute';
 import { AdminRoute } from '@/components/layout/AdminRoute';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PageLoader } from '@/components/ui/PageLoader';
+import { CartPage } from './pages/CartPage';
 
 // ─── Lazy Loaded Pages ───────────────────────────────────────
 // WHY lazy(): Code splitting — each page is a separate JS chunk.
@@ -40,7 +41,7 @@ const ForgotPasswordPage = lazy(() => import('@/pages/auth/ForgotPasswordPage'))
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
 const ProductListPage = lazy(() => import('@/pages/products/ProductListPage'));
 const ProductDetailPage = lazy(() => import('@/pages/products/ProductDetailPage'));
-const CartPage = lazy(() => import('@/pages/CartPage'));
+
 const CheckoutPage = lazy(() => import('@/pages/CheckoutPage'));
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
 const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'));
