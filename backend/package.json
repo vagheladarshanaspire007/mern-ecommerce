@@ -13,7 +13,8 @@
     "test:watch": "jest --watch",
     "migrate": "ts-node src/utils/migrate.ts",
     "seed": "ts-node src/utils/seed.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "audit": "npm audit"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -30,8 +31,10 @@
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
+    "nodemailer": "^9.0.5",
     "pg": "^8.11.3",
     "rate-limit-redis": "^4.2.0",
+    "sharp": "^0.35.3",
     "socket.io": "^4.6.2",
     "uuid": "^14.0.2",
     "winston": "^3.11.0",
