@@ -23,15 +23,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 
 import type { ShippingAddress } from './ShippingForm';
-
-interface CartItem {
-  productId: string;
-  name: string;
-  price: number;
-  quantity: number;
-  stock: number;
-  imageUrl?: string;
-}
+import type { CartItem } from '@/store/slices/cartSlice';
 
 export interface InsufficientStockItem {
   productId: string;
