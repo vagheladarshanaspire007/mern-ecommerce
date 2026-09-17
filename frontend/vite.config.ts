@@ -69,6 +69,7 @@ export default defineConfig({
         // Users cache vendor.js between deploys → only app.js redownloaded.
         manualChunks(id) {
           if (id.includes('node_modules')) {
+<<<<<<< HEAD
             if (id.includes('react') || id.includes('react-dom')) {
               return 'vendor';
             }
@@ -88,6 +89,12 @@ export default defineConfig({
               return 'query';
             }
 
+=======
+            if (id.includes('react-router-dom')) return 'router';
+            if (id.includes('@reduxjs') || id.includes('react-redux')) return 'redux';
+            if (id.includes('@tanstack/react-query')) return 'query';
+            if (id.includes('react') || id.includes('react-dom')) return 'vendor';
+>>>>>>> origin/dev
             return 'vendor';
           }
         },
