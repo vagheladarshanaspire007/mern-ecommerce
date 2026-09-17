@@ -14,8 +14,6 @@
     "test:ui": "vitest --ui",
     "typecheck": "tsc --noEmit",
     "audit": "npm audit"
-    "typecheck": "tsc --noEmit",
-    "audit": "npm audit"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.4",
@@ -48,7 +46,6 @@
     "@vitest/coverage-v8": "^4.1.11",
     "@vitest/mocker": "^4.1.11",
     "@vitest/ui": "^4.1.11",
-    "autoprefixer": "^10.5.5",
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react": "^7.33.2",
@@ -58,7 +55,6 @@
     "jsdom": "^24.0.0",
     "lint-staged": "^15.2.0",
     "msw": "^2.1.2",
-    "postcss": "^8.5.28",
     "postcss": "^8.5.28",
     "prettier": "^3.2.4",
     "tailwindcss": "^3.4.19",
