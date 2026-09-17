@@ -23,7 +23,6 @@
     "clsx": "^2.1.0",
     "fflate": "^0.8.3",
     "js-yaml": "^5.4.2",
-
     "lucide-react": "^0.312.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -43,16 +42,22 @@
     "@typescript-eslint/eslint-plugin": "^7.7.0",
     "@typescript-eslint/parser": "^7.7.0",
     "@vitejs/plugin-react": "^5.0.0",
-
-    "autoprefixer": "^10.5.5",
     "@vitest/coverage-v8": "^4.1.11",
     "@vitest/mocker": "^4.1.11",
     "@vitest/ui": "^4.1.11",
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 
 =======
     "autoprefixer": "^10.5.5",
 >>>>>>> origin/dev
+=======
+    "autoprefixer": "^10.5.5",
+>>>>>>> Stashed changes
+=======
+    "autoprefixer": "^10.5.5",
+>>>>>>> Stashed changes
     "eslint": "^8.56.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react": "^7.33.2",
@@ -61,6 +66,8 @@
     "husky": "^8.0.3",
     "jsdom": "^24.0.0",
     "lint-staged": "^15.2.0",
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <<<<<<< HEAD
     "msw": "^2.15.0",
     "postcss": "^8.5.28",
@@ -72,6 +79,18 @@
     "prettier": "^3.2.4",
     "tailwindcss": "^3.4.19",
 >>>>>>> origin/dev
+=======
+    "msw": "^2.1.2",
+    "postcss": "^8.5.28",
+    "prettier": "^3.2.4",
+    "tailwindcss": "^3.4.19",
+>>>>>>> Stashed changes
+=======
+    "msw": "^2.1.2",
+    "postcss": "^8.5.28",
+    "prettier": "^3.2.4",
+    "tailwindcss": "^3.4.19",
+>>>>>>> Stashed changes
     "typescript": "^5.3.3",
     "vite": "^8.0.9",
     "vitest": "^4.1.11"
@@ -83,11 +102,6 @@
     ],
     "src/**/*.{css,json}": [
       "prettier --write"
-    ]
-  },
-  "msw": {
-    "workerDirectory": [
-      "public"
     ]
   }
 }

@@ -22,9 +22,7 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [
-    // Enables React Fast Refresh (HMR for components)
-    react(),
-    
+    react(), // Enables React Fast Refresh (HMR for components)
   ],
 
   resolve: {
@@ -50,7 +48,6 @@ export default defineConfig({
         target: 'http://localhost:5000',
         changeOrigin: true,
       },
-
       // WebSocket connections → forwarded to Socket.io server
       '/socket.io': {
         target: 'http://localhost:5000',
@@ -69,6 +66,8 @@ export default defineConfig({
         // Users cache vendor.js between deploys → only app.js redownloaded.
         manualChunks(id) {
           if (id.includes('node_modules')) {
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <<<<<<< HEAD
             if (id.includes('react') || id.includes('react-dom')) {
               return 'vendor';
@@ -90,11 +89,21 @@ export default defineConfig({
             }
 
 =======
+=======
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
             if (id.includes('react-router-dom')) return 'router';
             if (id.includes('@reduxjs') || id.includes('react-redux')) return 'redux';
             if (id.includes('@tanstack/react-query')) return 'query';
             if (id.includes('react') || id.includes('react-dom')) return 'vendor';
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
 >>>>>>> origin/dev
+=======
+>>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
             return 'vendor';
           }
         },
