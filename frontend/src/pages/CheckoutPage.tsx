@@ -2,22 +2,13 @@ import { useRef, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 
 import { OrderConfirmation } from '@/components/checkout/OrderConfirmation';
-import {
-  OrderSummary,
-  type InsufficientStockItem,
-} from '@/components/checkout/OrderSummary';
-import {
-  ShippingForm,
-  type ShippingAddress,
-} from '@/components/checkout/ShippingForm';
+import { OrderSummary, type InsufficientStockItem } from '@/components/checkout/OrderSummary';
+import { ShippingForm, type ShippingAddress } from '@/components/checkout/ShippingForm';
 
 import { Card } from '@/components/ui/Card';
 import api from '@/services/api';
 import { useAppDispatch, useAppSelector } from '@/store';
-import {
-  clearCart,
-  selectCartItems,
-} from '@/store/slices/cartSlice';
+import { clearCart, selectCartItems } from '@/store/slices/cartSlice';
 
 type CheckoutStep = 1 | 2 | 3;
 
@@ -50,18 +41,14 @@ const CheckoutPage = () => {
   const cartItems = useAppSelector(selectCartItems);
 
   const [currentStep, setCurrentStep] = useState<CheckoutStep>(1);
-  const [shippingAddress, setShippingAddress] =
-    useState<ShippingAddress | null>(null);
+  const [shippingAddress, setShippingAddress] = useState<ShippingAddress | null>(null);
 
   const [orderId, setOrderId] = useState<string | null>(null);
-  const [estimatedDelivery, setEstimatedDelivery] =
-    useState<string | null>(null);
+  const [estimatedDelivery, setEstimatedDelivery] = useState<string | null>(null);
 
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [insufficientStockItems, setInsufficientStockItems] = useState<
-    InsufficientStockItem[]
-  >([]);
+  const [insufficientStockItems, setInsufficientStockItems] = useState<InsufficientStockItem[]>([]);
 
   const hasPlacedOrder = useRef(false);
 
@@ -121,14 +108,9 @@ const CheckoutPage = () => {
     } catch (error) {
       const apiError = error as ApiError;
 
-      if (
-        apiError.code === 'INSUFFICIENT_STOCK' ||
-        apiError.status === 409
-      ) {
+      if (apiError.code === 'INSUFFICIENT_STOCK' || apiError.status === 409) {
         const stockIssues = (apiError.details ?? []).map((issue) => {
-          const cartItem = cartItems.find(
-            (item) => item.productId === issue.productId
-          );
+          const cartItem = cartItems.find((item) => item.productId === issue.productId);
 
           return {
             productId: issue.productId,
@@ -149,10 +131,7 @@ const CheckoutPage = () => {
         return;
       }
 
-      setErrorMessage(
-        apiError.message ||
-          'Unable to place the order. Please try again.'
-      );
+      setErrorMessage(apiError.message || 'Unable to place the order. Please try again.');
     } finally {
       setIsPlacingOrder(false);
     }
@@ -168,13 +147,9 @@ const CheckoutPage = () => {
     <div className="py-8 sm:py-12">
       <div className="mx-auto max-w-4xl px-4 sm:px-6">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">
-            Checkout
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">Checkout</h1>
 
-          <p className="mt-1 text-sm text-gray-500">
-            Complete your order in three simple steps.
-          </p>
+          <p className="mt-1 text-sm text-gray-500">Complete your order in three simple steps.</p>
         </div>
 
         {/* Progress */}
@@ -187,10 +162,7 @@ const CheckoutPage = () => {
                 const isCompleted = currentStep > step;
 
                 return (
-                  <div
-                    key={title}
-                    className="flex flex-1 items-center"
-                  >
+                  <div key={title} className="flex flex-1 items-center">
                     <div className="flex min-w-0 flex-1 flex-col items-center">
                       <div
                         className={[
@@ -207,9 +179,7 @@ const CheckoutPage = () => {
                       <span
                         className={[
                           'mt-2 text-center text-xs font-medium sm:text-sm',
-                          isActive
-                            ? 'text-blue-600'
-                            : 'text-gray-500',
+                          isActive ? 'text-blue-600' : 'text-gray-500',
                         ].join(' ')}
                       >
                         {title}
@@ -220,9 +190,7 @@ const CheckoutPage = () => {
                       <div
                         className={[
                           'mx-2 h-0.5 flex-1',
-                          currentStep > step
-                            ? 'bg-blue-600'
-                            : 'bg-gray-200',
+                          currentStep > step ? 'bg-blue-600' : 'bg-gray-200',
                         ].join(' ')}
                         aria-hidden="true"
                       />
@@ -275,4 +243,3 @@ const CheckoutPage = () => {
 };
 
 export default CheckoutPage;
-
