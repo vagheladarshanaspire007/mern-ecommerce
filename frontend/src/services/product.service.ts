@@ -135,24 +135,24 @@ export const productService = {
   },
 
   async uploadImage(file: File, onProgress?: (progress: number) => void): Promise<string> {
-  const formData = new FormData();
-  formData.append('image', file);
+    const formData = new FormData();
+    formData.append('image', file);
 
-  const response = await api.post<UploadResponse>('/upload/image', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-    onUploadProgress: (progressEvent: AxiosProgressEvent) => {
-      if (!progressEvent.total || !onProgress) {
-        return;
-      }
+    const response = await api.post<UploadResponse>('/upload/image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      onUploadProgress: (progressEvent: AxiosProgressEvent) => {
+        if (!progressEvent.total || !onProgress) {
+          return;
+        }
 
-      const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
 
-      onProgress(progress);
-    },
-  });
+        onProgress(progress);
+      },
+    });
 
-  return response.data.url;
-},
+    return response.data.url;
+  },
 };

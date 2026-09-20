@@ -34,7 +34,7 @@ export function ProductCard({ product }: ProductCardProps) {
         name: product.name,
         price: Number(product.price),
         imageUrl: product.imageUrls[0],
-        stock: product.stock
+        stock: product.stock,
       })
     );
   };
