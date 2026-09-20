@@ -10,7 +10,6 @@
  *
  * Run with: npm run migrate
  *
- * TODO (Day 41): Add your e-commerce tables here.
  *   Follow the pattern: CREATE TABLE IF NOT EXISTS.
  * ============================================================
  */
