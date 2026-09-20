@@ -325,7 +325,7 @@ export default function AdminProductForm() {
       </div>
 
       <Card>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6" noValidate>
           <Input
             label="Name"
             value={formData.name}

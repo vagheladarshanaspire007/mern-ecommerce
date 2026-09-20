@@ -81,6 +81,7 @@ export default function ProductDetailPage() {
         name: product.name,
         price: Number(product.price),
         imageUrl: product.imageUrls[0],
+        stock: product.stock,
       })
     );
 
