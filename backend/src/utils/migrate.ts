@@ -214,7 +214,6 @@ const migrations: { id: string; sql: string }[] = [
   `,
   },
 
-  // TODO (Day 41): Add more tables: categories, orders, order_items, reviews, cart
   {
     id: '010_add_shipping_address_to_orders',
     sql: `
