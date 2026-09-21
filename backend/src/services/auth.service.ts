@@ -15,6 +15,7 @@ import type {
 const REFRESH_TOKEN_TTL = 7 * 24 * 60 * 60;
 const RESET_TOKEN_TTL = 60 * 60;
 const INVALID_CREDENTIALS_MESSAGE = 'Invalid email or password';
+const DUMMY_PASSWORD_HASH = bcrypt.hashSync(crypto.randomUUID(), 12);
 
 const getSafeUser = (user: User) => ({
   id: user.id,
@@ -61,13 +62,10 @@ export const AuthService = {
   login: async (data: LoginDto) => {
     const user = await UserModel.findByEmail(data.email);
 
-    if (!user) {
-      throw new AppError(401, 'INVALID_CREDENTIALS', INVALID_CREDENTIALS_MESSAGE);
-    }
+    const passwordHash = user?.passwordHash ?? DUMMY_PASSWORD_HASH;
+    const isValid = await UserModel.verifyPassword(data.password, passwordHash);
 
-    const isValid = await UserModel.verifyPassword(data.password, user.passwordHash);
-
-    if (!isValid) {
+    if (!user || !isValid) {
       throw new AppError(401, 'INVALID_CREDENTIALS', INVALID_CREDENTIALS_MESSAGE);
     }
 
@@ -152,9 +150,11 @@ export const AuthService = {
       throw new AppError(400, 'INVALID_RESET_TOKEN', 'Invalid or expired reset token');
     }
 
-    const passwordHash = await bcrypt.hash(data.password, 12);
+    const rounds = Number.parseInt(process.env.BCRYPT_ROUNDS || '12', 10);
+    const passwordHash = await bcrypt.hash(data.password, rounds);
 
     await UserModel.updatePassword(user.id, passwordHash);
+    await cacheDel(`refresh:${user.id}`);
     await cacheDel(`password-reset:${data.token}`);
   },
 };
