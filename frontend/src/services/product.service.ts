@@ -1,5 +1,5 @@
 import api from '@/services/api';
-import type { AxiosProgressEvent } from 'axios';
+import { AxiosProgressEvent } from 'axios';
 
 export interface Product {
   id: string;

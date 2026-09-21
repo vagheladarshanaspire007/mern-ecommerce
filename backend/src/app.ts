@@ -20,6 +20,8 @@
  */
 
 import express, { Application, Request } from 'express';
+import fs from 'node:fs';
+import path from 'node:path';
 import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
@@ -37,10 +39,16 @@ import { notFoundHandler } from './middleware/error/notFoundHandler';
 import { authRouter } from './routes/auth.routes';
 import { userRouter } from './routes/user.routes';
 import { productRouter } from './routes/product.routes';
+import { orderRouter } from './routes/order.routes';
 import { uploadRouter } from './routes/upload.routes';
 import { healthRouter } from './routes/health.routes';
 
 export const app: Application = express();
+
+const UPLOAD_DIR = process.env.UPLOAD_DIR || 'uploads';
+fs.mkdirSync(path.join(UPLOAD_DIR, 'images'), { recursive: true });
+
+app.use('/uploads', express.static(UPLOAD_DIR));
 
 // ─── 1. Security Headers ────────────────────────────────────
 // helmet() sets ~14 HTTP headers that protect against common web vulnerabilities.
@@ -126,6 +134,7 @@ app.use('/api/health', healthRouter); // Health check (no version prefix)
 app.use(`${API_PREFIX}/auth`, authRouter); // Registration, login, refresh, logout
 app.use(`${API_PREFIX}/users`, userRouter); // User CRUD (protected)
 app.use(`${API_PREFIX}/products`, productRouter); // Product CRUD (Day 41-43 feature)
+app.use(`${API_PREFIX}/orders`, orderRouter); // Order management
 app.use(`${API_PREFIX}/upload`, uploadRouter); // File uploads via Multer
 
 // ─── 10. 404 Handler ────────────────────────────────────────
