@@ -113,7 +113,6 @@ const AdminDashboardPage = () => {
     <div className="space-y-6 p-6">
       <div>
         <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-
         <p className="mt-2 text-gray-500">Manage products, orders, and users.</p>
       </div>
 
