@@ -37,6 +37,7 @@ import { notFoundHandler } from './middleware/error/notFoundHandler';
 import { authRouter } from './routes/auth.routes';
 import { userRouter } from './routes/user.routes';
 import { productRouter } from './routes/product.routes';
+import { orderRouter } from './routes/order.routes';
 import { uploadRouter } from './routes/upload.routes';
 import { healthRouter } from './routes/health.routes';
 
@@ -126,6 +127,7 @@ app.use('/api/health', healthRouter); // Health check (no version prefix)
 app.use(`${API_PREFIX}/auth`, authRouter); // Registration, login, refresh, logout
 app.use(`${API_PREFIX}/users`, userRouter); // User CRUD (protected)
 app.use(`${API_PREFIX}/products`, productRouter); // Product CRUD (Day 41-43 feature)
+app.use(`${API_PREFIX}/orders`, orderRouter); // Order management
 app.use(`${API_PREFIX}/upload`, uploadRouter); // File uploads via Multer
 
 // ─── 10. 404 Handler ────────────────────────────────────────
