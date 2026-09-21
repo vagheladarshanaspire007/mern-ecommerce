@@ -28,7 +28,7 @@
     "ioredis": "^5.3.2",
     "joi": "^17.11.0",
     "jsonwebtoken": "^9.0.2",
-    "morgan": "^1.12.0",
+    "morgan": "^1.12.1",
     "multer": "^1.4.5-lts.1",
     "pg": "^8.11.3",
     "rate-limit-redis": "^4.2.0",
@@ -38,6 +38,13 @@
     "winston": "^3.11.0",
     "winston-daily-rotate-file": "^4.7.1",
     "zod": "^3.22.4"
+  },
+  "overrides": {
+  "qs": "^6.16.0",
+  "bull": {
+    "uuid": "11.1.1"
+  },
+  "js-yaml": "4.3.2"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
