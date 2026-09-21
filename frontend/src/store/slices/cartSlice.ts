@@ -5,11 +5,12 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface CartItem {
+export interface CartItem {
   productId: string;
   name: string;
   price: number;
   quantity: number;
+  stock: number;
   imageUrl?: string;
 }
 
@@ -33,12 +34,25 @@ const cartSlice = createSlice({
      * creates a new immutable state behind the scenes.
      */
     addToCart: (state, action: PayloadAction<Omit<CartItem, 'quantity'>>) => {
-      const existing = state.items.find((i) => i.productId === action.payload.productId);
+      const existing = state.items.find((item) => item.productId === action.payload.productId);
+
       if (existing) {
+        if (existing.quantity >= existing.stock) {
+          return;
+        }
+
         existing.quantity += 1;
-      } else {
-        state.items.push({ ...action.payload, quantity: 1 });
+        return;
       }
+
+      if (action.payload.stock <= 0) {
+        return;
+      }
+
+      state.items.push({
+        ...action.payload,
+        quantity: 1,
+      });
     },
 
     removeFromCart: (state, action: PayloadAction<string>) => {
@@ -60,17 +74,23 @@ const cartSlice = createSlice({
       state.items = [];
     },
 
+    hydrateCart: (state, action: PayloadAction<CartItem[]>) => {
+      state.items = action.payload;
+    },
+
     toggleCart: (state) => {
       state.isOpen = !state.isOpen;
     },
   },
 });
 
-export const { addToCart, removeFromCart, updateQuantity, clearCart, toggleCart } =
+export const { addToCart, removeFromCart, updateQuantity, clearCart, hydrateCart, toggleCart } =
   cartSlice.actions;
 
 // ─── Selectors ───────────────────────────────────────────────
 // WHY selectors: Encapsulate derived state — components don't compute totals
+export const selectCartItems = (state: { cart: CartState }) => state.cart.items;
+
 export const selectCartItemCount = (state: { cart: CartState }) =>
   state.cart.items.reduce((sum, item) => sum + item.quantity, 0);
 

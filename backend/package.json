@@ -11,8 +11,8 @@
     "format": "prettier --write 'src/**/*.ts'",
     "test": "jest --coverage --passWithNoTests",
     "test:watch": "jest --watch",
-    "migrate": "node dist/utils/migrate.js",
-    "seed": "node dist/utils/seed.js",
+    "migrate": "ts-node src/utils/migrate.ts",
+    "seed": "ts-node src/utils/seed.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -32,7 +32,6 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^9.1.0",
     "pg": "^8.11.3",
-    "qs": "^6.16.0",
     "rate-limit-redis": "^4.2.0",
     "sharp": "^0.35.4",
     "socket.io": "^4.6.2",
@@ -42,7 +41,11 @@
     "zod": "^3.22.4"
   },
   "overrides": {
-    "qs": "^6.16.0"
+    "js-yaml": "4.3.2",
+    "qs": "6.16.0",
+    "@istanbuljs/load-nyc-config": {
+      "js-yaml": "3.15.2"
+    }
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -79,6 +82,9 @@
     ]
   },
   "overrides": {
-    "js-yaml": "4.3.2"
+    "bull": {
+      "uuid": "11.1.1"
+    },
+    "qs": "6.16.0"
   }
 }

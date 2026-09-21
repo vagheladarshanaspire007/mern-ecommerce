@@ -9,7 +9,7 @@
  *   /dashboard           → User dashboard (protected)
  *   /products            → Product listing (public)
  *   /products/:id        → Product detail (public)
- *   /cart                → Shopping cart (protected)
+ *   /cart                → Shopping cart (public)
  *   /checkout            → Checkout flow (protected)
  *   /admin/*             → Admin panel (admin role only)
  *   *                    → 404 Not Found
@@ -29,6 +29,7 @@ import { GuestRoute } from '@/components/layout/GuestRoute';
 import { AdminRoute } from '@/components/layout/AdminRoute';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PageLoader } from '@/components/ui/PageLoader';
+import { CartPage } from './pages/CartPage';
 
 // ─── Lazy Loaded Pages ───────────────────────────────────────
 // WHY lazy(): Code splitting — each page is a separate JS chunk.
@@ -41,17 +42,17 @@ const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
 const OrderHistoryPage = lazy(() => import('@/pages/OrderHistoryPage'));
 const ProductListPage = lazy(() => import('@/pages/products/ProductListPage'));
 const ProductDetailPage = lazy(() => import('@/pages/products/ProductDetailPage'));
-const CartPage = lazy(() => import('@/pages/CartPage'));
 const CheckoutPage = lazy(() => import('@/pages/CheckoutPage'));
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
 const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'));
+const AdminProductForm = lazy(() => import('@/pages/admin/AdminProductForm'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
 export default function App() {
   return (
     <Suspense fallback={<PageLoader />}>
       <Routes>
-        {/* ── Guest Only (redirect to /dashboard if logged in) ─*/}
+        {/* ── Guest Only (redirect to /dashboard if logged in) ── */}
         <Route element={<GuestRoute />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
@@ -63,19 +64,28 @@ export default function App() {
           <Route path="/" element={<Navigate to="/products" replace />} />
           <Route path="/products" element={<ProductListPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
+          <Route path="/cart" element={<CartPage />} />
+
+          {/* ── Public Cart ──────────────────────────────────── */}
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
 
           {/* ── Protected routes (login required) ────────────── */}
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/orders" element={<OrderHistoryPage />} />
           </Route>
 
+          {/* ── Public Cart ──────────────────────────────────── */}
+          <Route path="/cart" element={<CartPage />} />
+
           {/* ── Admin routes (admin role required) ───────────── */}
           <Route element={<AdminRoute />}>
             <Route path="/admin" element={<AdminDashboardPage />} />
+            <Route path="/admin/products/new" element={<AdminProductForm />} />
+            <Route path="/admin/products/:id/edit" element={<AdminProductForm />} />
             <Route path="/admin/*" element={<AdminDashboardPage />} />
           </Route>
         </Route>
