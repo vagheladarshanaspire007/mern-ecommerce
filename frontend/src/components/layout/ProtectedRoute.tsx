@@ -12,24 +12,30 @@
  * ============================================================
  */
 
-// ── ProtectedRoute.tsx ────────────────────────────────────────
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAppSelector } from '@/store';
 
 /**
- * Redirects unauthenticated users to /login.
- * WHY state.from: After login, redirect user back to the page they
- * were trying to visit (better UX than always going to /dashboard).
+ * Redirects unauthenticated users to /login?redirect=...
+ *
+ * WHY redirect:
+ * After login, the user is returned to the page they originally
+ * wanted to visit instead of always going to /dashboard.
  */
 export function ProtectedRoute() {
   const { isAuthenticated, isInitialized } = useAppSelector((state) => state.auth);
+
   const location = useLocation();
 
-  // Wait until we've checked for an existing session (silent refresh)
-  if (!isInitialized) return null; // Or <PageLoader /> while checking
+  // Wait until we've checked for an existing session.
+  if (!isInitialized) {
+    return null;
+  }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    const redirect = `${location.pathname}${location.search}`;
+
+    return <Navigate to={`/login?redirect=${encodeURIComponent(redirect)}`} replace />;
   }
 
   return <Outlet />;

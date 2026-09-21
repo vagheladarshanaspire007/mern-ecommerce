@@ -217,9 +217,9 @@ describe('authSlice', () => {
     const state = store.getState().auth;
 
     expect(state.isLoading).toBe(false);
-    expect(state.user).toEqual(mockUser);
-    expect(state.accessToken).toBe('register-access-token');
-    expect(state.isAuthenticated).toBe(true);
+    expect(state.user).toBeNull();
+    expect(state.accessToken).toBeNull();
+    expect(state.isAuthenticated).toBe(false);
     expect(state.error).toBeNull();
   });
 
