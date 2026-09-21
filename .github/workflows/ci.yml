@@ -158,7 +158,7 @@ jobs:
         working-directory: backend
         run: npm run seed
         env:
-          NODE_ENV: test
+          NODE_ENV: development
           DB_HOST: localhost
           DB_PORT: 5432
           DB_NAME: mern_test
