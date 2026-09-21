@@ -146,7 +146,14 @@ jobs:
           REDIS_PORT: 6379
           JWT_ACCESS_SECRET: test_access_secret_32_chars_minimum
           JWT_REFRESH_SECRET: test_refresh_secret_32_chars_minimum
-
+      - name: Verify test database
+        run: |
+          PGPASSWORD=postgres psql \
+            -h localhost \
+            -p 5432 \
+            -U postgres \
+            -d mern_test \
+            -c "SELECT current_database();"
       - name: Seed test database
         working-directory: backend
         run: npm run seed
