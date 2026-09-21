@@ -11,15 +11,12 @@ import { Router } from 'express';
 import { authenticate } from '../middleware/auth/authenticate';
 import { uploadRateLimiter } from '../middleware/security/rateLimiter';
 import { uploadSingleImage, uploadMultipleImages } from '../middleware/upload';
+import { uploadImage } from '../controllers/upload.controller';
 
 const router = Router();
 
-router.post('/image', authenticate, uploadRateLimiter, uploadSingleImage, (req, res) => {
-  // TODO: Compress image with sharp, upload to S3/cloud storage, return URL
-  res.status(501).json({
-    message: 'TODO: Compress with sharp → upload to storage → return public URL',
-    file: req.file,
-  });
+router.post('/image', authenticate, uploadRateLimiter, uploadSingleImage, (req, res, next) => {
+  uploadImage(req, res).catch(next);
 });
 
 router.post('/images', authenticate, uploadRateLimiter, uploadMultipleImages, (req, res) => {
