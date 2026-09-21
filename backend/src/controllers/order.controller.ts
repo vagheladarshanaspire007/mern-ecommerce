@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
 import { OrderService } from '../services/order.service';
-import type { OrderItemInput, OrderStatus } from '../models/order.model';
+import type { OrderItemInput, OrderStatus, ShippingAddress } from '../models/order.model';
 
 interface CreateOrderBody {
   items: OrderItemInput[];
+  shippingAddress: ShippingAddress;
 }
 
 interface UpdateOrderStatusBody {
@@ -11,7 +12,11 @@ interface UpdateOrderStatusBody {
 }
 
 export const createOrder = async (req: Request, res: Response): Promise<void> => {
-  const order = await OrderService.create(req.user!.userId, (req.body as CreateOrderBody).items);
+  const order = await OrderService.create(
+    req.user!.userId,
+    (req.body as CreateOrderBody).items,
+    (req.body as CreateOrderBody).shippingAddress
+  );
 
   res.status(201).json({
     success: true,

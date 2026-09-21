@@ -9,6 +9,14 @@ export const createOrderSchema = z.object({
       })
     )
     .min(1),
+  shippingAddress: z.object({
+    fullName: z.string().trim().min(2).max(100),
+    address: z.string().trim().min(5).max(255),
+    city: z.string().trim().min(2).max(100),
+    state: z.string().trim().min(2).max(100),
+    pin: z.string().regex(/^\d{6}$/),
+    phone: z.string().regex(/^[+]?\d{10,15}$/),
+  }),
 });
 
 export const orderIdSchema = z.object({

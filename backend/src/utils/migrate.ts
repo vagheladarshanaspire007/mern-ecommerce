@@ -59,7 +59,7 @@ const migrations: { id: string; sql: string }[] = [
         name VARCHAR(255) NOT NULL,
         description TEXT,
         price NUMERIC(10, 2) NOT NULL,
-        stock INTEGER NOT NULL DEFAULT 0,
+        stock INTEGER NOT NULL DEFAULT 0 CHECK (stock >= 0),
         image_urls TEXT[] DEFAULT '{}',
         is_active BOOLEAN DEFAULT TRUE,
         created_at TIMESTAMP DEFAULT NOW(),
@@ -106,7 +106,7 @@ const migrations: { id: string; sql: string }[] = [
       user_id UUID NOT NULL,
       status VARCHAR(20) NOT NULL DEFAULT 'pending'
         CHECK (status IN ('pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled')),
-      total_amount NUMERIC(10, 2) NOT NULL CHECK (total_amount >= 0),
+      total_amount NUMERIC(10, 2) NOT NULL,
       created_at TIMESTAMP DEFAULT NOW(),
       updated_at TIMESTAMP DEFAULT NOW(),
 
@@ -131,7 +131,7 @@ const migrations: { id: string; sql: string }[] = [
       order_id UUID NOT NULL,
       product_id UUID NOT NULL,
       quantity INTEGER NOT NULL CHECK (quantity > 0),
-      unit_price NUMERIC(10, 2) NOT NULL CHECK (unit_price >= 0),
+      unit_price NUMERIC(10, 2) NOT NULL,
 
       CONSTRAINT fk_order_items_order
         FOREIGN KEY (order_id)
@@ -212,6 +212,19 @@ const migrations: { id: string; sql: string }[] = [
     CREATE INDEX IF NOT EXISTS idx_cart_items_product_id
       ON cart_items(product_id);
   `,
+  },
+
+  // TODO (Day 41): Add more tables: categories, orders, order_items, reviews, cart
+  {
+    id: '010_add_shipping_address_to_orders',
+    sql: `
+      ALTER TABLE orders
+        ADD COLUMN IF NOT EXISTS shipping_address JSONB NOT NULL DEFAULT '{}'::jsonb,
+        ADD COLUMN IF NOT EXISTS estimated_delivery TIMESTAMP;
+
+      ALTER TABLE orders
+        ALTER COLUMN shipping_address DROP DEFAULT;
+    `,
   },
 ];
 
