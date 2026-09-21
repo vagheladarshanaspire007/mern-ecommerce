@@ -58,10 +58,10 @@ async function bootstrap() {
     };
 
     process.on('SIGTERM', () => {
-      void shutdown('SIGTERM');
+      shutdown('SIGTERM');
     });
     process.on('SIGINT', () => {
-      void shutdown('SIGINT');
+      shutdown('SIGINT');
     });
   } catch (error) {
     logger.error('Fatal error during bootstrap:', error);

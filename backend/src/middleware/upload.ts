@@ -31,7 +31,7 @@ import { Request } from 'express';
 import { AppError } from '../utils/AppError';
 
 // ─── Allowed MIME Types ──────────────────────────────────────
-const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const ALLOWED_DOCUMENT_TYPES = ['application/pdf'];
 const ALLOWED_ALL = [...ALLOWED_IMAGE_TYPES, ...ALLOWED_DOCUMENT_TYPES];
 
