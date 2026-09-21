@@ -29,19 +29,7 @@ const defaultUser: MockStoredUser = {
   updatedAt: '2026-08-01T10:00:00.000Z',
 };
 
-const adminUser: MockStoredUser = {
-  id: 'mock-admin-001',
-  firstName: 'Admin',
-  lastName: 'User',
-  email: 'admin@example.com',
-  password: 'Admin123',
-  role: 'admin',
-  emailVerified: true,
-  createdAt: '2026-08-01T10:00:00.000Z',
-  updatedAt: '2026-08-01T10:00:00.000Z',
-};
-
-const mockUsers: MockStoredUser[] = [defaultUser, adminUser];
+const mockUsers: MockStoredUser[] = [defaultUser];
 
 const mockAccessToken = 'mock-access-token-ec201';
 
@@ -86,7 +74,7 @@ const mockProducts = [
     id: 'product-001',
     name: 'Wireless Headphones',
     description: 'Premium wireless headphones',
-    price: 2999,
+    price: '2999',
     stock: 25,
     imageUrls: [],
     isActive: true,
@@ -97,7 +85,7 @@ const mockProducts = [
     id: 'product-002',
     name: 'Mechanical Keyboard',
     description: 'RGB mechanical keyboard',
-    price: 4999,
+    price: '4999',
     stock: 15,
     imageUrls: [],
     isActive: true,
@@ -108,12 +96,25 @@ const mockProducts = [
     id: 'product-003',
     name: 'Wireless Mouse',
     description: 'Ergonomic wireless mouse',
-    price: 1499,
+    price: '1499',
     stock: 40,
     imageUrls: [],
     isActive: true,
     createdAt: '2026-08-03T10:00:00.000Z',
     updatedAt: '2026-08-03T10:00:00.000Z',
+  },
+];
+
+const mockCategories = [
+  {
+    id: 'category-001',
+    name: 'Electronics',
+    description: 'Electronic products',
+  },
+  {
+    id: 'category-002',
+    name: 'Accessories',
+    description: 'Computer and mobile accessories',
   },
 ];
 
@@ -361,6 +362,18 @@ export const handlers = [
       data: {
         products: limitedProducts,
         nextCursor: null,
+      },
+    });
+  }),
+
+  // ============================================================
+  // Product Categories
+  // ============================================================
+  http.get(`${API_URL}/products/categories`, () => {
+    return HttpResponse.json({
+      success: true,
+      data: {
+        categories: mockCategories,
       },
     });
   }),

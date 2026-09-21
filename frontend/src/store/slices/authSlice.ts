@@ -150,7 +150,7 @@ const authSlice = createSlice({
       // ── Logout ───────────────────────────────────────────
       .addCase(logoutUser.fulfilled, () => ({
         ...initialState,
-        isInitialized: true,
+        isInitialized: false,
       }));
   },
 });

@@ -29,7 +29,7 @@ import { GuestRoute } from '@/components/layout/GuestRoute';
 import { AdminRoute } from '@/components/layout/AdminRoute';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PageLoader } from '@/components/ui/PageLoader';
-import AdminProductForm from './pages/admin/AdminProductForm';
+import { CartPage } from './pages/CartPage';
 
 // ─── Lazy Loaded Pages ───────────────────────────────────────
 // WHY lazy(): Code splitting — each page is a separate JS chunk.
@@ -42,13 +42,10 @@ const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
 const OrderHistoryPage = lazy(() => import('@/pages/OrderHistoryPage'));
 const ProductListPage = lazy(() => import('@/pages/products/ProductListPage'));
 const ProductDetailPage = lazy(() => import('@/pages/products/ProductDetailPage'));
-const CartPage = lazy(async () => {
-  const module = await import('@/pages/CartPage');
-  return { default: module.CartPage };
-});
 const CheckoutPage = lazy(() => import('@/pages/CheckoutPage'));
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
 const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'));
+const AdminProductForm = lazy(() => import('@/pages/admin/AdminProductForm'));
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
 export default function App() {
@@ -67,6 +64,7 @@ export default function App() {
           <Route path="/" element={<Navigate to="/products" replace />} />
           <Route path="/products" element={<ProductListPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
+          <Route path="/cart" element={<CartPage />} />
 
           {/* ── Public Cart ──────────────────────────────────── */}
           <Route path="/cart" element={<CartPage />} />
@@ -75,6 +73,7 @@ export default function App() {
           {/* ── Protected routes (login required) ────────────── */}
           <Route element={<ProtectedRoute />}>
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/orders" element={<OrderHistoryPage />} />
           </Route>
