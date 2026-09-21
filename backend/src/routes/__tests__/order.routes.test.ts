@@ -34,8 +34,15 @@ describe('Order routes', () => {
       .set('Authorization', `Bearer ${token}`)
       .send({
         items: [{ productId: product.id, quantity: 1 }],
+        shippingAddress: {
+          fullName: 'John Doe',
+          address: '123 Main Street',
+          city: 'Mumbai',
+          state: 'Maharashtra',
+          pin: '400001',
+          phone: '+919876543210',
+        },
       });
-
     expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);
 
@@ -53,8 +60,15 @@ describe('Order routes', () => {
       .set('Authorization', `Bearer ${token}`)
       .send({
         items: [{ productId: product.id, quantity: 999999 }],
+        shippingAddress: {
+          fullName: 'John Doe',
+          address: '123 Main Street',
+          city: 'Mumbai',
+          state: 'Maharashtra',
+          pin: '400001',
+          phone: '+919876543210',
+        },
       });
-
     expect(res.status).toBe(409);
   });
 });

@@ -1,7 +1,16 @@
-import type { OrderStatus } from '../../models/order.model';
+import type { OrderStatus, ShippingAddress } from '../../models/order.model';
 import { OrderService } from '../order.service';
 import { OrderModel } from '../../models/order.model';
 import { withTransaction } from '../../config/database';
+
+const shippingAddress: ShippingAddress = {
+  fullName: 'John Doe',
+  address: '123 Main Street',
+  city: 'Mumbai',
+  state: 'Maharashtra',
+  pin: '400001',
+  phone: '+919876543210',
+};
 
 jest.mock('../../models/order.model', () => ({
   OrderModel: {
@@ -45,7 +54,7 @@ describe('OrderService', () => {
     });
 
     await expect(
-      OrderService.create('user-1', [{ productId: 'product-1', quantity: 5 }])
+      OrderService.create('user-1', [{ productId: 'product-1', quantity: 5 }],shippingAddress)
     ).rejects.toMatchObject({
       statusCode: 409,
       code: 'INSUFFICIENT_STOCK',
@@ -82,7 +91,7 @@ describe('OrderService', () => {
     (OrderModel.createItem as jest.Mock).mockRejectedValue(new Error('order_items insert failed'));
 
     await expect(
-      OrderService.create('user-1', [{ productId: 'product-1', quantity: 1 }])
+      OrderService.create('user-1', [{ productId: 'product-1', quantity: 1 }],shippingAddress)
     ).rejects.toThrow('order_items insert failed');
 
     expect(OrderModel.create).toHaveBeenCalled();
@@ -117,7 +126,7 @@ describe('OrderService additional coverage', () => {
       userId: 'user-1',
     });
 
-    const result = await OrderService.create('user-1', [{ productId: 'product-1', quantity: 2 }]);
+    const result = await OrderService.create('user-1', [{ productId: 'product-1', quantity: 2 }],shippingAddress);
 
     expect(result.id).toBe('order-1');
     expect(client.query).toHaveBeenCalledTimes(2);
@@ -142,7 +151,7 @@ describe('OrderService additional coverage', () => {
     (withTransaction as jest.Mock).mockImplementation(async (callback) => callback(client));
 
     await expect(
-      OrderService.create('user-1', [{ productId: 'product-1', quantity: 1 }])
+      OrderService.create('user-1', [{ productId: 'product-1', quantity: 1 }],shippingAddress)
     ).rejects.toMatchObject({ statusCode: 409 });
 
     expect(OrderModel.create).not.toHaveBeenCalled();

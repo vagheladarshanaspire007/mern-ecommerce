@@ -30,6 +30,7 @@ jest.mock('../../utils/email', () => ({
 
 jest.mock('bcryptjs', () => ({
   hash: jest.fn().mockResolvedValue('new-hashed-password'),
+  hashSync: jest.fn().mockReturnValue('dummy-password-hash'),
 }));
 
 const mockUser = {
