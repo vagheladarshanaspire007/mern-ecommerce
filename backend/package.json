@@ -80,5 +80,11 @@
       "eslint --fix",
       "prettier --write"
     ]
+  },
+  "overrides": {
+    "bull": {
+      "uuid": "11.1.1"
+    },
+    "qs": "6.16.0"
   }
 }

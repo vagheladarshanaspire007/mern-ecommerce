@@ -129,19 +129,38 @@ api.interceptors.response.use(
   }
 );
 
+interface ApiErrorDetails {
+  productId: string;
+  requested: number;
+  available: number;
+}
+
+interface ApiErrorResponse {
+  error?: {
+    message?: string;
+    code?: string;
+    details?: ApiErrorDetails[];
+  };
+}
 /**
  * Normalize API errors into a consistent shape.
  * WHY: Keeps error handling in components simple — always the same structure.
  */
 function normalizeError(error: AxiosError): Error {
-  const data = error.response?.data as { error?: { message?: string; code?: string } } | undefined;
+  const data = error.response?.data as ApiErrorResponse | undefined;
 
   const message = data?.error?.message || error.message || 'An unexpected error occurred';
 
-  const normalizedError = new Error(message);
-  (normalizedError as Error & { code?: string; status?: number }).code = data?.error?.code;
-  (normalizedError as Error & { status?: number }).status = error.response?.status;
+  const normalizedError = new Error(message) as Error & {
+    code?: string;
+    status?: number;
+    details?: ApiErrorDetails[];
+  };
+
+  normalizedError.code = data?.error?.code;
+  normalizedError.status = error.response?.status;
+  normalizedError.details = data?.error?.details;
+
   return normalizedError;
 }
-
 export default api;
