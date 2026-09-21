@@ -39,6 +39,7 @@ const LoginPage = lazy(() => import('@/pages/auth/LoginPage'));
 const RegisterPage = lazy(() => import('@/pages/auth/RegisterPage'));
 const ForgotPasswordPage = lazy(() => import('@/pages/auth/ForgotPasswordPage'));
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
+const OrderHistoryPage = lazy(() => import('@/pages/OrderHistoryPage'));
 const ProductListPage = lazy(() => import('@/pages/products/ProductListPage'));
 const ProductDetailPage = lazy(() => import('@/pages/products/ProductDetailPage'));
 
@@ -69,6 +70,7 @@ export default function App() {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/orders" element={<OrderHistoryPage />} />
           </Route>
 
           {/* ── Public Cart ──────────────────────────────────── */}
