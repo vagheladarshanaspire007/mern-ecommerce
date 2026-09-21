@@ -33,8 +33,8 @@ export function ProductCard({ product }: ProductCardProps) {
         productId: product.id,
         name: product.name,
         price: Number(product.price),
-        stock: product.stock,
         imageUrl: product.imageUrls[0],
+        stock: product.stock,
       })
     );
   };

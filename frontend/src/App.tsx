@@ -29,7 +29,7 @@ import { GuestRoute } from '@/components/layout/GuestRoute';
 import { AdminRoute } from '@/components/layout/AdminRoute';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PageLoader } from '@/components/ui/PageLoader';
-import { CartPage } from './pages/CartPage';
+import AdminProductForm from './pages/admin/AdminProductForm';
 
 // ─── Lazy Loaded Pages ───────────────────────────────────────
 // WHY lazy(): Code splitting — each page is a separate JS chunk.
@@ -42,7 +42,10 @@ const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
 const OrderHistoryPage = lazy(() => import('@/pages/OrderHistoryPage'));
 const ProductListPage = lazy(() => import('@/pages/products/ProductListPage'));
 const ProductDetailPage = lazy(() => import('@/pages/products/ProductDetailPage'));
-
+const CartPage = lazy(async () => {
+  const module = await import('@/pages/CartPage');
+  return { default: module.CartPage };
+});
 const CheckoutPage = lazy(() => import('@/pages/CheckoutPage'));
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
 const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'));
@@ -79,6 +82,8 @@ export default function App() {
           {/* ── Admin routes (admin role required) ───────────── */}
           <Route element={<AdminRoute />}>
             <Route path="/admin" element={<AdminDashboardPage />} />
+            <Route path="/admin/products/new" element={<AdminProductForm />} />
+            <Route path="/admin/products/:id/edit" element={<AdminProductForm />} />
             <Route path="/admin/*" element={<AdminDashboardPage />} />
           </Route>
         </Route>
