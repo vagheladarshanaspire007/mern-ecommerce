@@ -148,7 +148,10 @@ const authSlice = createSlice({
       })
 
       // ── Logout ───────────────────────────────────────────
-      .addCase(logoutUser.fulfilled, () => initialState);
+      .addCase(logoutUser.fulfilled, () => ({
+        ...initialState,
+        isInitialized: true,
+      }));
   },
 });
 

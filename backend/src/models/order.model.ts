@@ -2,7 +2,12 @@ import { PoolClient } from 'pg';
 import { query } from '../config/database';
 
 export type OrderStatus =
-  'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  | 'pending'
+  | 'confirmed'
+  | 'processing'
+  | 'shipped'
+  | 'delivered'
+  | 'cancelled';
 
 export interface OrderItemInput {
   productId: string;
