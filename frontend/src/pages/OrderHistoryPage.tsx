@@ -1,4 +1,7 @@
+﻿import { useEffect } from 'react';
 import { DataTable } from '@/components/ui/DataTable';
+import { useAppDispatch } from '@/store';
+import { clearUnreadCount } from '@/store/slices/uiSlice';
 import type { Order, OrderStatus } from '@/types/auth.types';
 
 const mockOrders: Order[] = [
@@ -76,11 +79,17 @@ const columns = [
   {
     key: 'totalAmount',
     label: 'Total',
-    render: (order: Order) => `₹${order.totalAmount.toLocaleString('en-IN')}`,
+    render: (order: Order) => `â‚¹${order.totalAmount.toLocaleString('en-IN')}`,
   },
 ];
 
 export default function OrderHistoryPage() {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(clearUnreadCount());
+  }, [dispatch]);
+
   return (
     <div className="space-y-6 p-6">
       <div>
