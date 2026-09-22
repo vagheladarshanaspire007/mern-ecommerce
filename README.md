@@ -1111,7 +1111,8 @@ cd backend && npm run typecheck
 cd ../frontend && npm run typecheck
 
 # Lint
-npm run lint
+npm run lint:check
+npm run format:check
 ```
 
 **Performance checks:**
