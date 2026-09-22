@@ -12,12 +12,12 @@ for i in $(seq 1 110); do
   status=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
   echo "Request $i: HTTP $status"
 
-  if [ "$status" = "429" ]; then
+  if [[ "$status" = "429" ]]; then
     RATE_LIMIT_HIT=1
   fi
 done
 
-if [ "$RATE_LIMIT_HIT" -eq 1 ]; then
+if [[ "$RATE_LIMIT_HIT" -eq 1 ]]; then
   echo "PASS: Rate limit returned HTTP 429."
   exit 0
 fi
