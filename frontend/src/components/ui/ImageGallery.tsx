@@ -27,6 +27,8 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
           src={selectedImage}
           alt={`${productName} ${selectedIndex + 1}`}
           loading="lazy"
+          width={500}
+          height={500}
           className="h-full w-full object-contain"
         />
       </div>
@@ -49,6 +51,8 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
                 src={image}
                 alt={`${productName} ${index + 1}`}
                 loading="lazy"
+                width={80}
+                height={80}
                 className="h-full w-full object-cover"
               />
             </button>

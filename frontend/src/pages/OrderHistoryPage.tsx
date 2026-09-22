@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 import { DataTable } from '@/components/ui/DataTable';
 import type { Order, OrderStatus } from '@/types/auth.types';
 
@@ -81,6 +83,10 @@ const columns = [
 ];
 
 export default function OrderHistoryPage() {
+  useEffect(() => {
+    document.title = 'Order History | MERN E-Commerce';
+  }, []);
+
   return (
     <div className="space-y-6 p-6">
       <div>

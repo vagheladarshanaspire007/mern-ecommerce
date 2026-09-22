@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useAppSelector } from '@/store';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
@@ -8,6 +9,10 @@ interface ProfileFormData {
 }
 
 const ProfilePage = () => {
+  useEffect(() => {
+    document.title = 'Profile | MERN E-Commerce';
+  }, []);
+
   const user = useAppSelector((state) => state.auth.user);
 
   const { register, handleSubmit } = useForm<ProfileFormData>({
@@ -16,9 +21,11 @@ const ProfilePage = () => {
       lastName: user?.lastName ?? '',
     },
   });
+
   const onSubmit = () => {
     toast('Profile updates are not wired up yet.');
   };
+
   if (!user) {
     return (
       <div className="p-6">

@@ -54,10 +54,12 @@ export function ProductCard({ product }: ProductCardProps) {
               src={product.imageUrls[0]}
               alt={product.name}
               loading="lazy"
+              width={300}
+              height={300}
               className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-sm text-gray-500">
+            <div className="flex h-full items-center justify-center text-sm text-gray-700">
               No image available
             </div>
           )}

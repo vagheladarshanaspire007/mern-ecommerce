@@ -29,7 +29,6 @@ import { GuestRoute } from '@/components/layout/GuestRoute';
 import { AdminRoute } from '@/components/layout/AdminRoute';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { PageLoader } from '@/components/ui/PageLoader';
-import { CartPage } from './pages/CartPage';
 
 // ─── Lazy Loaded Pages ───────────────────────────────────────
 // WHY lazy(): Code splitting — each page is a separate JS chunk.
@@ -43,6 +42,11 @@ const OrderHistoryPage = lazy(() => import('@/pages/OrderHistoryPage'));
 const ProductListPage = lazy(() => import('@/pages/products/ProductListPage'));
 const ProductDetailPage = lazy(() => import('@/pages/products/ProductDetailPage'));
 const CheckoutPage = lazy(() => import('@/pages/CheckoutPage'));
+const CartPage = lazy(() =>
+  import('@/pages/CartPage').then((module) => ({
+    default: module.CartPage,
+  }))
+);
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
 const AdminDashboardPage = lazy(() => import('@/pages/admin/AdminDashboardPage'));
 const AdminProductForm = lazy(() => import('@/pages/admin/AdminProductForm'));

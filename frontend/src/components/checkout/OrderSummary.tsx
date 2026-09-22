@@ -98,6 +98,9 @@ export function OrderSummary({
                 <img
                   src={item.imageUrl}
                   alt={item.name}
+                  loading="lazy"
+                  width={80}
+                  height={80}
                   className="h-20 w-20 shrink-0 rounded-md object-cover"
                 />
               ) : (
