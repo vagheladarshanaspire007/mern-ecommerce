@@ -1329,3 +1329,285 @@ redis-cli ping   # Should return PONG
 
 > Built for the MERN Internship Training Program.  
 > See `docs/GITHUB_SETUP.md` for repository configuration.
+---
+
+# Developer Onboarding
+
+## Architecture
+
+```mermaid
+flowchart LR
+    Browser["React / Vite Frontend"] -->|HTTP / REST| API["Express API"]
+    Browser -->|WebSocket| API
+    API --> DB["PostgreSQL"]
+    API --> Redis["Redis"]
+    API --> Files["Uploads"]
+    API --> Mail["SMTP / Nodemailer"]
+```
+
+The frontend communicates with the Express backend through REST APIs and Socket.io. The backend uses PostgreSQL for persistent data, Redis for caching/rate limiting, local storage for uploaded files, and SMTP for email delivery.
+
+## How to Run — 3 Steps
+
+### 1. Configure environment
+
+```bash
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env.local
+```
+
+For Docker-based development, ensure Docker and Docker Compose are installed.
+
+### 2. Start the stack
+
+```bash
+docker compose up -d
+```
+
+Then run migrations:
+
+```bash
+docker compose exec api npm run migrate
+```
+
+### 3. Verify the application
+
+```bash
+curl http://localhost:5000/api/health
+curl http://localhost:5000/api/health/ready
+```
+
+Open the frontend at:
+
+```text
+http://localhost:3000
+```
+
+## Environment Variables Reference
+
+### Backend
+
+| Variable | Purpose | Example |
+|---|---|---|
+| `NODE_ENV` | Application environment | `development` |
+| `PORT` | API port | `5000` |
+| `API_VERSION` | API version prefix | `v1` |
+| `FRONTEND_URL` | Allowed frontend CORS origin | `http://localhost:3000` |
+| `DB_HOST` | PostgreSQL host | `localhost` |
+| `DB_PORT` | PostgreSQL port | `5432` |
+| `DB_NAME` | Database name | `mern_db` |
+| `DB_USER` | Database user | `postgres` |
+| `DB_PASSWORD` | Database password | local secret |
+| `DB_POOL_MIN` | Minimum DB connections | `2` |
+| `DB_POOL_MAX` | Maximum DB connections | `10` |
+| `REDIS_HOST` | Redis host | `localhost` |
+| `REDIS_PORT` | Redis port | `6379` |
+| `REDIS_PASSWORD` | Redis password | optional |
+| `REDIS_TTL` | Cache TTL in seconds | `3600` |
+| `JWT_ACCESS_SECRET` | Access-token signing secret | local secret |
+| `JWT_REFRESH_SECRET` | Refresh-token signing secret | local secret |
+| `JWT_ACCESS_EXPIRES_IN` | Access-token lifetime | `15m` |
+| `JWT_REFRESH_EXPIRES_IN` | Refresh-token lifetime | `7d` |
+| `SMTP_HOST` | SMTP server | `smtp.gmail.com` |
+| `SMTP_PORT` | SMTP port | `587` |
+| `SMTP_USER` | SMTP username | email address |
+| `SMTP_PASS` | SMTP password/app password | local secret |
+| `EMAIL_FROM` | Sender address | `noreply@yourapp.com` |
+| `UPLOAD_MAX_SIZE_MB` | Maximum upload size | `10` |
+| `UPLOAD_DIR` | Upload directory | `uploads` |
+| `RATE_LIMIT_WINDOW_MS` | Global rate-limit window | `900000` |
+| `RATE_LIMIT_MAX_REQUESTS` | Global request limit | `100` |
+| `BCRYPT_ROUNDS` | Password hashing cost | `12` |
+| `COOKIE_SECRET` | Cookie signing secret | local secret |
+| `LOG_LEVEL` | Logging level | `debug` |
+
+### Frontend
+
+| Variable | Purpose | Example |
+|---|---|---|
+| `VITE_API_URL` | Backend REST API URL | `http://localhost:5000/api/v1` |
+| `VITE_WS_URL` | Socket.io server URL | `http://localhost:5000` |
+| `VITE_APP_NAME` | Application name | `MERN E-Commerce` |
+
+Never commit `.env`, `.env.local`, or real credentials.
+
+## API Endpoint Reference
+
+| Method | Route | Auth | Description |
+|---|---|---|---|
+| POST | `/api/v1/auth/register` | No | Register user |
+| POST | `/api/v1/auth/login` | No | Login |
+| POST | `/api/v1/auth/refresh` | Refresh token | Refresh access token |
+| POST | `/api/v1/auth/forgot-password` | No | Request password reset |
+| POST | `/api/v1/auth/reset-password` | No | Reset password |
+| POST | `/api/v1/auth/logout` | Yes | Logout |
+| GET | `/api/v1/auth/me` | Yes | Current user |
+| GET | `/api/v1/products/categories` | No | List categories |
+| GET | `/api/v1/products` | Optional | List products |
+| GET | `/api/v1/products/:id` | Optional | Get product |
+| POST | `/api/v1/products` | Admin | Create product |
+| PATCH | `/api/v1/products/:id` | Admin | Update product |
+| DELETE | `/api/v1/products/:id` | Admin | Delete product |
+| POST | `/api/v1/orders` | Yes | Create order |
+| GET | `/api/v1/orders` | Yes | List orders |
+| GET | `/api/v1/orders/:id` | Yes | Get order |
+| PATCH | `/api/v1/orders/:id/status` | Admin | Update order status |
+| GET | `/api/v1/users/profile` | Yes | Profile — Out of Scope |
+| PATCH | `/api/v1/users/profile` | Yes | Update profile — Out of Scope |
+| PATCH | `/api/v1/users/change-password` | Yes | Change password — Out of Scope |
+| GET | `/api/v1/users` | Admin | List users — Out of Scope |
+| DELETE | `/api/v1/users/:id` | Admin | Delete user — Out of Scope |
+| POST | `/api/v1/upload/image` | Yes | Upload image |
+| POST | `/api/v1/upload/images` | Yes | Multiple images — Out of Scope |
+| GET | `/api/health` | No | Liveness check |
+| GET | `/api/health/ready` | No | Readiness check |
+
+Detailed request and response examples are available in [`docs/API.md`](docs/API.md).
+
+## Security Verification
+
+The API applies Helmet security headers including:
+
+- `X-Frame-Options: DENY`
+- `X-Content-Type-Options: nosniff`
+- `Content-Security-Policy`
+- `Referrer-Policy`
+- `Permissions-Policy`
+
+Rate limits:
+
+| Area | Limit |
+|---|---|
+| General API | 100 requests / 15 minutes / IP |
+| Authentication | 5 attempts / 15 minutes |
+| Password reset | 3 requests / hour |
+| Uploads | 50 requests / hour |
+
+Run the rate-limit verification script:
+
+```bash
+./scripts/rate-limit-test.sh
+```
+
+The expected result is HTTP `429` once the global request limit is exceeded.
+
+Run the security audit:
+
+```bash
+npm --prefix backend audit --audit-level=high
+npm --prefix frontend audit --audit-level=high
+```
+
+## CI Checks
+
+The GitHub Actions pipeline validates:
+
+- ESLint
+- Prettier
+- TypeScript
+- Backend tests
+- Frontend tests
+- npm security audit
+
+Run the equivalent checks locally:
+
+```bash
+npm --prefix backend run lint
+npm --prefix backend run typecheck
+npm --prefix backend run test
+
+npm --prefix frontend run lint
+npm --prefix frontend run typecheck
+npm --prefix frontend run test
+```
+
+## Troubleshooting
+
+### API is unavailable
+
+Check containers:
+
+```bash
+docker compose ps
+```
+
+Check API logs:
+
+```bash
+docker compose logs api
+```
+
+### Database connection fails
+
+Verify PostgreSQL is running and that `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD` match the local configuration.
+
+Then run:
+
+```bash
+docker compose exec api npm run migrate
+```
+
+### Redis connection fails
+
+Check Redis:
+
+```bash
+docker compose exec redis redis-cli ping
+```
+
+Expected:
+
+```text
+PONG
+```
+
+### Frontend cannot reach the API
+
+Verify:
+
+```text
+VITE_API_URL=http://localhost:5000/api/v1
+```
+
+and confirm the backend is running on port `5000`.
+
+### Rate-limit test returns 429 immediately
+
+The limiter is IP-based. Restart the API container to reset in-memory limiter state:
+
+```bash
+docker restart mern_api
+```
+
+Then rerun:
+
+```bash
+./scripts/rate-limit-test.sh
+```
+
+### Tests fail after dependency changes
+
+Reinstall dependencies from the lockfiles:
+
+```bash
+cd backend && npm ci
+cd ../frontend && npm ci
+cd ..
+```
+
+Then rerun the CI checks.
+
+## Out of Scope / Remaining Boilerplate
+
+The following existing placeholders are intentionally documented as out of scope for this task:
+
+- User profile CRUD endpoints.
+- User password-change endpoint.
+- Admin user listing/deletion endpoints.
+- Multiple-image processing endpoint.
+- Chat room/message TODO handlers.
+- Deployment workflow placeholders for environment-specific infrastructure.
+- Optional frontend footer enhancement.
+- The migration utility's product-schema TODO is retained as project-specific migration documentation rather than changed during the security/documentation task.
+
+These placeholders do not block the security audit, local test suite, API documentation, or developer onboarding requirements.
