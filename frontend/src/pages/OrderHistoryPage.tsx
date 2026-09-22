@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
-
 import { DataTable } from '@/components/ui/DataTable';
+import { useAppDispatch } from '@/store';
+import { clearUnreadCount } from '@/store/slices/uiSlice';
 import type { Order, OrderStatus } from '@/types/auth.types';
 
 const mockOrders: Order[] = [
@@ -83,6 +84,12 @@ const columns = [
 ];
 
 export default function OrderHistoryPage() {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(clearUnreadCount());
+  }, [dispatch]);
+
   useEffect(() => {
     document.title = 'Order History | MERN E-Commerce';
   }, []);

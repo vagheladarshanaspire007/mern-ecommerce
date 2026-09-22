@@ -15,3 +15,6 @@ export type { BadgeProps, BadgeVariant } from './Badge';
 export type { ModalProps } from './Modal';
 export type { SkeletonProps } from './Skeleton';
 export type { EmptyStateProps } from './EmptyState';
+
+export { NotificationBadge } from './NotificationBadge';
+export { ConnectionStatus } from './ConnectionStatus';

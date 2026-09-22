@@ -1,3 +1,5 @@
+﻿import { ConnectionStatus } from '@/components/ui/ConnectionStatus';
+import { NotificationBadge } from '@/components/ui/NotificationBadge';
 import { useState } from 'react';
 import { Link, NavLink, useSearchParams } from 'react-router-dom';
 import { Menu, Search, ShoppingCart, X } from 'lucide-react';
@@ -121,6 +123,8 @@ export function Navbar() {
             </button>
 
             {/* User */}
+            <ConnectionStatus />
+            <NotificationBadge />
             <UserMenu />
           </div>
 
@@ -214,6 +218,8 @@ export function Navbar() {
 
               {/* Mobile User Menu */}
               <div className="border-t pt-3">
+                <ConnectionStatus />
+                <NotificationBadge />
                 <UserMenu />
               </div>
             </div>
