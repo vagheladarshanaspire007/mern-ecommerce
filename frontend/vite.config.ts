@@ -64,7 +64,7 @@ export default defineConfig({
 
   build: {
     outDir: 'dist',
-    sourcemap: false,        // WHY false in prod: Don't expose source to users
+    sourcemap: false, // WHY false in prod: Don't expose source to users
     chunkSizeWarningLimit: 500,
     rollupOptions: {
       output: {
@@ -72,16 +72,43 @@ export default defineConfig({
         // Users cache vendor.js between deploys → only app.js redownloaded.
         manualChunks(id) {
           if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
-            return 'vendor';
+            return 'react-vendor';
           }
-          if (id.includes('node_modules/react-router-dom')) {
+
+          if (
+            id.includes('node_modules/react-router') ||
+            id.includes('node_modules/react-router-dom')
+          ) {
             return 'router';
           }
-          if (id.includes('node_modules/@reduxjs') || id.includes('node_modules/react-redux')) {
+
+          if (
+            id.includes('node_modules/@reduxjs') ||
+            id.includes('node_modules/react-redux') ||
+            id.includes('node_modules/redux') ||
+            id.includes('node_modules/immer') ||
+            id.includes('node_modules/redux-thunk')
+          ) {
             return 'redux';
           }
-          if (id.includes('node_modules/@tanstack/react-query')) {
+
+          if (id.includes('node_modules/@tanstack') || id.includes('node_modules/react-query')) {
             return 'query';
+          }
+
+          if (
+            id.includes('node_modules/react-hook-form') ||
+            id.includes('node_modules/@hookform')
+          ) {
+            return 'forms';
+          }
+
+          if (id.includes('node_modules/lucide-react')) {
+            return 'icons';
+          }
+
+          if (id.includes('node_modules/axios') || id.includes('node_modules/socket.io-client')) {
+            return 'network';
           }
         },
       },

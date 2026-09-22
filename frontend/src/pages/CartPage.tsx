@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/store';
 
@@ -9,6 +10,10 @@ import { ShoppingCart } from 'lucide-react';
 import { useCartActions } from '@/hooks/useCartActions';
 
 export function CartPage() {
+  useEffect(() => {
+    document.title = 'Shopping Cart | MERN E-Commerce';
+  }, []);
+
   const dispatch = useAppDispatch();
 
   const items = useAppSelector(selectCartItems);

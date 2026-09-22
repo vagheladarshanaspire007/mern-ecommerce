@@ -15,7 +15,14 @@ export function CartItem({ item, onIncrease, onDecrease, onRemove }: CartItemPro
       {/* Product Image */}
       <div className="h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-gray-100">
         {item.imageUrl ? (
-          <img src={item.imageUrl} alt={item.name} className="h-full w-full object-cover" />
+          <img
+            src={item.imageUrl}
+            alt={item.name}
+            loading="lazy"
+            width={80}
+            height={80}
+            className="h-full w-full object-cover"
+          />
         ) : (
           <div className="flex h-full items-center justify-center text-xs text-gray-500">
             No image

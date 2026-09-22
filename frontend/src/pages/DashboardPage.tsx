@@ -1,7 +1,12 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '@/store';
 
 const DashboardPage = () => {
+  useEffect(() => {
+    document.title = 'Dashboard | MERN E-Commerce';
+  }, []);
+
   const user = useAppSelector((state) => state.auth.user);
 
   const firstName = user?.firstName ?? 'User';

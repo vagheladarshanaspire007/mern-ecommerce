@@ -48,6 +48,13 @@ export default function AdminProductForm() {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Set page title.
+  useEffect(() => {
+    document.title = isEditMode
+      ? 'Edit Product | MERN E-Commerce'
+      : 'Add Product | MERN E-Commerce';
+  }, [isEditMode]);
+
   // Load categories.
   useEffect(() => {
     const loadCategories = async () => {
@@ -452,6 +459,9 @@ export default function AdminProductForm() {
                 <img
                   src={previewUrl}
                   alt="Product preview"
+                  loading="lazy"
+                  width={160}
+                  height={160}
                   className="h-40 w-40 rounded-lg border object-cover"
                 />
 

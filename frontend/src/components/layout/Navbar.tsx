@@ -48,7 +48,14 @@ export function Navbar() {
         >
           {/* Logo */}
           <Link to="/products" className="shrink-0" aria-label="Go to products">
-            <img src="/images/logo.jpeg" alt="MyStore" className="h-16 w-auto object-contain" />
+            <img
+              src="/images/logo.jpeg"
+              alt="MyStore"
+              loading="lazy"
+              width={64}
+              height={64}
+              className="h-16 w-auto object-contain"
+            />
           </Link>
 
           {/* Desktop Search */}

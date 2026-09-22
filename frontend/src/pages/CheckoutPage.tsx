@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 
 import { OrderConfirmation } from '@/components/checkout/OrderConfirmation';
@@ -35,6 +35,10 @@ interface ApiError extends Error {
 }
 
 const CheckoutPage = () => {
+  useEffect(() => {
+    document.title = 'Checkout | MERN E-Commerce';
+  }, []);
+
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 

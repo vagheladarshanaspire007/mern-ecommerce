@@ -19,6 +19,10 @@ const AdminDashboardPage = () => {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
+    document.title = 'Admin Dashboard | MERN E-Commerce';
+  }, []);
+
+  useEffect(() => {
     if (activeTab !== 'Products') {
       return;
     }

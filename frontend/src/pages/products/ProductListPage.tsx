@@ -15,6 +15,10 @@ import { Button } from '@/components/ui/Button';
 const PAGE_SIZE = 20;
 
 export function ProductListPage() {
+  useEffect(() => {
+    document.title = 'Products | MERN E-Commerce';
+  }, []);
+
   const [searchParams, setSearchParams] = useSearchParams();
 
   const searchFromUrl = searchParams.get('search') ?? '';

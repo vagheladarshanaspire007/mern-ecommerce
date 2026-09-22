@@ -46,8 +46,11 @@ export default function ProductDetailPage() {
 
   useEffect(() => {
     if (!product) {
+      document.title = 'Product | MERN E-Commerce';
       return;
     }
+
+    document.title = `${product.name} | MERN E-Commerce`;
 
     const loadReviews = async () => {
       try {

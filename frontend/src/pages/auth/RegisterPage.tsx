@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -28,6 +28,10 @@ const registerSchema = z
 type RegisterFormData = z.infer<typeof registerSchema>;
 
 const RegisterPage = () => {
+  useEffect(() => {
+    document.title = 'Register | MERN E-Commerce';
+  }, []);
+
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
