@@ -2,6 +2,9 @@
 
 Base URL: `http://localhost:5000/api/v1`
 
+> Health endpoints are mounted outside the versioned API prefix:
+> `http://localhost:5000/api/health` and `http://localhost:5000/api/health/ready`
+
 ## Authentication
 
 Authenticated requests use:
@@ -10,13 +13,15 @@ Authenticated requests use:
 Authorization: Bearer <accessToken>
 ```
 
+The refresh token is sent as an HTTP-only `refreshToken` cookie.
+
 ## Endpoint Summary
 
 | Method | Route | Auth | Description |
 |---|---|---|---|
 | POST | `/auth/register` | No | Register a user |
 | POST | `/auth/login` | No | Login |
-| POST | `/auth/refresh` | Refresh token | Refresh access token |
+| POST | `/auth/refresh` | Refresh token cookie | Refresh access token |
 | POST | `/auth/forgot-password` | No | Request password reset |
 | POST | `/auth/reset-password` | No | Reset password |
 | POST | `/auth/logout` | Yes | Logout |
@@ -38,8 +43,8 @@ Authorization: Bearer <accessToken>
 | DELETE | `/users/:id` | Admin | Delete user — Out of Scope |
 | POST | `/upload/image` | Yes | Upload one image |
 | POST | `/upload/images` | Yes | Multiple images — Out of Scope |
-| GET | `/health` | No | Liveness check |
-| GET | `/health/ready` | No | DB/Redis readiness check |
+| GET | `/api/health` | No | Liveness check |
+| GET | `/api/health/ready` | No | DB/Redis readiness check |
 
 ## Authentication API
 
@@ -53,7 +58,9 @@ Register a new user.
 {
   "email": "john@example.com",
   "password": "Password123!",
-  "name": "John Doe"
+  "firstName": "John",
+  "lastName": "Doe",
+  "confirmPassword": "Password123!"
 }
 ```
 
@@ -100,12 +107,17 @@ Login is rate-limited to 5 attempts per 15-minute window.
 
 Refresh an access token.
 
+The refresh token is read from the `refreshToken` HTTP-only cookie.
+
 **Request**
 
-```json
-{
-  "refreshToken": "<refresh-token>"
-}
+No request body is required.
+
+Example request:
+
+```http
+POST /api/v1/auth/refresh
+Cookie: refreshToken=<refresh-token>
 ```
 
 ### POST `/auth/forgot-password`
@@ -129,7 +141,8 @@ Reset a password using a reset token.
 ```json
 {
   "token": "<reset-token>",
-  "password": "NewPassword123!"
+  "password": "NewPassword123!",
+  "confirmPassword": "NewPassword123!"
 }
 ```
 
@@ -163,7 +176,9 @@ Returns available product categories.
 ```json
 {
   "success": true,
-  "data": []
+  "data": {
+    "categories": []
+  }
 }
 ```
 
@@ -208,13 +223,15 @@ Admin authentication required.
 
 **Request**
 
+`categoryId` must be a valid category UUID.
+
 ```json
 {
   "name": "Example Product",
   "description": "Product description",
   "price": 29.99,
   "stock": 100,
-  "category": "electronics"
+  "categoryId": "<category-uuid>"
 }
 ```
 
@@ -262,7 +279,9 @@ Admin authentication required.
 ```json
 {
   "success": true,
-  "message": "Product deleted successfully"
+  "data": {
+    "message": "Product deleted successfully"
+  }
 }
 ```
 
@@ -284,7 +303,14 @@ Create an order.
       "quantity": 2
     }
   ],
-  "shippingAddress": {}
+  "shippingAddress": {
+    "fullName": "John Doe",
+    "address": "123 Main Street",
+    "city": "Mumbai",
+    "state": "Maharashtra",
+    "pin": "400001",
+    "phone": "9876543210"
+  }
 }
 ```
 
@@ -357,7 +383,7 @@ Currently returns HTTP `501`.
 
 ## Health API
 
-### GET `/health`
+### GET `/api/health`
 
 Unauthenticated liveness check.
 
@@ -372,7 +398,7 @@ Unauthenticated liveness check.
 }
 ```
 
-### GET `/health/ready`
+### GET `/api/health/ready`
 
 Checks PostgreSQL and Redis connectivity.
 

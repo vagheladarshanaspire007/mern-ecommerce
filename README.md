@@ -1367,7 +1367,7 @@ docker compose up -d
 Then run migrations:
 
 ```bash
-docker compose exec api npm run migrate
+docker compose exec api node dist/utils/migrate.js
 ```
 
 ### 3. Verify the application
@@ -1544,7 +1544,7 @@ Verify PostgreSQL is running and that `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`
 Then run:
 
 ```bash
-docker compose exec api npm run migrate
+docker compose exec api node dist/utils/migrate.js
 ```
 
 ### Redis connection fails
